@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A-Z Vocabulary Learning App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+
+    .font-display { font-family: 'Playfair Display', serif; }
+    .font-body { font-family: 'Poppins', sans-serif; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes flip {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(180deg); }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+
+    .letter-btn {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      color: #64748b;
+    }
+
+    .letter-btn:hover {
+      border-color: #6366f1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .letter-btn.active {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      border-color: #6366f1;
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .word-card {
+      background: white;
+      border-radius: 14px;
+      padding: 1.5rem;
+      border-left: 5px solid #6366f1;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .word-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(99, 102, 241, 0.15);
+      border-left-color: #a855f7;
+    }
+
+    .pos-badge {
+      display: inline-block;
+      padding: 0.375rem 0.875rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pos-noun { background: #dbeafe; color: #1e40af; }
+    .pos-verb { background: #dcfce7; color: #166534; }
+    .pos-adjective { background: #fce7f3; color: #be185d; }
+    .pos-adverb { background: #fef3c7; color: #b45309; }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90%;
+      overflow-y: auto;
+      padding: 2.5rem;
+      animation: fadeInUp 0.3s ease-out;
+    }
+
+    .close-modal {
+      float: right;
+      font-size: 2rem;
+      font-weight: 300;
+      color: #94a3b8;
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: color 0.3s;
+    }
+
+    .close-modal:hover {
+      color: #6366f1;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeInUp 0.3s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 280px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+      text-align: center;
+      padding: 2rem;
+      transition: all 0.6s ease;
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+    }
+
+    .flashcard:hover {
+      transform: scale(1.02);
+    }
+
+    .flashcard.flipped {
+      background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%);
+    }
+
+    .quiz-option {
+      padding: 1.25rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: white;
+      font-weight: 500;
+    }
+
+    .quiz-option:hover:not(:disabled) {
+      border-color: #6366f1;
+      background: #f0f4ff;
+      transform: translateX(4px);
+    }
+
+    .quiz-option.selected {
+      border-color: #6366f1;
+      background: #f0f4ff;
+    }
+
+    .quiz-option.correct {
+      border-color: #22c55e;
+      background: #dcfce7;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
+
+    .quiz-option.incorrect {
+      border-color: #ef4444;
+      background: #fee2e2;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .vocab-bg {
+      background: linear-gradient(135deg, #f8fafc 0%, #f0e7ff 50%, #e0c3ff 100%);
+    }
+
+    .btn-practice {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-practice:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-check {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-check:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .feedback-message {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-top: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      animation: fadeInUp 0.3s ease-out;
+    }
+
+    .feedback-correct {
+      background: #dcfce7;
+      color: #166534;
+      border: 2px solid #22c55e;
+    }
+
+    .feedback-incorrect {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 2px solid #ef4444;
+    }
+
+    .word-detail {
+      margin-bottom: 1.5rem;
+    }
+
+    .word-detail-label {
+      font-weight: 600;
+      color: #475569;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .word-detail-text {
+      color: #334155;
+      font-size: 1.125rem;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #94a3b8;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body">
+     <nav class="bg-white shadow-md p-4 flex justify-between items-center">
+    <div class="font-bold text-xl">Salamot E-learning</div>
+    <div class="space-x-4">
+        <a href="index.html" class="hover:text-blue-500">Home</a>
+    </div>
+</nav>
+  <div id="app-wrapper" class="h-full w-full vocab-bg overflow-auto"><!-- Header -->
+   <header class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+     <div class="flex items-center justify-between">
+      <div>
+       <h1 id="app-title" class="font-display text-3xl md:text-4xl font-bold gradient-text">A-Z Vocabulary Learning App</h1>
+       <p id="app-subtitle" class="text-sm md:text-base text-gray-600 mt-1">Master English with Bengali Meanings</p>
+      </div>
+      <div class="text-5xl">
+       📖
+      </div>
+     </div>
+    </div>
+   </header><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-4 py-8"><!-- Alphabet Navigation -->
+    <section class="mb-8 animate-fade-in-up opacity-0 delay-100" style="animation-fill-mode: forwards;">
+     <h2 class="text-xl font-bold mb-4" style="color: #1e293b;">Select a Letter</h2>
+     <div class="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-13 gap-3"><button class="letter-btn active" onclick="selectLetter('A')">A</button> <button class="letter-btn" onclick="selectLetter('B')">B</button> <button class="letter-btn" onclick="selectLetter('C')">C</button> <button class="letter-btn" onclick="selectLetter('D')">D</button> <button class="letter-btn" onclick="selectLetter('E')">E</button> <button class="letter-btn" onclick="selectLetter('F')">F</button> <button class="letter-btn" onclick="selectLetter('G')">G</button> <button class="letter-btn" onclick="selectLetter('H')">H</button> <button class="letter-btn" onclick="selectLetter('I')">I</button> <button class="letter-btn" onclick="selectLetter('J')">J</button> <button class="letter-btn" onclick="selectLetter('K')">K</button> <button class="letter-btn" onclick="selectLetter('L')">L</button> <button class="letter-btn" onclick="selectLetter('M')">M</button> <button class="letter-btn" onclick="selectLetter('N')">N</button> <button class="letter-btn" onclick="selectLetter('O')">O</button> <button class="letter-btn" onclick="selectLetter('P')">P</button> <button class="letter-btn" onclick="selectLetter('Q')">Q</button> <button class="letter-btn" onclick="selectLetter('R')">R</button> <button class="letter-btn" onclick="selectLetter('S')">S</button> <button class="letter-btn" onclick="selectLetter('T')">T</button> <button class="letter-btn" onclick="selectLetter('U')">U</button> <button class="letter-btn" onclick="selectLetter('V')">V</button> <button class="letter-btn" onclick="selectLetter('W')">W</button> <button class="letter-btn" onclick="selectLetter('X')">X</button> <button class="letter-btn" onclick="selectLetter('Y')">Y</button> <button class="letter-btn" onclick="selectLetter('Z')">Z</button>
+     </div>
+    </section><!-- Category Tabs and Words -->
+    <section class="animate-fade-in-up opacity-0 delay-200" style="animation-fill-mode: forwards;">
+     <h2 id="letter-title" class="text-2xl font-bold mb-6 gradient-text">Letter A - Words</h2><!-- Category Tabs -->
+     <div class="mb-6 flex border-b border-gray-200 overflow-x-auto"><button class="tab-btn active" onclick="switchTab('all')">All Words</button> <button class="tab-btn" onclick="switchTab('nouns')">Nouns</button> <button class="tab-btn" onclick="switchTab('verbs')">Verbs</button> <button class="tab-btn" onclick="switchTab('adjectives')">Adjectives</button> <button class="tab-btn" onclick="switchTab('adverbs')">Adverbs</button>
+     </div><!-- Words Grid -->
+     <div id="words-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"><!-- Words will be loaded here -->
+     </div><!-- Empty State -->
+     <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-state-icon">
+       📭
+      </div>
+      <p class="text-lg">No words found in this category.</p>
+     </div>
+    </section>
+   </main>
+  </div><!-- Practice Modal -->
+  <div id="practice-modal" class="modal-overlay">
+   <div class="modal-content"><button class="close-modal" onclick="closeModal()">×</button>
+    <div class="mb-6">
+     <h2 id="modal-word" class="font-display text-4xl font-bold gradient-text mb-3"></h2>
+     <div class="flex items-center gap-3 flex-wrap"><span id="modal-pos" class="pos-badge"></span>
+     </div>
+    </div><!-- Practice Tabs -->
+    <div class="flex border-b border-gray-200 mb-6 overflow-x-auto"><button class="tab-btn active" onclick="switchPracticeTab('details')">Details</button> <button class="tab-btn" onclick="switchPracticeTab('flashcard')">Flashcard</button> <button class="tab-btn" onclick="switchPracticeTab('quiz')">Fill-in-the-Blank</button>
+    </div><!-- Details Tab -->
+    <div id="details-tab" class="tab-content active">
+     <div class="word-detail">
+      <div class="word-detail-label">
+       Bengali Meaning
+      </div>
+      <div id="modal-bengali" class="word-detail-text font-semibold" style="color: #6366f1;"></div>
+     </div>
+     <div class="word-detail">
+      <div class="word-detail-label">
+       Part of Speech
+      </div>
+      <div class="word-detail-text" id="modal-pos-detail"></div>
+     </div>
+     <div class="word-detail">
+      <div class="word-detail-label">
+       Example Sentence
+      </div>
+      <div class="word-detail-text italic" id="modal-example"></div>
+     </div>
+    </div><!-- Flashcard Tab -->
+    <div id="flashcard-tab" class="tab-content">
+     <p class="text-center text-gray-600 mb-6 font-semibold">Click the card to flip</p>
+     <div id="flashcard" class="flashcard" onclick="flipFlashcard()"><span id="flashcard-content" class="text-3xl"></span>
+     </div>
+     <p class="text-center text-gray-500 text-sm mt-6">Front: Word | Back: Meaning &amp; Example</p>
+    </div><!-- Quiz Tab -->
+    <div id="quiz-tab" class="tab-content">
+     <div class="mb-6">
+      <h3 class="text-lg font-bold mb-6" style="color: #1e293b;">Fill in the blank with the correct word:</h3>
+      <p class="text-lg mb-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500" id="quiz-sentence"></p>
+      <div id="quiz-options" class="space-y-3 mb-6"></div><button class="btn-check" onclick="submitQuizAnswer()" id="quiz-submit-btn">Check Answer</button>
+      <div id="quiz-feedback" class="mt-4"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      app_title: "A-Z Vocabulary Learning App",
+      app_subtitle: "Master English with Bengali Meanings",
+      primary_color: "#6366f1",
+      secondary_color: "#8b5cf6",
+      text_color: "#1e293b"
+    };
+
+    let config = { ...defaultConfig };
+    let currentLetter = 'A';
+    let currentTab = 'all';
+    let selectedWord = null;
+    let flashcardFlipped = false;
+    let quizAnswered = false;
+
+    // Complete Dictionary Data
+    const vocabularyData = {
+      A: [
+        { word: 'Ability', bengali: 'ক্ষমতা', pos: 'Noun', example: 'She has the ability to speak five languages fluently.' },
+        { word: 'Abandon', bengali: 'পরিত্যাগ করা', pos: 'Verb', example: 'He decided to abandon his old job and start a new career.' },
+        { word: 'Accurate', bengali: 'নির্ভুল', pos: 'Adjective', example: 'The weather forecast was accurate this time.' },
+        { word: 'Achieve', bengali: 'অর্জন করা', pos: 'Verb', example: 'She worked hard to achieve her goals.' },
+        { word: 'Afford', bengali: 'সামর্থ্য রাখা', pos: 'Verb', example: 'They cannot afford a luxury vacation this year.' }
+      ],
+      B: [
+        { word: 'Baggage', bengali: 'ব্যাগেজ', pos: 'Noun', example: 'Please collect your baggage from the conveyor belt.' },
+        { word: 'Bargain', bengali: 'দর-কষাকষি', pos: 'Noun', example: 'I found an amazing bargain at the market today.' },
+        { word: 'Basic', bengali: 'মৌলিক', pos: 'Adjective', example: 'Understanding basic mathematics is essential for students.' },
+        { word: 'Benefit', bengali: 'সুবিধা', pos: 'Noun', example: 'Exercise provides many health benefits.' },
+        { word: 'Beverage', bengali: 'পানীয়', pos: 'Noun', example: 'We serve hot and cold beverages at the cafe.' }
+      ],
+      C: [
+        { word: 'Capable', bengali: 'সক্ষম', pos: 'Adjective', example: 'She is capable of handling this challenging project.' },
+        { word: 'Confident', bengali: 'আত্মবিশ্বাসী', pos: 'Adjective', example: 'He felt confident about his exam performance.' },
+        { word: 'Confirm', bengali: 'নিশ্চিত করা', pos: 'Verb', example: 'Please confirm your attendance at the meeting.' },
+        { word: 'Confuse', bengali: 'বিভ্রান্ত করা', pos: 'Verb', example: 'The complicated instructions confuse most users.' },
+        { word: 'Crucial', bengali: 'অত্যন্ত গুরুত্বপূর্ণ', pos: 'Adjective', example: 'Time management is crucial for success.' }
+      ],
+      D: [
+        { word: 'Decision', bengali: 'সিদ্ধান্ত', pos: 'Noun', example: 'Making the right decision requires careful consideration.' },
+        { word: 'Delay', bengali: 'বিলম্ব', pos: 'Noun', example: 'There was a delay in the flight departure.' },
+        { word: 'Deserve', bengali: 'যোগ্য', pos: 'Verb', example: 'She deserves recognition for her hard work.' },
+        { word: 'Device', bengali: 'যন্ত্র', pos: 'Noun', example: 'This device helps measure temperature accurately.' },
+        { word: 'Display', bengali: 'প্রদর্শন করা', pos: 'Verb', example: 'The museum will display ancient artifacts next month.' }
+      ],
+      E: [
+        { word: 'Eager', bengali: 'আগ্রহী', pos: 'Adjective', example: 'The eager students listened attentively to the lecture.' },
+        { word: 'Effort', bengali: 'প্রচেষ্টা', pos: 'Noun', example: 'Success requires consistent effort and dedication.' },
+        { word: 'Elegant', bengali: 'সুন্দর', pos: 'Adjective', example: 'She wore an elegant dress to the party.' },
+        { word: 'Entire', bengali: 'সম্পূর্ণ', pos: 'Adjective', example: 'The entire project took three months to complete.' },
+        { word: 'Evidence', bengali: 'প্রমাণ', pos: 'Noun', example: 'There is strong evidence supporting this scientific theory.' }
+      ],
+      F: [
+        { word: 'Familiar', bengali: 'পরিচিত', pos: 'Adjective', example: 'This place looks familiar but I cannot remember when I visited.' },
+        { word: 'Fancy', bengali: 'অলংকৃত', pos: 'Adjective', example: 'They had a fancy dinner at an upscale restaurant.' },
+        { word: 'Flavor', bengali: 'স্বাদ', pos: 'Noun', example: 'This dessert has a unique flavor of chocolate and vanilla.' },
+        { word: 'Flexible', bengali: 'নমনীয়', pos: 'Adjective', example: 'A flexible schedule allows workers to maintain work-life balance.' },
+        { word: 'Frequent', bengali: 'ঘন ঘন', pos: 'Adjective', example: 'He makes frequent trips to the office.' }
+      ],
+      G: [
+        { word: 'Gather', bengali: 'সংগ্রহ করা', pos: 'Verb', example: 'The family gathered around the dinner table.' },
+        { word: 'Generous', bengali: 'উদার', pos: 'Adjective', example: 'A generous person always helps others in need.' },
+        { word: 'Gesture', bengali: 'অঙ্গভঙ্গি', pos: 'Noun', example: 'She made a friendly gesture by smiling warmly.' },
+        { word: 'Glance', bengali: 'দৃষ্টি নিক্ষেপ করা', pos: 'Verb', example: 'He took a quick glance at the newspaper.' },
+        { word: 'Gradual', bengali: 'ক্রমান্বয়ী', pos: 'Adjective', example: 'The gradual change in weather is quite noticeable.' }
+      ],
+      H: [
+        { word: 'Habit', bengali: 'অভ্যাস', pos: 'Noun', example: 'Reading before bed is my favorite habit.' },
+        { word: 'Harsh', bengali: 'কঠোর', pos: 'Adjective', example: 'The harsh weather conditions made travel difficult.' },
+        { word: 'Hazard', bengali: 'বিপদ', pos: 'Noun', example: 'Smoking is a serious health hazard.' },
+        { word: 'Hesitate', bengali: 'সংকোচ করা', pos: 'Verb', example: 'Do not hesitate to ask for help when needed.' },
+        { word: 'Humble', bengali: 'নম্র', pos: 'Adjective', example: 'Despite his success, he remains humble and grounded.' }
+      ],
+      I: [
+        { word: 'Identify', bengali: 'চিহ্নিত করা', pos: 'Verb', example: 'Can you identify the main character in this movie?' },
+        { word: 'Ignore', bengali: 'উপেক্ষা করা', pos: 'Verb', example: 'It is wrong to ignore someone who needs help.' },
+        { word: 'Impact', bengali: 'প্রভাব', pos: 'Noun', example: 'Technology has a huge impact on modern society.' },
+        { word: 'Improve', bengali: 'উন্নত করা', pos: 'Verb', example: 'Practice will help you improve your English skills.' },
+        { word: 'Involve', bengali: 'জড়িত করা', pos: 'Verb', example: 'This project will involve the entire team.' }
+      ],
+      J: [
+        { word: 'Jealous', bengali: 'ঈর্ষান্বিত', pos: 'Adjective', example: 'He felt jealous when his friend got promoted.' },
+        { word: 'Jolly', bengali: 'আনন্দময়', pos: 'Adjective', example: 'The jolly atmosphere at the party was infectious.' },
+        { word: 'Journey', bengali: 'যাত্রা', pos: 'Noun', example: 'Our journey across Europe was unforgettable.' },
+        { word: 'Jumble', bengali: 'গোলমাল', pos: 'Noun', example: 'The room was in complete jumble after the party.' },
+        { word: 'Justify', bengali: 'ন্যায্যতা দেওয়া', pos: 'Verb', example: 'Can you justify your decision to leave the company?' }
+      ],
+      K: [
+        { word: 'Keen', bengali: 'আগ্রহী', pos: 'Adjective', example: 'She is keen on learning new languages.' },
+        { word: 'Keep', bengali: 'রাখা', pos: 'Verb', example: 'Please keep this document safe and secure.' },
+        { word: 'Kindness', bengali: 'দয়া', pos: 'Noun', example: 'Her kindness towards animals is truly remarkable.' },
+        { word: 'Kitchen', bengali: 'রসোই', pos: 'Noun', example: 'We designed a modern kitchen with latest appliances.' },
+        { word: 'Knot', bengali: 'গিঁট', pos: 'Noun', example: 'He tied a tight knot to secure the rope.' }
+      ],
+      L: [
+        { word: 'Label', bengali: 'লেবেল', pos: 'Noun', example: 'Check the label on the product before buying.' },
+        { word: 'Latest', bengali: 'সর্বশেষ', pos: 'Adjective', example: 'She always wears the latest fashion trends.' },
+        { word: 'Leisure', bengali: 'অবসর', pos: 'Noun', example: 'I enjoy spending my leisure time reading books.' },
+        { word: 'Likely', bengali: 'সম্ভবত', pos: 'Adjective', example: 'It is likely to rain tomorrow according to the forecast.' },
+        { word: 'Loyal', bengali: 'অনুগত', pos: 'Adjective', example: 'A loyal friend stands by you in difficult times.' }
+      ],
+      M: [
+        { word: 'Maintain', bengali: 'বজায় রাখা', pos: 'Verb', example: 'Regular exercise helps maintain good health.' },
+        { word: 'Manner', bengali: 'আচরণ', pos: 'Noun', example: 'He spoke in a polite manner to everyone.' },
+        { word: 'Margin', bengali: 'মার্জিন', pos: 'Noun', example: 'We won the game by a narrow margin.' },
+        { word: 'Maximum', bengali: 'সর্বোচ্চ', pos: 'Noun', example: 'The maximum speed limit on highways is strictly enforced.' },
+        { word: 'Memory', bengali: 'স্মৃতি', pos: 'Noun', example: 'Those childhood memories will stay with me forever.' }
+      ],
+      N: [
+        { word: 'Natural', bengali: 'প্রাকৃতিক', pos: 'Adjective', example: 'Natural ingredients are better for your health.' },
+        { word: 'Nearby', bengali: 'কাছাকাছি', pos: 'Adjective', example: 'There is a grocery store nearby our house.' },
+        { word: 'Necessary', bengali: 'প্রয়োজনীয়', pos: 'Adjective', example: 'It is necessary to follow safety guidelines at work.' },
+        { word: 'Notice', bengali: 'লক্ষ্য করা', pos: 'Verb', example: 'Did you notice the new decoration in the office?' },
+        { word: 'Notion', bengali: 'ধারণা', pos: 'Noun', example: 'The notion that money brings happiness is false.' }
+      ],
+      O: [
+        { word: 'Obvious', bengali: 'স্পষ্ট', pos: 'Adjective', example: 'It is obvious that he did not prepare for the exam.' },
+        { word: 'Occasion', bengali: 'অনুষ্ঠান', pos: 'Noun', example: 'The wedding was a special occasion for the family.' },
+        { word: 'Offer', bengali: 'প্রস্তাব', pos: 'Noun', example: 'The job offer was too good to refuse.' },
+        { word: 'Option', bengali: 'বিকল্প', pos: 'Noun', example: 'You have multiple options to choose from.' },
+        { word: 'Ordinary', bengali: 'সাধারণ', pos: 'Adjective', example: 'It was an ordinary day with nothing special.' }
+      ],
+      P: [
+        { word: 'Particular', bengali: 'বিশেষ', pos: 'Adjective', example: 'He has no particular preference in music.' },
+        { word: 'Pause', bengali: 'বিরাম', pos: 'Noun', example: 'There was a pause before he answered the question.' },
+        { word: 'Persuade', bengali: 'প্ররোচিত করা', pos: 'Verb', example: 'She tried to persuade him to join the team.' },
+        { word: 'Polite', bengali: 'ভদ্র', pos: 'Adjective', example: 'It is important to be polite in social situations.' },
+        { word: 'Precise', bengali: 'সঠিক', pos: 'Adjective', example: 'His precise measurements ensured accuracy.' }
+      ],
+      Q: [
+        { word: 'Quality', bengali: 'গুণমান', pos: 'Noun', example: 'We always maintain high quality standards.' },
+        { word: 'Quantity', bengali: 'পরিমাণ', pos: 'Noun', example: 'The quantity of production increased significantly.' },
+        { word: 'Quarrel', bengali: 'ঝগড়া', pos: 'Noun', example: 'Their quarrel lasted for several hours.' },
+        { word: 'Queue', bengali: 'সারি', pos: 'Noun', example: 'There was a long queue at the ticket counter.' },
+        { word: 'Quickly', bengali: 'দ্রুত', pos: 'Adverb', example: 'He quickly finished his homework before dinner.' }
+      ],
+      R: [
+        { word: 'Rare', bengali: 'বিরল', pos: 'Adjective', example: 'This is a rare opportunity that you should not miss.' },
+        { word: 'Reasonable', bengali: 'যুক্তিসঙ্গত', pos: 'Adjective', example: 'The price is quite reasonable for such quality.' },
+        { word: 'Regret', bengali: 'অনুশোচনা', pos: 'Noun', example: 'He expressed regret for his harsh words.' },
+        { word: 'Reliable', bengali: 'নির্ভরযোগ্য', pos: 'Adjective', example: 'She is a reliable person who always keeps her promises.' },
+        { word: 'Remind', bengali: 'মনে করিয়ে দেওয়া', pos: 'Verb', example: 'Please remind me about the meeting tomorrow.' }
+      ],
+      S: [
+        { word: 'Scarce', bengali: 'দুর্লভ', pos: 'Adjective', example: 'Clean water is scarce in some regions.' },
+        { word: 'Sensible', bengali: 'বুদ্ধিমান', pos: 'Adjective', example: 'A sensible decision requires careful thinking.' },
+        { word: 'Significant', bengali: 'উল্লেখযোগ্য', pos: 'Adjective', example: 'This discovery has significant implications for science.' },
+        { word: 'Sincere', bengali: 'আন্তরিক', pos: 'Adjective', example: 'His sincere apology was accepted by everyone.' },
+        { word: 'Strategy', bengali: 'কৌশল', pos: 'Noun', example: 'A good strategy is essential for business success.' }
+      ],
+      T: [
+        { word: 'Talent', bengali: 'প্রতিভা', pos: 'Noun', example: 'She has exceptional talent in painting.' },
+        { word: 'Target', bengali: 'লক্ষ্য', pos: 'Noun', example: 'Our target is to increase sales by fifty percent.' },
+        { word: 'Tendency', bengali: 'প্রবণতা', pos: 'Noun', example: 'He has a tendency to arrive late for meetings.' },
+        { word: 'Thrilled', bengali: 'অত্যন্ত আনন্দিত', pos: 'Adjective', example: 'The children were thrilled to see the surprise.' },
+        { word: 'Tough', bengali: 'কঠিন', pos: 'Adjective', example: 'This is a tough decision with no easy answer.' }
+      ],
+      U: [
+        { word: 'Ultimate', bengali: 'চূড়ান্ত', pos: 'Adjective', example: 'Winning the championship is the ultimate goal.' },
+        { word: 'Unique', bengali: 'অনন্য', pos: 'Adjective', example: 'Each person has a unique fingerprint.' },
+        { word: 'Update', bengali: 'আপডেট', pos: 'Noun', example: 'The software update includes important security fixes.' },
+        { word: 'Urgent', bengali: 'জরুরি', pos: 'Adjective', example: 'This is an urgent matter that requires immediate attention.' },
+        { word: 'Utility', bengali: 'উপযোগিতা', pos: 'Noun', example: 'The utility of this tool is undeniable.' }
+      ],
+      V: [
+        { word: 'Vacant', bengali: 'শূন্য', pos: 'Adjective', example: 'The vacant position was filled quickly.' },
+        { word: 'Vague', bengali: 'অস্পষ্ট', pos: 'Adjective', example: 'His vague answer did not satisfy the audience.' },
+        { word: 'Valid', bengali: 'বৈধ', pos: 'Adjective', example: 'Your passport must be valid for travel.' },
+        { word: 'Variety', bengali: 'বৈচিত্র্য', pos: 'Noun', example: 'The store offers a wide variety of products.' },
+        { word: 'Visible', bengali: 'দৃশ্যমান', pos: 'Adjective', example: 'The stars are visible on clear nights.' }
+      ],
+      W: [
+        { word: 'Wander', bengali: 'ঘুরে বেড়ানো', pos: 'Verb', example: 'We decided to wander through the streets of the city.' },
+        { word: 'Wealthy', bengali: 'সমৃদ্ধ', pos: 'Adjective', example: 'The wealthy businessman donated to charity.' },
+        { word: 'Weird', bengali: 'অদ্ভুত', pos: 'Adjective', example: 'That was a weird coincidence that happened yesterday.' },
+        { word: 'Willing', bengali: 'ইচ্ছুক', pos: 'Adjective', example: 'Are you willing to help with this project?' },
+        { word: 'Wisdom', bengali: 'জ্ঞান', pos: 'Noun', example: 'Ancient wisdom is often found in philosophical texts.' }
+      ],
+      X: [
+        { word: 'Xenon', bengali: 'জেনন', pos: 'Noun', example: 'Xenon is a noble gas used in lighting.' },
+        { word: 'Xerox', bengali: 'জেরক্স', pos: 'Verb', example: 'Please xerox these documents for the meeting.' },
+        { word: 'Xylophone', bengali: 'জাইলোফোন', pos: 'Noun', example: 'The musician played a beautiful melody on the xylophone.' },
+        { word: 'X-ray', bengali: 'এক্স-রে', pos: 'Noun', example: 'The doctor ordered an X-ray to check for fractures.' },
+        { word: 'Xeric', bengali: 'শুষ্ক', pos: 'Adjective', example: 'Xeric plants survive in dry climates.' }
+      ],
+      Y: [
+        { word: 'Yacht', bengali: 'ইয়ট', pos: 'Noun', example: 'The luxury yacht sailed across the ocean.' },
+        { word: 'Yard', bengali: 'আঙ্গিনা', pos: 'Noun', example: 'The children played in the backyard.' },
+        { word: 'Yawn', bengali: 'হাই তোলা', pos: 'Verb', example: 'He began to yawn during the boring lecture.' },
+        { word: 'Yearly', bengali: 'বার্ষিক', pos: 'Adjective', example: 'We have a yearly meeting with our partners.' },
+        { word: 'Yet', bengali: 'এখনো', pos: 'Adverb', example: 'The project is not finished yet.' }
+      ],
+      Z: [
+        { word: 'Zap', bengali: 'ঝলকানি দেওয়া', pos: 'Verb', example: 'Use the remote to zap between channels.' },
+        { word: 'Zeal', bengali: 'উৎসাহ', pos: 'Noun', example: 'She approached the task with great zeal and enthusiasm.' },
+        { word: 'Zigzag', bengali: 'জিগজ্যাগ', pos: 'Noun', example: 'The path made a zigzag pattern through the mountains.' },
+        { word: 'Zip', bengali: 'জিপ', pos: 'Verb', example: 'Please zip up your jacket before going outside.' },
+        { word: 'Zone', bengali: 'অঞ্চল', pos: 'Noun', example: 'This is a restricted zone with no entry allowed.' }
+      ]
+    };
+
+    // Initialize app
+    function selectLetter(letter) {
+      currentLetter = letter;
+      currentTab = 'all';
+      
+      // Update active button
+      document.querySelectorAll('.letter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('letter-title').textContent = `Letter ${letter} - Words`;
+      renderWords();
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      // Update active tab button
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      renderWords();
+    }
+
+    function renderWords() {
+      const container = document.getElementById('words-container');
+      const emptyState = document.getElementById('empty-state');
+      
+      let words = vocabularyData[currentLetter] || [];
+      
+      // Filter by POS
+      if (currentTab !== 'all') {
+        const posMap = { nouns: 'Noun', verbs: 'Verb', adjectives: 'Adjective', adverbs: 'Adverb' };
+        words = words.filter(w => w.pos === posMap[currentTab]);
+      }
+      
+      if (words.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      container.innerHTML = words.map((w, idx) => `
+        <div class="word-card animate-fade-in-up" style="animation-delay: ${idx * 50}ms; opacity: 0; animation-fill-mode: forwards;">
+          <div class="mb-3 flex items-start justify-between">
+            <h3 class="text-2xl font-bold" style="color: #6366f1;">${w.word}</h3>
+            <span class="pos-badge pos-${w.pos.toLowerCase()}">${w.pos}</span>
+          </div>
+          <p class="text-gray-600 mb-3 font-semibold text-lg">${w.bengali}</p>
+          <p class="text-gray-600 text-sm mb-4 line-clamp-2">${w.example}</p>
+          <button class="btn-practice" onclick="openPracticeModal(${JSON.stringify(w).replace(/"/g, '&quot;')})">
+            Practice Now →
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function openPracticeModal(word) {
+      selectedWord = word;
+      flashcardFlipped = false;
+      quizAnswered = false;
+      
+      // Update modal
+      document.getElementById('modal-word').textContent = word.word;
+      document.getElementById('modal-bengali').textContent = word.bengali;
+      document.getElementById('modal-pos-detail').textContent = word.pos;
+      document.getElementById('modal-example').textContent = `"${word.example}"`;
+      
+      const posClass = `pos-${word.pos.toLowerCase()}`;
+      document.getElementById('modal-pos').className = `pos-badge ${posClass}`;
+      document.getElementById('modal-pos').textContent = word.pos;
+      
+      // Setup quiz
+      setupQuiz(word);
+      
+      // Reset to details tab
+      switchPracticeTab('details');
+      
+      document.getElementById('practice-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('practice-modal').classList.remove('active');
+    }
+
+    function switchPracticeTab(tab) {
+      // Update tab buttons
+      document.querySelectorAll('#practice-modal .tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Update tab contents
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(`${tab}-tab`).classList.add('active');
+    }
+
+    function flipFlashcard() {
+      flashcardFlipped = !flashcardFlipped;
+      const card = document.getElementById('flashcard');
+      const content = document.getElementById('flashcard-content');
+      
+      if (flashcardFlipped) {
+        card.classList.add('flipped');
+        content.innerHTML = `<div class="text-lg"><div class="mb-3"><strong>${selectedWord.bengali}</strong></div><div class="text-base italic">"${selectedWord.example}"</div></div>`;
+      } else {
+        card.classList.remove('flipped');
+        content.textContent = selectedWord.word;
+      }
+    }
+
+    function setupQuiz(word) {
+      // Create fill-in-the-blank sentence
+      const sentences = [
+        `She demonstrated remarkable __________ in solving the problem.`,
+        `The __________ display showed all the latest information clearly.`,
+        `His __________ attitude made him stand out from others.`,
+        `We need a __________ approach to handle this situation.`,
+        `The __________ will take approximately two hours.`
+      ];
+      
+      // Generate options with distractors
+      const options = [word.word, 'example', 'sample', 'thought'];
+      const shuffled = options.sort(() => Math.random() - 0.5);
+      
+      const randomSentence = sentences[Math.floor(Math.random() * sentences.length)];
+      document.getElementById('quiz-sentence').textContent = randomSentence;
+      
+      document.getElementById('quiz-options').innerHTML = shuffled.map((opt) => `
+        <button class="quiz-option" onclick="selectQuizOption(this, '${opt}', '${word.word}')" style="width: 100%;">
+          ${opt}
+        </button>
+      `).join('');
+      
+      quizAnswered = false;
+      document.getElementById('quiz-feedback').innerHTML = '';
+      document.getElementById('quiz-submit-btn').textContent = 'Check Answer';
+      document.getElementById('quiz-submit-btn').style.opacity = '1';
+      document.getElementById('quiz-submit-btn').style.pointerEvents = 'auto';
+    }
+
+    function selectQuizOption(el, value, correct) {
+      if (quizAnswered) return;
+      
+      document.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
+      el.classList.add('selected');
+      el.dataset.selected = value;
+    }
+
+    function submitQuizAnswer() {
+      const selected = document.querySelector('.quiz-option.selected');
+      if (!selected) {
+        alert('Please select an answer');
+        return;
+      }
+      
+      quizAnswered = true;
+      const isCorrect = selected.dataset.selected === selectedWord.word;
+      
+      document.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.style.pointerEvents = 'none';
+        opt.style.opacity = '0.7';
+      });
+      
+      if (isCorrect) {
+        selected.classList.remove('selected');
+        selected.classList.add('correct');
+        document.getElementById('quiz-feedback').innerHTML = '<div class="feedback-message feedback-correct">✓ Correct! Excellent work!</div>';
+      } else {
+        selected.classList.remove('selected');
+        selected.classList.add('incorrect');
+        document.getElementById('quiz-feedback').innerHTML = `<div class="feedback-message feedback-incorrect">✗ Incorrect. The correct answer is: <strong>${selectedWord.word}</strong></div>`;
+      }
+      
+      document.getElementById('quiz-submit-btn').textContent = 'Try Another Word';
+      document.getElementById('quiz-submit-btn').style.opacity = '0.5';
+    }
+
+    // Handle modal close on overlay click
+    document.getElementById('practice-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    async function onConfigChange(newConfig) {
+      config = { ...config, ...newConfig };
+      
+      const titleEl = document.getElementById('app-title');
+      if (titleEl) titleEl.textContent = config.app_title || defaultConfig.app_title;
+      
+      const subtitleEl = document.getElementById('app-subtitle');
+      if (subtitleEl) subtitleEl.textContent = config.app_subtitle || defaultConfig.app_subtitle;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              config.primary_color = value;
+              window.elementSdk.setConfig({ primary_color: value });
+            }
+          },
+          {
+            get: () => config.secondary_color || defaultConfig.secondary_color,
+            set: (value) => {
+              config.secondary_color = value;
+              window.elementSdk.setConfig({ secondary_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || 'Poppins',
+          set: (value) => {
+            config.font_family = value;
+            document.body.style.fontFamily = `${value}, Poppins, sans-serif`;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || 16,
+          set: (value) => {
+            config.font_size = value;
+            document.documentElement.style.fontSize = `${value}px`;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["app_title", config.app_title || defaultConfig.app_title],
+        ["app_subtitle", config.app_subtitle || defaultConfig.app_subtitle]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Initial render
+    renderWords();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c933ebc91d754ff',t:'MTc3MDMwMzI4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
