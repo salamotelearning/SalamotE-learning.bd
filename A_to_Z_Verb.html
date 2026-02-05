@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A-Z Daily Verbs Learning App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+
+    .font-display { font-family: 'Playfair Display', serif; }
+    .font-body { font-family: 'Poppins', sans-serif; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    .animate-slide-down {
+      animation: slideDown 0.4s ease-out;
+    }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+
+    .letter-btn {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      background: white;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+      color: #64748b;
+    }
+
+    .letter-btn:hover {
+      border-color: #6366f1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .letter-btn.active {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      border-color: #6366f1;
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .verb-card {
+      background: white;
+      border-radius: 14px;
+      padding: 1.5rem;
+      border-left: 5px solid #6366f1;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .verb-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(99, 102, 241, 0.15);
+      border-left-color: #a855f7;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      max-width: 1000px;
+      width: 100%;
+      max-height: 90%;
+      overflow-y: auto;
+      padding: 2.5rem;
+      animation: fadeInUp 0.3s ease-out;
+    }
+
+    .close-modal {
+      float: right;
+      font-size: 2rem;
+      font-weight: 300;
+      color: #94a3b8;
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: color 0.3s;
+    }
+
+    .close-modal:hover {
+      color: #6366f1;
+    }
+
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeInUp 0.3s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .sentence-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    .sentence-table th, .sentence-table td {
+      padding: 1rem;
+      text-align: left;
+      border: 1px solid #e2e8f0;
+      font-size: 0.95rem;
+    }
+
+    .sentence-table th {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      font-weight: 600;
+    }
+
+    .sentence-table tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .sentence-table tr:hover {
+      background: #f0f4ff;
+    }
+
+    .quiz-option {
+      padding: 1.25rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: white;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-option:hover:not(:disabled) {
+      border-color: #6366f1;
+      background: #f0f4ff;
+      transform: translateX(4px);
+    }
+
+    .quiz-option.selected {
+      border-color: #6366f1;
+      background: #f0f4ff;
+    }
+
+    .quiz-option.correct {
+      border-color: #22c55e;
+      background: #dcfce7;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
+
+    .quiz-option.incorrect {
+      border-color: #ef4444;
+      background: #fee2e2;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .verbs-bg {
+      background: linear-gradient(135deg, #f8fafc 0%, #f0e7ff 50%, #e0c3ff 100%);
+    }
+
+    .btn-practice {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-practice:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-check {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-top: 1.5rem;
+    }
+
+    .btn-check:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .feedback-message {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-top: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+      animation: fadeInUp 0.3s ease-out;
+    }
+
+    .feedback-correct {
+      background: #dcfce7;
+      color: #166534;
+      border: 2px solid #22c55e;
+    }
+
+    .feedback-incorrect {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 2px solid #ef4444;
+    }
+
+    .quiz-question {
+      background: #f0f4ff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border-left: 4px solid #6366f1;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      color: #94a3b8;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .scroll-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .scroll-container::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .scroll-container::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    .scroll-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body">
+  <div id="app-wrapper" class="h-full w-full verbs-bg overflow-auto"><!-- Header -->
+   <header class="bg-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+     <h1 id="app-title" class="font-display text-3xl md:text-4xl font-bold gradient-text">A-Z Daily Verbs Learning App</h1>
+     <p id="app-subtitle" class="text-sm md:text-base text-gray-600 mt-1">Master English Verbs with Grammar Patterns</p>
+    </div>
+   </header><!-- Sticky Alphabet Navigation -->
+   <div class="sticky-header">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+     <h2 class="text-lg font-bold mb-3" style="color: #1e293b;">Select a Letter</h2>
+     <div class="scroll-container">
+      <div class="flex gap-2 pb-2 min-w-min"><button class="letter-btn active" onclick="selectLetter('A')">A</button> <button class="letter-btn" onclick="selectLetter('B')">B</button> <button class="letter-btn" onclick="selectLetter('C')">C</button> <button class="letter-btn" onclick="selectLetter('D')">D</button> <button class="letter-btn" onclick="selectLetter('E')">E</button> <button class="letter-btn" onclick="selectLetter('F')">F</button> <button class="letter-btn" onclick="selectLetter('G')">G</button> <button class="letter-btn" onclick="selectLetter('H')">H</button> <button class="letter-btn" onclick="selectLetter('I')">I</button> <button class="letter-btn" onclick="selectLetter('J')">J</button> <button class="letter-btn" onclick="selectLetter('K')">K</button> <button class="letter-btn" onclick="selectLetter('L')">L</button> <button class="letter-btn" onclick="selectLetter('M')">M</button> <button class="letter-btn" onclick="selectLetter('N')">N</button> <button class="letter-btn" onclick="selectLetter('O')">O</button> <button class="letter-btn" onclick="selectLetter('P')">P</button> <button class="letter-btn" onclick="selectLetter('Q')">Q</button> <button class="letter-btn" onclick="selectLetter('R')">R</button> <button class="letter-btn" onclick="selectLetter('S')">S</button> <button class="letter-btn" onclick="selectLetter('T')">T</button> <button class="letter-btn" onclick="selectLetter('U')">U</button> <button class="letter-btn" onclick="selectLetter('V')">V</button> <button class="letter-btn" onclick="selectLetter('W')">W</button> <button class="letter-btn" onclick="selectLetter('X')">X</button> <button class="letter-btn" onclick="selectLetter('Y')">Y</button> <button class="letter-btn" onclick="selectLetter('Z')">Z</button>
+      </div>
+     </div>
+    </div>
+   </div><!-- Main Content -->
+   <main class="max-w-7xl mx-auto px-4 py-8">
+    <section class="animate-fade-in-up opacity-0 delay-200" style="animation-fill-mode: forwards;">
+     <h2 id="letter-title" class="text-2xl font-bold mb-6 gradient-text">Letter A - Daily Verbs</h2><!-- Verbs Grid -->
+     <div id="verbs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"><!-- Verbs will be loaded here -->
+     </div><!-- Empty State -->
+     <div id="empty-state" class="empty-state" style="display: none;">
+      <div class="empty-state-icon">
+       📭
+      </div>
+      <p class="text-lg">No verbs found for this letter.</p>
+     </div>
+    </section>
+   </main>
+  </div><!-- Practice Modal -->
+  <div id="practice-modal" class="modal-overlay">
+   <div class="modal-content"><button class="close-modal" onclick="closeModal()">×</button>
+    <div class="mb-6">
+     <h2 id="modal-verb" class="font-display text-4xl font-bold gradient-text mb-3"></h2>
+     <p id="modal-bengali" class="text-xl font-semibold" style="color: #6366f1;"></p>
+    </div><!-- Tabs -->
+    <div class="flex border-b border-gray-200 mb-6 overflow-x-auto"><button class="tab-btn active" onclick="switchTab('patterns')">Grammar Patterns</button> <button class="tab-btn" onclick="switchTab('quiz')">Subject-Verb Quiz</button>
+    </div><!-- Patterns Tab -->
+    <div id="patterns-tab" class="tab-content active">
+     <div class="mb-6">
+      <h3 class="text-lg font-bold mb-4" style="color: #1e293b;">14 Essential Sentence Patterns</h3>
+      <div class="overflow-x-auto">
+       <table class="sentence-table">
+        <thead>
+         <tr>
+          <th>Subject</th>
+          <th>Affirmative (হ্যাঁ)</th>
+          <th>Negative (না)</th>
+         </tr>
+        </thead>
+        <tbody id="patterns-tbody"><!-- Patterns will be generated here -->
+        </tbody>
+       </table>
+      </div>
+     </div>
+    </div><!-- Quiz Tab -->
+    <div id="quiz-tab" class="tab-content">
+     <div class="mb-6">
+      <h3 class="text-lg font-bold mb-6" style="color: #1e293b;">Fill in the Blank - Subject-Verb Agreement</h3>
+      <div id="quiz-container"><!-- Quiz questions will be generated here -->
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      app_title: "A-Z Daily Verbs Learning App",
+      app_subtitle: "Master English Verbs with Grammar Patterns",
+      primary_color: "#6366f1",
+      secondary_color: "#8b5cf6",
+      text_color: "#1e293b"
+    };
+
+    let config = { ...defaultConfig };
+    let currentLetter = 'A';
+    let selectedVerb = null;
+    let quizAnswered = false;
+
+    // Complete Verbs Database (10 verbs per letter)
+    const verbsData = {
+      A: [
+        { verb: 'Abandon', bengali: 'পরিত্যাগ করা' },
+        { verb: 'Accept', bengali: 'গ্রহণ করা' },
+        { verb: 'Achieve', bengali: 'অর্জন করা' },
+        { verb: 'Acknowledge', bengali: 'স্বীকার করা' },
+        { verb: 'Act', bengali: 'অভিনয় করা' },
+        { verb: 'Activate', bengali: 'সক্রিয় করা' },
+        { verb: 'Adapt', bengali: 'খাপ খাইয়ে নেওয়া' },
+        { verb: 'Add', bengali: 'যোগ করা' },
+        { verb: 'Advance', bengali: 'এগিয়ে যাওয়া' },
+        { verb: 'Advise', bengali: 'পরামর্শ দেওয়া' }
+      ],
+      B: [
+        { verb: 'Balance', bengali: 'ভারসাম্য রাখা' },
+        { verb: 'Bake', bengali: 'বেক করা' },
+        { verb: 'Ban', bengali: 'নিষেধ করা' },
+        { verb: 'Bank', bengali: 'ব্যাংকে রাখা' },
+        { verb: 'Bargain', bengali: 'দর-কষাকষি করা' },
+        { verb: 'Bat', bengali: 'ব্যাট দিয়ে মারা' },
+        { verb: 'Battle', bengali: 'যুদ্ধ করা' },
+        { verb: 'Bear', bengali: 'বহন করা' },
+        { verb: 'Beat', bengali: 'পরাজিত করা' },
+        { verb: 'Become', bengali: 'হওয়া' }
+      ],
+      C: [
+        { verb: 'Calculate', bengali: 'হিসাব করা' },
+        { verb: 'Call', bengali: 'ডাকা' },
+        { verb: 'Cancel', bengali: 'বাতিল করা' },
+        { verb: 'Capture', bengali: 'ধরা' },
+        { verb: 'Care', bengali: 'যত্ন নেওয়া' },
+        { verb: 'Carry', bengali: 'বহন করা' },
+        { verb: 'Catch', bengali: 'ধরা' },
+        { verb: 'Cause', bengali: 'কারণ হওয়া' },
+        { verb: 'Celebrate', bengali: 'উদযাপন করা' },
+        { verb: 'Challenge', bengali: 'চ্যালেঞ্জ দেওয়া' }
+      ],
+      D: [
+        { verb: 'Damage', bengali: 'ক্ষতি করা' },
+        { verb: 'Dance', bengali: 'নাচা' },
+        { verb: 'Dare', bengali: 'সাহস করা' },
+        { verb: 'Date', bengali: 'ডেট করা' },
+        { verb: 'Debate', bengali: 'বিতর্ক করা' },
+        { verb: 'Decide', bengali: 'সিদ্ধান্ত নেওয়া' },
+        { verb: 'Decline', bengali: 'প্রত্যাখ্যান করা' },
+        { verb: 'Decorate', bengali: 'সাজানো' },
+        { verb: 'Decrease', bengali: 'কমানো' },
+        { verb: 'Defend', bengali: 'রক্ষা করা' }
+      ],
+      E: [
+        { verb: 'Earn', bengali: 'আয় করা' },
+        { verb: 'Eat', bengali: 'খাওয়া' },
+        { verb: 'Echo', bengali: 'প্রতিধ্বনি ফেলা' },
+        { verb: 'Edit', bengali: 'সম্পাদনা করা' },
+        { verb: 'Educate', bengali: 'শিক্ষা দেওয়া' },
+        { verb: 'Elect', bengali: 'নির্বাচন করা' },
+        { verb: 'Eliminate', bengali: 'দূর করা' },
+        { verb: 'Email', bengali: 'ইমেল করা' },
+        { verb: 'Embarrass', bengali: 'লজ্জিত করা' },
+        { verb: 'Employ', bengali: 'নিয়োগ করা' }
+      ],
+      F: [
+        { verb: 'Face', bengali: 'মুখোমুখি হওয়া' },
+        { verb: 'Fail', bengali: 'ব্যর্থ হওয়া' },
+        { verb: 'Fall', bengali: 'পড়া' },
+        { verb: 'Familiarize', bengali: 'পরিচিত করানো' },
+        { verb: 'Farm', bengali: 'চাষাবাদ করা' },
+        { verb: 'Fasten', bengali: 'বাঁধা' },
+        { verb: 'Fear', bengali: 'ভয় পাওয়া' },
+        { verb: 'Feed', bengali: 'খাওয়ানো' },
+        { verb: 'Feel', bengali: 'অনুভব করা' },
+        { verb: 'Fetch', bengali: 'নিয়ে আসা' }
+      ],
+      G: [
+        { verb: 'Gain', bengali: 'অর্জন করা' },
+        { verb: 'Gamble', bengali: 'জুয়া খেলা' },
+        { verb: 'Garden', bengali: 'বাগান করা' },
+        { verb: 'Gather', bengali: 'সংগ্রহ করা' },
+        { verb: 'Generate', bengali: 'উৎপাদন করা' },
+        { verb: 'Gesture', bengali: 'ইশারা করা' },
+        { verb: 'Glance', bengali: 'দৃষ্টি নিক্ষেপ করা' },
+        { verb: 'Glow', bengali: 'জ্বলজ্বল করা' },
+        { verb: 'Goal', bengali: 'লক্ষ্য রাখা' },
+        { verb: 'Govern', bengali: 'শাসন করা' }
+      ],
+      H: [
+        { verb: 'Handle', bengali: 'পরিচালনা করা' },
+        { verb: 'Happen', bengali: 'ঘটা' },
+        { verb: 'Harm', bengali: 'ক্ষতি করা' },
+        { verb: 'Harvest', bengali: 'ফসল কাটা' },
+        { verb: 'Hate', bengali: 'ঘৃণা করা' },
+        { verb: 'Have', bengali: 'থাকা' },
+        { verb: 'Heal', bengali: 'সুস্থ করা' },
+        { verb: 'Hear', bengali: 'শোনা' },
+        { verb: 'Help', bengali: 'সাহায্য করা' },
+        { verb: 'Hide', bengali: 'লুকানো' }
+      ],
+      I: [
+        { verb: 'Ignore', bengali: 'উপেক্ষা করা' },
+        { verb: 'Imagine', bengali: 'কল্পনা করা' },
+        { verb: 'Imitate', bengali: 'নকল করা' },
+        { verb: 'Implement', bengali: 'বাস্তবায়ন করা' },
+        { verb: 'Import', bengali: 'আমদানি করা' },
+        { verb: 'Impose', bengali: 'আরোপ করা' },
+        { verb: 'Improve', bengali: 'উন্নত করা' },
+        { verb: 'Improvise', bengali: 'তাৎক্ষণিকভাবে করা' },
+        { verb: 'Include', bengali: 'অন্তর্ভুক্ত করা' },
+        { verb: 'Increase', bengali: 'বৃদ্ধি করা' }
+      ],
+      J: [
+        { verb: 'Jab', bengali: 'ঝাঁকুনি দেওয়া' },
+        { verb: 'Jail', bengali: 'জেলে দেওয়া' },
+        { verb: 'Jeopardize', bengali: 'বিপন্ন করা' },
+        { verb: 'Jerk', bengali: 'ঝাঁকুনি দেওয়া' },
+        { verb: 'Join', bengali: 'যোগ দেওয়া' },
+        { verb: 'Joke', bengali: 'মজা করা' },
+        { verb: 'Journey', bengali: 'যাত্রা করা' },
+        { verb: 'Judge', bengali: 'বিচার করা' },
+        { verb: 'Jump', bengali: 'লাফ দেওয়া' },
+        { verb: 'Justify', bengali: 'ন্যায্যতা দেওয়া' }
+      ],
+      K: [
+        { verb: 'Keep', bengali: 'রাখা' },
+        { verb: 'Kick', bengali: 'লাথি মারা' },
+        { verb: 'Kill', bengali: 'হত্যা করা' },
+        { verb: 'Kiss', bengali: 'চুম্বন করা' },
+        { verb: 'Knock', bengali: 'নক করা' },
+        { verb: 'Know', bengali: 'জানা' },
+        { verb: 'Kneel', bengali: 'হাঁটু মোড়া' },
+        { verb: 'Knit', bengali: 'বুনন করা' },
+        { verb: 'Knot', bengali: 'গিঁট দেওয়া' },
+        { verb: 'Knuckle', bengali: 'গিরা' }
+      ],
+      L: [
+        { verb: 'Label', bengali: 'লেবেল লাগানো' },
+        { verb: 'Labor', bengali: 'পরিশ্রম করা' },
+        { verb: 'Lack', bengali: 'অভাব হওয়া' },
+        { verb: 'Launch', bengali: 'উৎক্ষেপণ করা' },
+        { verb: 'Lead', bengali: 'নেতৃত্ব দেওয়া' },
+        { verb: 'Lean', bengali: 'ঝুঁকানো' },
+        { verb: 'Learn', bengali: 'শিখা' },
+        { verb: 'Leave', bengali: 'ছেড়ে যাওয়া' },
+        { verb: 'Lend', bengali: 'ধার দেওয়া' },
+        { verb: 'Lighten', bengali: 'হালকা করা' }
+      ],
+      M: [
+        { verb: 'Mail', bengali: 'মেল করা' },
+        { verb: 'Maintain', bengali: 'রক্ষণাবেক্ষণ করা' },
+        { verb: 'Make', bengali: 'তৈরি করা' },
+        { verb: 'Manage', bengali: 'পরিচালনা করা' },
+        { verb: 'Map', bengali: 'মানচিত্র তৈরি করা' },
+        { verb: 'Mark', bengali: 'চিহ্নিত করা' },
+        { verb: 'Marry', bengali: 'বিবাহ করা' },
+        { verb: 'Mask', bengali: 'মুখোশ লাগানো' },
+        { verb: 'Match', bengali: 'মিলানো' },
+        { verb: 'Maximize', bengali: 'সর্বোচ্চ করা' }
+      ],
+      N: [
+        { verb: 'Name', bengali: 'নাম দেওয়া' },
+        { verb: 'Narrate', bengali: 'বর্ণনা করা' },
+        { verb: 'Navigate', bengali: 'যাত্রা করা' },
+        { verb: 'Negotiate', bengali: 'আলোচনা করা' },
+        { verb: 'Nest', bengali: 'বাসা বানানো' },
+        { verb: 'Network', bengali: 'নেটওয়ার্ক করা' },
+        { verb: 'Nominate', bengali: 'মনোনীত করা' },
+        { verb: 'Normalize', bengali: 'সাধারণীকরণ করা' },
+        { verb: 'Notify', bengali: 'অবহিত করা' },
+        { verb: 'Nourish', bengali: 'পুষ্টি দেওয়া' }
+      ],
+      O: [
+        { verb: 'Obey', bengali: 'মেনে চলা' },
+        { verb: 'Observe', bengali: 'পর্যবেক্ষণ করা' },
+        { verb: 'Occupy', bengali: 'দখল করা' },
+        { verb: 'Occur', bengali: 'ঘটা' },
+        { verb: 'Offend', bengali: 'অপমান করা' },
+        { verb: 'Offer', bengali: 'প্রস্তাব দেওয়া' },
+        { verb: 'Open', bengali: 'খোলা' },
+        { verb: 'Operate', bengali: 'পরিচালনা করা' },
+        { verb: 'Oppose', bengali: 'বিরোধিতা করা' },
+        { verb: 'Optimize', bengali: 'অনুকূল করা' }
+      ],
+      P: [
+        { verb: 'Pack', bengali: 'প্যাক করা' },
+        { verb: 'Paint', bengali: 'রঙ করা' },
+        { verb: 'Park', bengali: 'পার্ক করা' },
+        { verb: 'Participate', bengali: 'অংশগ্রহণ করা' },
+        { verb: 'Pass', bengali: 'পাস করা' },
+        { verb: 'Pause', bengali: 'থেমে যাওয়া' },
+        { verb: 'Pay', bengali: 'অর্থ প্রদান করা' },
+        { verb: 'Perform', bengali: 'পারফরম্যান্স দেওয়া' },
+        { verb: 'Permit', bengali: 'অনুমতি দেওয়া' },
+        { verb: 'Persuade', bengali: 'প্রভাবিত করা' }
+      ],
+      Q: [
+        { verb: 'Qualify', bengali: 'যোগ্য হওয়া' },
+        { verb: 'Question', bengali: 'প্রশ্ন করা' },
+        { verb: 'Queue', bengali: 'সারিতে দাঁড়ানো' },
+        { verb: 'Quibble', bengali: 'তুচ্ছ অজুহাত করা' },
+        { verb: 'Quicken', bengali: 'দ্রুত করা' },
+        { verb: 'Quiet', bengali: 'শান্ত করা' },
+        { verb: 'Quit', bengali: 'ছেড়ে দেওয়া' },
+        { verb: 'Quiz', bengali: 'পরীক্ষা নেওয়া' },
+        { verb: 'Quote', bengali: 'উদ্ধৃত করা' },
+        { verb: 'Quake', bengali: 'কাঁপা' }
+      ],
+      R: [
+        { verb: 'Race', bengali: 'দৌড়ানো' },
+        { verb: 'Radiate', bengali: 'বিকিরণ করা' },
+        { verb: 'Raise', bengali: 'উত্থাপন করা' },
+        { verb: 'Rank', bengali: 'শ্রেণীবদ্ধ করা' },
+        { verb: 'Rate', bengali: 'হার নির্ধারণ করা' },
+        { verb: 'Reach', bengali: 'পৌঁছানো' },
+        { verb: 'React', bengali: 'প্রতিক্রিয়া করা' },
+        { verb: 'Read', bengali: 'পড়া' },
+        { verb: 'Realize', bengali: 'উপলব্ধি করা' },
+        { verb: 'Receive', bengali: 'গ্রহণ করা' }
+      ],
+      S: [
+        { verb: 'Sacrifice', bengali: 'ত্যাগ করা' },
+        { verb: 'Sail', bengali: 'পালতোলা করা' },
+        { verb: 'Sample', bengali: 'নমুনা নেওয়া' },
+        { verb: 'Satisfy', bengali: 'সন্তুষ্ট করা' },
+        { verb: 'Save', bengali: 'সংরক্ষণ করা' },
+        { verb: 'Scale', bengali: 'পরিমাপ করা' },
+        { verb: 'Scan', bengali: 'স্কেন করা' },
+        { verb: 'Schedule', bengali: 'সময়সূচী করা' },
+        { verb: 'Search', bengali: 'অনুসন্ধান করা' },
+        { verb: 'Secure', bengali: 'সুরক্ষিত করা' }
+      ],
+      T: [
+        { verb: 'Tackle', bengali: 'মোকাবেলা করা' },
+        { verb: 'Take', bengali: 'নেওয়া' },
+        { verb: 'Talk', bengali: 'কথা বলা' },
+        { verb: 'Target', bengali: 'লক্ষ্য করা' },
+        { verb: 'Teach', bengali: 'পড়ানো' },
+        { verb: 'Tempt', bengali: 'প্রলোভন দেওয়া' },
+        { verb: 'Terrify', bengali: 'ভয় দেখানো' },
+        { verb: 'Test', bengali: 'পরীক্ষা করা' },
+        { verb: 'Thank', bengali: 'ধন্যবাদ জানানো' },
+        { verb: 'Think', bengali: 'চিন্তা করা' }
+      ],
+      U: [
+        { verb: 'Understand', bengali: 'বুঝা' },
+        { verb: 'Undertake', bengali: 'গ্রহণ করা' },
+        { verb: 'Undo', bengali: 'পূর্ববত করা' },
+        { verb: 'Unfold', bengali: 'উন্মোচন করা' },
+        { verb: 'Unite', bengali: 'একীভূত করা' },
+        { verb: 'Update', bengali: 'আপডেট করা' },
+        { verb: 'Upgrade', bengali: 'আপগ্রেড করা' },
+        { verb: 'Upload', bengali: 'আপলোড করা' },
+        { verb: 'Use', bengali: 'ব্যবহার করা' },
+        { verb: 'Utilize', bengali: 'কাজে লাগানো' }
+      ],
+      V: [
+        { verb: 'Validate', bengali: 'যাচাই করা' },
+        { verb: 'Value', bengali: 'মূল্য দেওয়া' },
+        { verb: 'Vanish', bengali: 'অদৃশ্য হওয়া' },
+        { verb: 'Vary', bengali: 'পরিবর্তন করা' },
+        { verb: 'Verbalize', bengali: 'কথায় প্রকাশ করা' },
+        { verb: 'Verify', bengali: 'নিশ্চিত করা' },
+        { verb: 'Version', bengali: 'সংস্করণ করা' },
+        { verb: 'Vibrate', bengali: 'কাঁপানো' },
+        { verb: 'Violate', bengali: 'লঙ্ঘন করা' },
+        { verb: 'Visualize', bengali: 'কল্পনা করা' }
+      ],
+      W: [
+        { verb: 'Wait', bengali: 'অপেক্ষা করা' },
+        { verb: 'Wake', bengali: 'জেগে ওঠা' },
+        { verb: 'Walk', bengali: 'হাঁটা' },
+        { verb: 'Wander', bengali: 'ঘোরাঘুরি করা' },
+        { verb: 'Want', bengali: 'চাওয়া' },
+        { verb: 'Warn', bengali: 'সতর্ক করা' },
+        { verb: 'Waste', bengali: 'নষ্ট করা' },
+        { verb: 'Watch', bengali: 'দেখা' },
+        { verb: 'Wave', bengali: 'হাত নাড়ানো' },
+        { verb: 'Weaken', bengali: 'দুর্বল করা' }
+      ],
+      X: [
+        { verb: 'Xerox', bengali: 'জেরক্স করা' },
+        { verb: 'X-out', bengali: 'কেটে ফেলা' },
+        { verb: 'Examine', bengali: 'পরীক্ষা করা' },
+        { verb: 'Excavate', bengali: 'খনন করা' },
+        { verb: 'Exceed', bengali: 'অতিক্রম করা' },
+        { verb: 'Exchange', bengali: 'বিনিময় করা' },
+        { verb: 'Execute', bengali: 'বাস্তবায়ন করা' },
+        { verb: 'Exert', bengali: 'প্রচেষ্টা করা' },
+        { verb: 'Exhaust', bengali: 'শেষ করা' },
+        { verb: 'Expand', bengali: 'সম্প্রসারণ করা' }
+      ],
+      Y: [
+        { verb: 'Yell', bengali: 'চিৎকার করা' },
+        { verb: 'Yield', bengali: 'ফলন দেওয়া' },
+        { verb: 'Yawn', bengali: 'হাই তোলা' },
+        { verb: 'Yacht', bengali: 'নৌকা চালানো' },
+        { verb: 'Yearn', bengali: 'আকাঙ্ক্ষা করা' },
+        { verb: 'Yoke', bengali: 'যুব্বক করা' },
+        { verb: 'Yodel', bengali: 'ইয়োডেল করা' },
+        { verb: 'Yarn', bengali: 'গল্প বলা' },
+        { verb: 'Yaw', bengali: 'বিচলিত হওয়া' },
+        { verb: 'Year', bengali: 'বছর পূর্ণ করা' }
+      ],
+      Z: [
+        { verb: 'Zap', bengali: 'আঘাত করা' },
+        { verb: 'Zeal', bengali: 'উৎসাহ দেখানো' },
+        { verb: 'Zip', bengali: 'জিপ দেওয়া' },
+        { verb: 'Zone', bengali: 'অঞ্চল নির্ধারণ করা' },
+        { verb: 'Zoom', bengali: 'জুম করা' },
+        { verb: 'Zigzag', bengali: 'জিগজ্যাগ করা' },
+        { verb: 'Zero', bengali: 'শূন্য করা' },
+        { verb: 'Zenith', bengali: 'শীর্ষে পৌঁছানো' },
+        { verb: 'Zest', bengali: 'উদ্যমের সাথে করা' },
+        { verb: 'Zealot', bengali: 'উগ্রবাদী হওয়া' }
+      ]
+    };
+
+    // Helper functions
+    function pluralizeVerb(verb) {
+      if (verb.endsWith('y')) {
+        return verb.slice(0, -1) + 'ies';
+      } else if (verb.endsWith('s') || verb.endsWith('ss') || verb.endsWith('ch') || verb.endsWith('x') || verb.endsWith('z') || verb.endsWith('o')) {
+        return verb + 'es';
+      }
+      return verb + 's';
+    }
+
+    function generatePatterns(verb) {
+      const patterns = [
+        { subject: 'I', affirmative: `I ${verb.toLowerCase()} daily.`, negative: `I do not ${verb.toLowerCase()} daily.` },
+        { subject: 'We', affirmative: `We ${verb.toLowerCase()} together.`, negative: `We do not ${verb.toLowerCase()} together.` },
+        { subject: 'You', affirmative: `You ${verb.toLowerCase()} well.`, negative: `You do not ${verb.toLowerCase()} well.` },
+        { subject: 'He', affirmative: `He ${pluralizeVerb(verb.toLowerCase())} always.`, negative: `He does not ${verb.toLowerCase()} always.` },
+        { subject: 'She', affirmative: `She ${pluralizeVerb(verb.toLowerCase())} sometimes.`, negative: `She does not ${verb.toLowerCase()} sometimes.` },
+        { subject: 'They', affirmative: `They ${verb.toLowerCase()} often.`, negative: `They do not ${verb.toLowerCase()} often.` },
+        { subject: 'It', affirmative: `It ${pluralizeVerb(verb.toLowerCase())} regularly.`, negative: `It does not ${verb.toLowerCase()} regularly.` }
+      ];
+      return patterns;
+    }
+
+    function generateQuizQuestions(verb) {
+      const options = [
+        { correct: pluralizeVerb(verb.toLowerCase()), incorrect1: verb.toLowerCase(), incorrect2: 'do ' + verb.toLowerCase(), incorrect3: 'to ' + verb.toLowerCase() },
+        { correct: verb.toLowerCase(), incorrect1: pluralizeVerb(verb.toLowerCase()), incorrect2: 'does ' + verb.toLowerCase(), incorrect3: 'did ' + verb.toLowerCase() },
+        { correct: 'does not', incorrect1: 'do not', incorrect2: 'not', incorrect3: 'don\'t' },
+        { correct: 'do not', incorrect1: 'does not', incorrect2: 'not', incorrect3: 'doesn\'t' },
+        { correct: pluralizeVerb(verb.toLowerCase()), incorrect1: verb.toLowerCase(), incorrect2: 'is ' + verb.toLowerCase(), incorrect3: 'are ' + verb.toLowerCase() }
+      ];
+
+      return options.map((opt, idx) => {
+        const questions = [
+          `He _____ (${verb}, ${pluralizeVerb(verb)}) every morning.`,
+          `I _____ (${verb}, ${pluralizeVerb(verb)}) my homework regularly.`,
+          `She _____ (${opt.correct}, ${opt.incorrect1}) ${verb.toLowerCase()} on weekends.`,
+          `They _____ (${opt.correct}, ${opt.incorrect1}) eat vegetables daily.`,
+          `We _____ (${opt.correct}, ${opt.incorrect1}) attend classes every day.`
+        ];
+        
+        return {
+          question: questions[idx] || `Complete this sentence with the correct form of "${verb}".`,
+          correct: opt.correct,
+          options: [opt.correct, opt.incorrect1, opt.incorrect2, opt.incorrect3].sort(() => Math.random() - 0.5)
+        };
+      });
+    }
+
+    function selectLetter(letter) {
+      currentLetter = letter;
+      
+      // Update active button
+      document.querySelectorAll('.letter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('letter-title').textContent = `Letter ${letter} - Daily Verbs`;
+      renderVerbs();
+    }
+
+    function renderVerbs() {
+      const container = document.getElementById('verbs-container');
+      const emptyState = document.getElementById('empty-state');
+      
+      const verbs = verbsData[currentLetter] || [];
+      
+      if (verbs.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      container.innerHTML = verbs.map((v, idx) => `
+        <div class="verb-card animate-fade-in-up" style="animation-delay: ${idx * 50}ms; opacity: 0; animation-fill-mode: forwards;">
+          <div class="mb-3">
+            <h3 class="text-2xl font-bold" style="color: #6366f1;">${v.verb}</h3>
+          </div>
+          <p class="text-gray-600 mb-4 font-semibold text-lg">${v.bengali}</p>
+          <button class="btn-practice" onclick="openPracticeModal(${JSON.stringify(v).replace(/"/g, '&quot;')})">
+            Learn Grammar Patterns →
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function openPracticeModal(verbData) {
+      selectedVerb = verbData;
+      quizAnswered = false;
+      
+      // Update modal header
+      document.getElementById('modal-verb').textContent = verbData.verb;
+      document.getElementById('modal-bengali').textContent = verbData.bengali;
+      
+      // Generate patterns table
+      const patterns = generatePatterns(verbData.verb);
+      document.getElementById('patterns-tbody').innerHTML = patterns.map(p => `
+        <tr>
+          <td class="font-semibold" style="color: #1e293b;">${p.subject}</td>
+          <td class="text-green-700">${p.affirmative}</td>
+          <td class="text-red-700">${p.negative}</td>
+        </tr>
+      `).join('');
+      
+      // Generate quiz questions
+      const quizQuestions = generateQuizQuestions(verbData.verb);
+      document.getElementById('quiz-container').innerHTML = quizQuestions.map((q, idx) => `
+        <div class="quiz-question">
+          <p class="mb-4">${idx + 1}. ${q.question}</p>
+          <div class="space-y-2">
+            ${q.options.map(opt => `
+              <button class="quiz-option w-full text-left" onclick="selectQuizOption(this, '${opt}', '${q.correct}', ${idx})">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+          <div id="feedback-${idx}"></div>
+        </div>
+      `).join('');
+      
+      // Reset and show modal
+      switchTab('patterns');
+      document.getElementById('practice-modal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('practice-modal').classList.remove('active');
+    }
+
+    function switchTab(tab) {
+      // Update tab buttons
+      document.querySelectorAll('#practice-modal .tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Update tab contents
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(`${tab}-tab`).classList.add('active');
+    }
+
+    function selectQuizOption(el, value, correct, questionIdx) {
+      const quizOptions = el.parentElement.querySelectorAll('.quiz-option');
+      
+      // Check if already answered
+      if (el.classList.contains('correct') || el.classList.contains('incorrect')) {
+        return;
+      }
+      
+      // Remove previous selections
+      quizOptions.forEach(opt => opt.classList.remove('selected'));
+      
+      // Mark this option
+      el.classList.add('selected');
+      
+      // Get feedback element
+      const feedbackEl = document.getElementById(`feedback-${questionIdx}`);
+      
+      // Check answer
+      if (value === correct) {
+        el.classList.remove('selected');
+        el.classList.add('correct');
+        quizOptions.forEach(opt => opt.disabled = true);
+        feedbackEl.innerHTML = '<div class="feedback-message feedback-correct">✓ Correct! Great job!</div>';
+      } else {
+        el.classList.remove('selected');
+        el.classList.add('incorrect');
+        quizOptions.forEach(opt => opt.disabled = true);
+        
+        // Highlight correct answer
+        quizOptions.forEach(opt => {
+          if (opt.textContent.trim() === correct) {
+            opt.classList.add('correct');
+          }
+        });
+        
+        feedbackEl.innerHTML = `<div class="feedback-message feedback-incorrect">✗ Incorrect. The correct answer is: <strong>${correct}</strong></div>`;
+      }
+    }
+
+    // Handle modal overlay click
+    document.getElementById('practice-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+
+    async function onConfigChange(newConfig) {
+      config = { ...config, ...newConfig };
+      
+      const titleEl = document.getElementById('app-title');
+      if (titleEl) titleEl.textContent = config.app_title || defaultConfig.app_title;
+      
+      const subtitleEl = document.getElementById('app-subtitle');
+      if (subtitleEl) subtitleEl.textContent = config.app_subtitle || defaultConfig.app_subtitle;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              config.primary_color = value;
+              window.elementSdk.setConfig({ primary_color: value });
+            }
+          },
+          {
+            get: () => config.secondary_color || defaultConfig.secondary_color,
+            set: (value) => {
+              config.secondary_color = value;
+              window.elementSdk.setConfig({ secondary_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || 'Poppins',
+          set: (value) => {
+            config.font_family = value;
+            document.body.style.fontFamily = `${value}, Poppins, sans-serif`;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || 16,
+          set: (value) => {
+            config.font_size = value;
+            document.documentElement.style.fontSize = `${value}px`;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["app_title", config.app_title || defaultConfig.app_title],
+        ["app_subtitle", config.app_subtitle || defaultConfig.app_subtitle]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Initial render
+    renderVerbs();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c94148d304954ff',t:'MTc3MDMxMjA0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
