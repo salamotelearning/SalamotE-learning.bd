@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salamot E-learning</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .font-display { font-family: 'Playfair Display', serif; }
+    .font-body { font-family: 'Nunito', sans-serif; }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+    }
+    
+    @keyframes wave {
+      0% { transform: rotate(0deg); }
+      10% { transform: rotate(14deg); }
+      20% { transform: rotate(-8deg); }
+      30% { transform: rotate(14deg); }
+      40% { transform: rotate(-4deg); }
+      50% { transform: rotate(10deg); }
+      60% { transform: rotate(0deg); }
+      100% { transform: rotate(0deg); }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+    
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+    
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .animate-pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    
+    .animate-wave {
+      animation: wave 2.5s ease-in-out infinite;
+      transform-origin: 70% 70%;
+      display: inline-block;
+    }
+    
+    .animate-fade-in-up {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+    
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-600 { animation-delay: 0.6s; }
+    .delay-800 { animation-delay: 0.8s; }
+    
+    .speech-bubble {
+      position: relative;
+      background: white;
+      border-radius: 20px;
+    }
+    
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      left: 50px;
+      bottom: -20px;
+      border-width: 20px 15px 0;
+      border-style: solid;
+      border-color: white transparent;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .btn-gradient {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+    }
+    
+    .classroom-bg {
+      background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #c7d2fe 100%);
+    }
+    
+    .book-decoration {
+      position: absolute;
+      opacity: 0.1;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body">
+  <div id="app-wrapper" class="h-full w-full classroom-bg overflow-auto"><!-- Decorative Elements -->
+   <div class="book-decoration top-10 left-10 text-6xl">
+    📚
+   </div>
+   <div class="book-decoration top-20 right-20 text-5xl">
+    🎓
+   </div>
+   <div class="book-decoration bottom-20 left-20 text-4xl">
+    ✏️
+   </div>
+   <div class="book-decoration bottom-10 right-10 text-5xl">
+    🌍
+   </div>
+   <div class="min-h-full flex flex-col items-center justify-center px-4 py-8"><!-- Header -->
+    <header class="text-center mb-8 animate-fade-in-up opacity-0" style="animation-delay: 0.1s; animation-fill-mode: forwards;">
+     <div class="flex items-center justify-center gap-3 mb-2"><span class="text-4xl">🎯</span>
+      <h1 id="brand-name" class="font-display text-3xl md:text-4xl font-bold gradient-text">Salamot E-learning</h1>
+     </div>
+     <p id="tagline" class="text-sm md:text-base font-semibold tracking-widest uppercase" style="color: #6366f1;">Master English with Confidence</p>
+    </header><!-- AI Teacher Section -->
+    <div class="flex flex-col lg:flex-row items-center gap-8 max-w-5xl mx-auto"><!-- Teacher Avatar -->
+     <div class="animate-fade-in-up opacity-0 delay-200" style="animation-fill-mode: forwards;">
+      <div class="relative"><!-- Glow effect -->
+       <div class="absolute inset-0 rounded-full animate-pulse-glow" style="background: #c7d2fe;"></div><!-- Teacher SVG -->
+       <div class="relative animate-float">
+        <svg width="280" height="320" viewbox="0 0 280 320" fill="none" xmlns="http://www.w3.org/2000/svg"><!-- Body/Suit --> <ellipse cx="140" cy="290" rx="80" ry="40" fill="#4338ca" /> <rect x="80" y="200" width="120" height="100" rx="20" fill="#4338ca" /> <!-- Shirt --> <path d="M110 200 L140 240 L170 200" fill="white" /> <!-- Tie --> <path d="M135 210 L140 260 L145 210 L140 220 Z" fill="#f59e0b" /> <!-- Neck --> <rect x="125" y="175" width="30" height="35" rx="5" fill="#fcd9bd" /> <!-- Head --> <ellipse cx="140" cy="130" rx="65" ry="75" fill="#fcd9bd" /> <!-- Hair --> <ellipse cx="140" cy="75" rx="55" ry="35" fill="#1e293b" /> <ellipse cx="85" cy="100" rx="15" ry="30" fill="#1e293b" /> <ellipse cx="195" cy="100" rx="15" ry="30" fill="#1e293b" /> <!-- Eyes --> <ellipse cx="115" cy="130" rx="12" ry="14" fill="white" /> <ellipse cx="165" cy="130" rx="12" ry="14" fill="white" /> <ellipse cx="117" cy="132" rx="6" ry="7" fill="#1e293b" /> <ellipse cx="167" cy="132" rx="6" ry="7" fill="#1e293b" /> <circle cx="119" cy="130" r="2" fill="white" /> <circle cx="169" cy="130" r="2" fill="white" /> <!-- Eyebrows --> <path d="M100 115 Q115 108 130 115" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round" /> <path d="M150 115 Q165 108 180 115" stroke="#1e293b" stroke-width="3" fill="none" stroke-linecap="round" /> <!-- Glasses --> <rect x="95" y="118" width="35" height="28" rx="5" stroke="#64748b" stroke-width="3" fill="none" /> <rect x="150" y="118" width="35" height="28" rx="5" stroke="#64748b" stroke-width="3" fill="none" /> <path d="M130 130 L150 130" stroke="#64748b" stroke-width="3" /> <!-- Smile --> <path d="M115 160 Q140 180 165 160" stroke="#c2410c" stroke-width="4" fill="none" stroke-linecap="round" /> <!-- Cheeks --> <ellipse cx="95" cy="155" rx="10" ry="6" fill="#fca5a5" opacity="0.5" /> <ellipse cx="185" cy="155" rx="10" ry="6" fill="#fca5a5" opacity="0.5" /> <!-- Waving Hand --> <g class="animate-wave" style="transform-origin: 230px 180px;">
+          <ellipse cx="240" cy="160" rx="25" ry="30" fill="#fcd9bd" />
+          <rect x="232" y="125" width="8" height="25" rx="4" fill="#fcd9bd" />
+          <rect x="242" y="120" width="8" height="30" rx="4" fill="#fcd9bd" />
+          <rect x="252" y="125" width="8" height="25" rx="4" fill="#fcd9bd" />
+          <rect x="225" y="135" width="8" height="20" rx="4" fill="#fcd9bd" />
+         </g> <!-- Arm --> <path d="M200 220 Q230 180 240 160" stroke="#4338ca" stroke-width="25" stroke-linecap="round" />
+        </svg>
+       </div><!-- Teaching indicator -->
+       <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white" style="background: #22c55e;">
+        🟢 LIVE
+       </div>
+      </div>
+     </div><!-- Speech Content -->
+     <div class="flex-1 max-w-xl"><!-- Speech Bubble -->
+      <div class="speech-bubble p-6 md:p-8 shadow-2xl animate-fade-in-up opacity-0 delay-400" style="animation-fill-mode: forwards;">
+       <p id="welcome-message" class="font-display text-xl md:text-2xl font-bold mb-4" style="color: #4338ca;">"Welcome to Salamot E-learning!"</p>
+       <p id="main-text" class="text-base md:text-lg leading-relaxed mb-4" style="color: #475569;">If you want to learn how to speak in English fluently, then you are in the perfect place. Let's start your journey today!</p>
+       <div class="flex items-center gap-2 text-sm" style="color: #6366f1;"><span class="inline-block w-2 h-2 rounded-full animate-pulse" style="background: #6366f1;"></span> <span class="font-semibold">Your AI English Teacher</span>
+       </div>
+      </div><!-- CTA Button -->
+      <div class="mt-8 text-center animate-fade-in-up opacity-0 delay-600" style="animation-fill-mode: forwards;">
+    <a href="courses.html" id="cta-button" class="btn-gradient text-white font-bold text-lg px-10 py-4 rounded-full shadow-lg inline-flex items-center gap-3">
+        <span id="cta-text">Start Your Journey</span>
+    </a>
+      </div>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+        </svg></button>
+      </div><!-- Features -->
+      <div class="mt-8 grid grid-cols-3 gap-4 animate-fade-in-up opacity-0 delay-800" style="animation-fill-mode: forwards;">
+       <div class="text-center p-3 rounded-xl" style="background: rgba(255,255,255,0.7);"><span class="text-2xl mb-1 block">🎤</span> <span class="text-xs font-semibold" style="color: #475569;">Speaking Practice</span>
+       </div>
+       <div class="text-center p-3 rounded-xl" style="background: rgba(255,255,255,0.7);"><span class="text-2xl mb-1 block">📖</span> <span class="text-xs font-semibold" style="color: #475569;">Interactive Lessons</span>
+       </div>
+       <div class="text-center p-3 rounded-xl" style="background: rgba(255,255,255,0.7);"><span class="text-2xl mb-1 block">🏆</span> <span class="text-xs font-semibold" style="color: #475569;">Earn Certificates</span>
+       </div>
+      </div>
+     </div>
+    </div><!-- Footer -->
+    <footer class="mt-12 text-center animate-fade-in-up opacity-0" style="animation-delay: 1s; animation-fill-mode: forwards;">
+     <p class="text-sm" style="color: #64748b;">Join thousands of learners worldwide 🌍</p>
+    </footer>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      brand_name: "Salamot E-learning",
+      welcome_message: "Welcome to Salamot E-learning!",
+      main_text: "If you want to learn how to speak in English fluently, then you are in the perfect place. Let's start your journey today!",
+      cta_text: "Start Your Journey",
+      primary_color: "#4338ca",
+      secondary_color: "#f8fafc",
+      text_color: "#475569",
+      accent_color: "#6366f1",
+      highlight_color: "#22c55e"
+    };
+
+    let config = { ...defaultConfig };
+
+    async function onConfigChange(newConfig) {
+      config = { ...config, ...newConfig };
+      
+      // Update brand name
+      const brandName = document.getElementById('brand-name');
+      if (brandName) {
+        brandName.textContent = config.brand_name || defaultConfig.brand_name;
+      }
+      
+      // Update welcome message
+      const welcomeMessage = document.getElementById('welcome-message');
+      if (welcomeMessage) {
+        welcomeMessage.textContent = `"${config.welcome_message || defaultConfig.welcome_message}"`;
+      }
+      
+      // Update main text
+      const mainText = document.getElementById('main-text');
+      if (mainText) {
+        mainText.textContent = config.main_text || defaultConfig.main_text;
+      }
+      
+      // Update CTA text
+      const ctaText = document.getElementById('cta-text');
+      if (ctaText) {
+        ctaText.textContent = config.cta_text || defaultConfig.cta_text;
+      }
+      
+      // Apply colors
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      
+      if (welcomeMessage) welcomeMessage.style.color = primaryColor;
+      if (mainText) mainText.style.color = textColor;
+      
+      const tagline = document.getElementById('tagline');
+      if (tagline) tagline.style.color = accentColor;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.secondary_color || defaultConfig.secondary_color,
+            set: (value) => {
+              config.secondary_color = value;
+              const wrapper = document.getElementById('app-wrapper');
+              if (wrapper) {
+                wrapper.style.background = `linear-gradient(135deg, ${value} 0%, #e0e7ff 50%, #c7d2fe 100%)`;
+              }
+              window.elementSdk.setConfig({ secondary_color: value });
+            }
+          },
+          {
+            get: () => config.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              config.primary_color = value;
+              const welcomeMsg = document.getElementById('welcome-message');
+              if (welcomeMsg) welcomeMsg.style.color = value;
+              const brandName = document.getElementById('brand-name');
+              if (brandName) {
+                brandName.style.background = `linear-gradient(135deg, ${value} 0%, #8b5cf6 50%, #a855f7 100%)`;
+                brandName.style.webkitBackgroundClip = 'text';
+                brandName.style.webkitTextFillColor = 'transparent';
+              }
+              window.elementSdk.setConfig({ primary_color: value });
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              config.text_color = value;
+              const mainText = document.getElementById('main-text');
+              if (mainText) mainText.style.color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => config.accent_color || defaultConfig.accent_color,
+            set: (value) => {
+              config.accent_color = value;
+              const ctaBtn = document.getElementById('cta-button');
+              if (ctaBtn) {
+                ctaBtn.style.background = `linear-gradient(135deg, ${value} 0%, #8b5cf6 100%)`;
+              }
+              const tagline = document.getElementById('tagline');
+              if (tagline) tagline.style.color = value;
+              window.elementSdk.setConfig({ accent_color: value });
+            }
+          },
+          {
+            get: () => config.highlight_color || defaultConfig.highlight_color,
+            set: (value) => {
+              config.highlight_color = value;
+              const liveIndicator = document.querySelector('[style*="background: #22c55e"]');
+              if (liveIndicator) liveIndicator.style.background = value;
+              window.elementSdk.setConfig({ highlight_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || 'Nunito',
+          set: (value) => {
+            config.font_family = value;
+            document.body.style.fontFamily = `${value}, Nunito, sans-serif`;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || 16,
+          set: (value) => {
+            config.font_size = value;
+            document.documentElement.style.fontSize = `${value}px`;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["brand_name", config.brand_name || defaultConfig.brand_name],
+        ["welcome_message", config.welcome_message || defaultConfig.welcome_message],
+        ["main_text", config.main_text || defaultConfig.main_text],
+        ["cta_text", config.cta_text || defaultConfig.cta_text]
+      ]);
+    }
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Button interaction
+    document.getElementById('cta-button').addEventListener('click', function() {
+      this.innerHTML = `
+        <span>Let's Go! 🚀</span>
+        <svg class="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+        </svg>
+      `;
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c8cf7fa758da475',t:'MTc3MDIzNzQ3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
