@@ -227,21 +227,20 @@
         <div class="text-4xl mb-3">
          📖
         </div>
-        <a href="A to Z.html" class="block no-underline">
-  <div class="category-card animate-fade-in-up delay-100 active relative overflow-hidden group h-full" 
-       style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);" 
-       onclick="switchCategory('vocabulary')">
+        <a href="A to Z.html" class="block">
+  <div class="category-card animate-fade-in-up delay-100 active group" 
+       style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); min-height: 220px;">
     
-    <div class="p-6 text-white cursor-pointer">
-      <div class="text-4xl mb-3">
-        📖
+    <div class="p-6 text-white cursor-pointer h-full flex flex-col justify-between">
+      <div>
+        <div class="text-4xl mb-3">📖</div>
+        <h3 id="vocab-label" class="font-bold text-lg mb-1">Vocabulary (A-Z)</h3>
+        <p class="text-sm opacity-90">Learn new words</p>
+        <p class="text-xs opacity-75 mt-2">18 lessons</p>
       </div>
-      <h3 id="vocab-label" class="font-bold text-lg mb-1">Vocabulary (A-Z)</h3>
-      <p class="text-sm opacity-90">Learn new words</p>
-      <p class="text-xs opacity-75 mt-2">18 lessons</p>
       
-      <div class="mt-4 flex items-center text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
-        Explore Now 
+      <div class="mt-4 flex items-center text-xs font-bold uppercase tracking-wider transition-all group-hover:translate-x-1">
+        EXPLORE NOW 
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
