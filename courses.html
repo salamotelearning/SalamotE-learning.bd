@@ -435,33 +435,35 @@ const lessons = {
     };
 
     function renderLessons(category) {
-      const container = document.getElementById('lessons-container');
-      const categoryLessons = lessons[category] || [];
-      
-      container.innerHTML = '';
-      
-      categoryLessons.forEach((lesson, index) => {
+    const container = document.getElementById('lessons-container');
+    const categoryLessons = lessons[category] || [];
+    
+    container.innerHTML = '';
+    
+    categoryLessons.forEach((lesson, index) => {
         const delay = (index * 100);
         const lessonCard = document.createElement('div');
-        lessonCard.className = 'lesson-card animate-fade-in-up bg-white shadow-md p-4';
+        // এখানে ভ্যারিয়েবল 'lessonCard' ব্যবহার করা হয়েছে
+        lessonCard.className = 'lesson-card animate-fade-in-up bg-white shadow-md p-4 rounded-xl'; 
         lessonCard.style.animationDelay = delay + 'ms';
         
-        LessonCard.innerHTML = `
-    <div class="aspect-video bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
-      <img 
-        src="https://img.youtube.com/vi/${lesson.video.split('/').pop()}/maxresdefault.jpg" 
-        alt="${lesson.title}" 
-        class="w-full h-full object-cover"
-        onerror="this.src='https://img.youtube.com/vi/${lesson.video.split('/').pop()}/0.jpg';"
-      >
-    </div>
-    <h3 class="font-bold text-lg mb-2" style="color: #4338ca;">${lesson.title}</h3>
-    <p class="text-gray-600 text-sm mb-4 line-clamp-2">${lesson.description}</p>
-    <button class="btn-primary w-full" onclick="openLessonModal('${category}', '${lesson.id}')">
-      <span>▶</span>
-      <span>Watch & Learn</span>
-    </button>`;
-        
+        // এখানে 'lessonCard' (ছোট হাতের l) ব্যবহার নিশ্চিত করুন
+        lessonCard.innerHTML = `
+            <div class="aspect-video bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+                <img 
+                    src="https://img.youtube.com/vi/${lesson.video.split('/').pop().split('?')[0]}/maxresdefault.jpg" 
+                    alt="${lesson.title}" 
+                    class="w-full h-full object-cover"
+                    onerror="this.src='https://img.youtube.com/vi/${lesson.video.split('/').pop().split('?')[0]}/0.jpg';"
+                >
+            </div>
+            <h3 class="font-bold text-lg mb-2" style="color: #4338ca;">${lesson.title}</h3>
+            <p class="text-gray-600 text-sm mb-4 line-clamp-2">${lesson.description}</p>
+            <button class="btn-primary w-full" onclick="openLessonModal('${category}', '${lesson.id}')">
+                <span>▶</span>
+                <span>Watch & Learn</span>
+            </button>`;
+       
         container.appendChild(lessonCard);
       });
     }
