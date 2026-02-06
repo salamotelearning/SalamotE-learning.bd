@@ -844,14 +844,20 @@
       emptyState.style.display = 'none';
       container.innerHTML = verbs.map((v, idx) => `
         <div class="verb-card animate-fade-in-up" style="animation-delay: ${idx * 50}ms; opacity: 0; animation-fill-mode: forwards;">
-          <div class="mb-3">
-            <h3 class="text-2xl font-bold" style="color: #6366f1;">${v.verb}</h3>
-          </div>
-          <p class="text-gray-600 mb-4 font-semibold text-lg">${v.bengali}</p>
-          <button class="btn-practice" onclick="openPracticeModal(${JSON.stringify(v).replace(/"/g, '&quot;')})">
-            Learn Grammar Patterns →
-          </button>
-        </div>
+  <div class="mb-3">
+    <h3 class="text-2xl font-bold" style="color: #6366f1;">${v.verb}</h3>
+  </div>
+  <p class="text-gray-600 mb-2 font-semibold text-lg">${v.bengali}</p>
+  
+  <div class="mt-3 mb-4 p-3 bg-indigo-50 rounded-lg border-l-4 border-indigo-300">
+    <p class="text-sm text-indigo-800"><strong>V2 & V3:</strong> ${v.v2_v3}</p>
+    <p class="text-sm text-gray-700 italic mt-1">"${v.sentence}"</p>
+  </div>
+  
+  <button class="btn-practice" onclick="openPracticeModal(${JSON.stringify(v).replace(/"/g, '&quot;')})">
+    Learn Grammar Patterns →
+  </button>
+</div>
       `).join('');
     }
 
