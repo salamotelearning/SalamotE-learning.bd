@@ -446,17 +446,21 @@ const lessons = {
         lessonCard.className = 'lesson-card animate-fade-in-up bg-white shadow-md p-4';
         lessonCard.style.animationDelay = delay + 'ms';
         
-        lessonCard.innerHTML = `
-          <div class="aspect-video bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 100 100'%3E%3Crect fill='%23e5e7eb' width='100' height='100'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%239ca3af' font-size='16'%3E▶ Video%3C/text%3E%3C/svg%3E" alt="Video" class="w-full h-full object-cover">
-          </div>
-          <h3 class="font-bold text-lg mb-2" style="color: #4338ca;">${lesson.title}</h3>
-          <p class="text-gray-600 text-sm mb-4 line-clamp-2">${lesson.description}</p>
-          <button class="btn-primary w-full" onclick="openLessonModal('${category}', '${lesson.id}')">
-            <span>▶</span>
-            <span>Watch & Learn</span>
-          </button>
-        `;
+        LessonCard.innerHTML = `
+    <div class="aspect-video bg-gray-200 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
+      <img 
+        src="https://img.youtube.com/vi/${lesson.video.split('/').pop()}/maxresdefault.jpg" 
+        alt="${lesson.title}" 
+        class="w-full h-full object-cover"
+        onerror="this.src='https://img.youtube.com/vi/${lesson.video.split('/').pop()}/0.jpg';"
+      >
+    </div>
+    <h3 class="font-bold text-lg mb-2" style="color: #4338ca;">${lesson.title}</h3>
+    <p class="text-gray-600 text-sm mb-4 line-clamp-2">${lesson.description}</p>
+    <button class="btn-primary w-full" onclick="openLessonModal('${category}', '${lesson.id}')">
+      <span>▶</span>
+      <span>Watch & Learn</span>
+    </button>`;
         
         container.appendChild(lessonCard);
       });
