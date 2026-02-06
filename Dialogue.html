@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Dialogue Practice</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-bubble {
+      border-radius: 18px;
+      padding: 1.25rem;
+      margin: 0.75rem 0;
+      max-width: 90%;
+      animation: slideUp 0.4s ease-out;
+      transition: all 0.3s ease;
+    }
+
+    .bubble-a {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .bubble-b {
+      background: #f1f5f9;
+      color: #1e293b;
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .verb {
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .bubble-b .verb {
+      background: rgba(99, 102, 241, 0.15);
+      color: #6366f1;
+    }
+
+    .audio-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-right: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .bubble-b .audio-btn {
+      background: rgba(99, 102, 241, 0.15);
+      color: #6366f1;
+    }
+
+    .audio-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .scenario-btn {
+      padding: 0.7rem 1.5rem;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #64748b;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .scenario-btn:hover, .scenario-btn.active {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      color: white;
+      border-color: #6366f1;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .role-btn {
+      padding: 0.6rem 1.2rem;
+      border: 2px solid #e2e8f0;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #64748b;
+      transition: all 0.3s ease;
+    }
+
+    .role-btn.active {
+      background: #6366f1;
+      color: white;
+      border-color: #6366f1;
+    }
+
+    .hidden-placeholder {
+      background: #cbd5e1;
+      color: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      text-align: center;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .hidden-placeholder:hover {
+      background: #94a3b8;
+      transform: translateY(-2px);
+    }
+
+    .verb-box {
+      background: white;
+      border-left: 4px solid #6366f1;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .verb-eng {
+      font-weight: 700;
+      color: #6366f1;
+      margin-bottom: 0.25rem;
+    }
+
+    .verb-ben {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+
+    .verb-forms {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .verb-form {
+      background: #f0f4ff;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      color: #6366f1;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .chat-bubble { max-width: 95%; }
+      .scenario-btn { font-size: 0.8rem; padding: 0.6rem 1rem; }
+      .desktop-only { display: none; }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full" style="background: linear-gradient(135deg, #f8fafc 0%, #f0e7ff 50%, #e0c3ff 100%);">
+     <nav class="bg-white shadow-md p-4 flex justify-between items-center">
+    <div class="font-bold text-xl">Salamot E-learning</div>
+    <div class="space-x-4">
+        <a href="index.html" class="hover:text-blue-500">Home</a>
+    </div>
+  </nav>
+  <div class="h-full w-full flex flex-col overflow-hidden"><!-- Header -->
+   <header class="bg-white border-b-2 border-purple-200 shadow-sm flex-shrink-0">
+    <div class="max-w-7xl mx-auto px-4 py-5">
+     <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">🎤 Dialogue Practice</h1>
+     <p class="text-gray-600 text-sm mt-1">Master Real-Life English Conversations with Bilingual Support</p>
+    </div>
+   </header><!-- Main -->
+   <main class="flex-1 overflow-auto w-full">
+    <div class="max-w-7xl mx-auto px-4 py-6 w-full"><!-- Scenario Selector -->
+     <div class="mb-6">
+      <h2 class="text-lg font-bold text-gray-800 mb-3">📖 Choose a Scenario</h2>
+      <div class="overflow-x-auto pb-2" style="scrollbar-width: thin;">
+       <div class="flex gap-2 min-w-min" id="scenario-btns"></div>
+      </div>
+     </div><!-- Controls -->
+     <div class="bg-white rounded-14 p-5 mb-6 shadow-md border border-purple-200">
+      <h3 class="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Practice Mode</h3>
+      <div class="flex gap-2 flex-wrap"><button id="hide-a-btn" class="role-btn" onclick="toggleHideA()">👤 Hide Person A</button> <button id="hide-b-btn" class="role-btn" onclick="toggleHideB()">👤 Hide Person B</button> <button id="reset-btn" class="role-btn" onclick="resetView()">🔄 Show All</button>
+      </div>
+     </div><!-- Content Grid -->
+     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 pb-8"><!-- Chat -->
+      <div class="lg:col-span-3">
+       <div class="bg-white rounded-14 p-6 shadow-md border border-purple-200 min-h-96 max-h-screen overflow-y-auto">
+        <div id="chat" class="space-y-2"></div>
+       </div>
+      </div><!-- Verbs Sidebar -->
+      <div class="hidden lg:block">
+       <div class="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-14 p-5 sticky top-6">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 pb-3 border-b-2 border-indigo-500">🎯 Focus Verbs</h3>
+        <div id="verbs-desk"></div>
+       </div>
+      </div>
+     </div><!-- Verbs Mobile -->
+     <div class="lg:hidden mb-8">
+      <div class="bg-white rounded-14 p-6 shadow-md border border-purple-200">
+       <h3 class="text-lg font-bold text-gray-800 mb-4">🎯 Focus Verbs</h3>
+       <div id="verbs-mobile"></div>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div>
+  <script>
+    const defaultConfig = {};
+    let config = { ...defaultConfig };
+    let currentScenario = 1;
+    let hidePersonA = false;
+    let hidePersonB = false;
+
+    const dialogues = {
+      1: { title: "Introducing Yourself", emoji: "👋", dialogues: [
+        { person: "A", en: "Hello! My name is Michael. I'm <span class='verb'>pleased</span> to <span class='verb'>meet</span> you!", bn: "নমস্কার! আমার নাম মাইকেল। আপনার সাথে দেখা করে আমি আনন্দিত!" },
+        { person: "B", en: "Hi Michael! I'm Sarah. It's nice to <span class='verb'>meet</span> you too. Where are you from?", bn: "হাই মাইকেল! আমি সারা। আপনার সাথে দেখা করে আমিও খুশি। আপনি কোথা থেকে এসেছেন?" },
+        { person: "A", en: "I'm from London. I <span class='verb'>work</span> as a software engineer. What about you?", bn: "আমি লন্ডন থেকে এসেছি। আমি সফটওয়্যার ইঞ্জিনিয়ার হিসেবে কাজ করি। আপনার কাজ কী?" },
+        { person: "B", en: "I <span class='verb'>teach</span> English at a local university. I really <span class='verb'>enjoy</span> working with students.", bn: "আমি স্থানীয় একটি বিশ্ববিদ্যালয়ে ইংরেজি পড়াই। আমি শিক্ষার্থীদের সাথে কাজ করতে অত্যন্ত আনন্দিত।" },
+        { person: "A", en: "That sounds interesting! How long have you been <span class='verb'>teaching</span>?", bn: "এটি খুবই আকর্ষণীয় শোনাচ্ছে! আপনি কতদিন ধরে পড়াচ্ছেন?" },
+        { person: "B", en: "For about 7 years now. I <span class='verb'>love</span> helping students <span class='verb'>improve</span> their English skills.", bn: "এখন সাত বছর ধরে। আমি শিক্ষার্থীদের ইংরেজি দক্ষতা উন্নত করতে সাহায্য করতে ভালোবাসি।" },
+        { person: "A", en: "I also <span class='verb'>study</span> languages in my free time. I'm currently <span class='verb'>learning</span> Spanish.", bn: "আমিও আমার অবসর সময়ে ভাষা শিখি। আমি বর্তমানে স্পেনিশ শিখছি।" },
+        { person: "B", en: "How wonderful! Which methods do you <span class='verb'>use</span> to <span class='verb'>learn</span> Spanish?", bn: "কত আশ্চর্যজনক! স্পেনিশ শিখতে আপনি কোন পদ্ধতি ব্যবহার করেন?" },
+        { person: "A", en: "I <span class='verb'>use</span> mobile apps, watch Spanish movies, and <span class='verb'>practice</span> with native speakers online.", bn: "আমি মোবাইল অ্যাপ ব্যবহার করি, স্পেনিশ চলচ্চিত্র দেখি এবং অনলাইনে মাতৃভাষী লোকদের সাথে অনুশীলন করি।" },
+        { person: "B", en: "That's an excellent approach! Do you <span class='verb'>have</span> any other hobbies or interests?", bn: "এটি একটি দুর্দান্ত পদ্ধতি! আপনার অন্য কোন শখ বা আগ্রহ আছে কি?" },
+        { person: "A", en: "Yes, I absolutely <span class='verb'>love</span> traveling. I've been to 15 countries so far.", bn: "হ্যাঁ, আমি ভ্রমণ করতে একেবারেই ভালোবাসি। আমি এখন পর্যন্ত ১৫টি দেশ ভ্রমণ করেছি।" },
+        { person: "B", en: "That's amazing! Where was your favorite destination? I'd like to <span class='verb'>plan</span> a trip soon.", bn: "এটি অসাধারণ! আপনার প্রিয় গন্তব্য কোথায় ছিল? আমি শীঘ্রই একটি ট্রিপ পরিকল্পনা করতে চাই।" }
+      ], verbs: [
+        { en: "Meet", bn: "দেখা করা", v1: "meet", v2: "met", v3: "met" },
+        { en: "Work", bn: "কাজ করা", v1: "work", v2: "worked", v3: "worked" },
+        { en: "Teach", bn: "পড়ানো", v1: "teach", v2: "taught", v3: "taught" },
+        { en: "Enjoy", bn: "উপভোগ করা", v1: "enjoy", v2: "enjoyed", v3: "enjoyed" },
+        { en: "Love", bn: "ভালোবাসা", v1: "love", v2: "loved", v3: "loved" },
+        { en: "Plan", bn: "পরিকল্পনা করা", v1: "plan", v2: "planned", v3: "planned" },
+        { en: "Learn", bn: "শিখা", v1: "learn", v2: "learned", v3: "learned" },
+        { en: "Study", bn: "পড়া", v1: "study", v2: "studied", v3: "studied" }
+      ]},
+      2: { title: "Greeting a Friend", emoji: "😊", dialogues: [
+        { person: "A", en: "Hey! It's been so long! How have you been?", bn: "হেই! এত দিন পর দেখা! তুমি কেমন আছো?" },
+        { person: "B", en: "I'm doing great! I <span class='verb'>missed</span> you so much. We should definitely <span class='verb'>catch</span> up soon.", bn: "আমি দুর্দান্ত আছি! আমি তোমাকে অনেক মিস করেছি। আমরা শীঘ্রই অবশ্যই একসাথে সময় কাটাব।" },
+        { person: "A", en: "Absolutely! I've been <span class='verb'>working</span> on a new project for the past three months.", bn: "একদম! আমি গত তিন মাস ধরে একটি নতুন প্রকল্পে কাজ করছি।" },
+        { person: "B", en: "Oh, that's exciting! <span class='verb'>Tell</span> me about it. What kind of project are you <span class='verb'>doing</span>?", bn: "ও, এটি রোমাঞ্চকর! আমাকে এর বিষয়ে বলো। তুমি কী ধরনের প্রকল্পে কাজ করছো?" },
+        { person: "A", en: "It's a mobile app for fitness tracking. We're <span class='verb'>developing</span> it with a team of 8 people.", bn: "এটি ফিটনেস ট্র্যাকিংয়ের জন্য একটি মোবাইল অ্যাপ। আমরা ৮ জন মানুষের একটি দল নিয়ে এটি তৈরি করছি।" },
+        { person: "B", en: "Wow! That sounds really cool. When will it be <span class='verb'>launched</span>?", bn: "ওয়াও! এটি সত্যিই দারুণ শোনাচ্ছে। এটি কখন লঞ্চ হবে?" },
+        { person: "A", en: "We <span class='verb'>expect</span> to <span class='verb'>release</span> it in about 3 months. I'm really excited about it!", bn: "আমরা আশা করি এটি প্রায় ৩ মাসে রিলিজ হবে। আমি এর বিষয়ে সত্যিই উত্তেজিত!" },
+        { person: "B", en: "I can't <span class='verb'>wait</span> to <span class='verb'>try</span> it! By the way, how's your family doing?", bn: "আমি এটি চেষ্টা করতে অপেক্ষা করতে পারছি না! যাইহোক, তোমার পরিবার কেমন আছে?" },
+        { person: "A", en: "Everyone's doing well, thanks for asking. My sister just <span class='verb'>graduated</span> from university.", bn: "সবাই ভালো আছে, জিজ্ঞাসার জন্য ধন্যবাদ। আমার বোন ঠিকনই বিশ্ববিদ্যালয় থেকে স্নাতক হয়েছে।" },
+        { person: "B", en: "That's wonderful! <span class='verb'>Congratulate</span> her from me! Where is she <span class='verb'>planning</span> to <span class='verb'>work</span>?", bn: "এটি দুর্দান্ত! আমার পক্ষ থেকে তাকে অভিনন্দন জানাও! তিনি কোথায় কাজ করার পরিকল্পনা করছেন?" },
+        { person: "A", en: "She's <span class='verb'>applying</span> for jobs in marketing. She's very talented and creative.", bn: "তিনি মার্কেটিং এ চাকরির জন্য আবেদন করছেন। তিনি অত্যন্ত প্রতিভাবান এবং সৃজনশীল।" },
+        { person: "B", en: "I'm sure she'll <span class='verb'>succeed</span>! Let's <span class='verb'>plan</span> a dinner this weekend to celebrate all the good news!", bn: "আমি নিশ্চিত সে সফল হবে! আসুন এই সপ্তাহান্তে একটি ডিনার পরিকল্পনা করি এবং সব ভালো খবর উদযাপন করি!" }
+      ], verbs: [
+        { en: "Miss", bn: "মিস করা", v1: "miss", v2: "missed", v3: "missed" },
+        { en: "Work", bn: "কাজ করা", v1: "work", v2: "worked", v3: "worked" },
+        { en: "Tell", bn: "বলা", v1: "tell", v2: "told", v3: "told" },
+        { en: "Develop", bn: "উন্নয়ন করা", v1: "develop", v2: "developed", v3: "developed" },
+        { en: "Succeed", bn: "সফল হওয়া", v1: "succeed", v2: "succeeded", v3: "succeeded" },
+        { en: "Graduate", bn: "স্নাতক হওয়া", v1: "graduate", v2: "graduated", v3: "graduated" },
+        { en: "Plan", bn: "পরিকল্পনা করা", v1: "plan", v2: "planned", v3: "planned" },
+        { en: "Release", bn: "রিলিজ করা", v1: "release", v2: "released", v3: "released" }
+      ]},
+      3: { title: "Making Plans", emoji: "📅", dialogues: [
+        { person: "A", en: "Would you like to <span class='verb'>go</span> to a movie this weekend?", bn: "এই সপ্তাহান্তে তুমি সিনেমায় যেতে চাও?" },
+        { person: "B", en: "Yes! I'd love to. What movie do you want to <span class='verb'>watch</span>?", bn: "হ্যাঁ! আমি খুবই চাই। তুমি কোন সিনেমা দেখতে চাও?" },
+        { person: "A", en: "I've <span class='verb'>heard</span> great reviews about the new action film. It's supposed to be amazing.", bn: "আমি নতুন অ্যাকশন ফিল্মের সম্পর্কে দুর্দান্ত রিভিউ শুনেছি। এটি অসাধারণ হবে বলে মনে হয়।" },
+        { person: "B", en: "Perfect! What time shall we <span class='verb'>meet</span>?", bn: "দারুণ! আমরা কখন মিলব?" },
+        { person: "A", en: "Let's <span class='verb'>meet</span> at 6 PM in front of the cinema. We can <span class='verb'>grab</span> some popcorn before the movie.", bn: "আসুন সন্ধ্যা ৬টায় সিনেমার সামনে মিলি। আমরা চলচ্চিত্রের আগে কিছু পপকর্ন নিতে পারি।" },
+        { person: "B", en: "Sounds great! I'll also <span class='verb'>book</span> the tickets online to <span class='verb'>avoid</span> waiting in line.", bn: "শোনা যাচ্ছে দারুণ! আমি লাইনে অপেক্ষা এড়াতে অনলাইনে টিকিট বুক করব।" },
+        { person: "A", en: "Good idea! How many tickets should we <span class='verb'>buy</span>?", bn: "ভালো ধারণা! আমরা কতটি টিকিট কিনব?" },
+        { person: "B", en: "Let me <span class='verb'>check</span> with my brother. He wanted to <span class='verb'>join</span> us. I'll <span class='verb'>call</span> him now.", bn: "আমার ভাইয়ের সাথে চেক করতে দাও। সে আমাদের সাথে যোগ দিতে চেয়েছিল। আমি এখনই তাকে ডাকব।" },
+        { person: "A", en: "That's perfect! Let's <span class='verb'>invite</span> him too. The more the merrier!", bn: "এটি নিখুঁত! চলো তাকেও আমন্ত্রণ জানাই। যত বেশি মানুষ তত বেশি মজা!" },
+        { person: "B", en: "Great! He's in! So that's three tickets. I'll <span class='verb'>purchase</span> them right away.", bn: "দারুণ! সে অনুমতি দিল! তাহলে তিনটি টিকিট। আমি এখনই সেগুলি কিনে ফেলব।" },
+        { person: "A", en: "Awesome! What about dinner after the movie? Do you <span class='verb'>know</span> any good restaurants nearby?", bn: "দুর্দান্ত! চলচ্চিত্রের পরে রাতের খাবার সম্পর্কে? আপনি কাছাকাছি কোন ভালো রেস্তোরাঁ জানেন?" },
+        { person: "B", en: "Yes, there's an Italian restaurant that I really <span class='verb'>recommend</span>. We can <span class='verb'>reserve</span> a table in advance.", bn: "হ্যাঁ, একটি ইতালিয়ান রেস্তোরাঁ আছে যা আমি সত্যিই সুপারিশ করি। আমরা আগে থেকেই একটি টেবিল সংরক্ষণ করতে পারি।" }
+      ], verbs: [
+        { en: "Go", bn: "যাওয়া", v1: "go", v2: "went", v3: "gone" },
+        { en: "Watch", bn: "দেখা", v1: "watch", v2: "watched", v3: "watched" },
+        { en: "Hear", bn: "শোনা", v1: "hear", v2: "heard", v3: "heard" },
+        { en: "Meet", bn: "মিলা", v1: "meet", v2: "met", v3: "met" },
+        { en: "Book", bn: "বুক করা", v1: "book", v2: "booked", v3: "booked" },
+        { en: "Buy", bn: "কেনা", v1: "buy", v2: "bought", v3: "bought" },
+        { en: "Join", bn: "যোগ দেওয়া", v1: "join", v2: "joined", v3: "joined" },
+        { en: "Reserve", bn: "সংরক্ষণ করা", v1: "reserve", v2: "reserved", v3: "reserved" }
+      ]},
+      4: { title: "Asking Directions", emoji: "🗺️", dialogues: [
+        { person: "A", en: "Excuse me! Can you <span class='verb'>help</span> me? I'm looking for the train station.", bn: "ক্ষমা করুন! আপনি আমাকে সাহায্য করতে পারবেন? আমি ট্রেন স্টেশন খুঁজছি।" },
+        { person: "B", en: "Of course! I'd be happy to <span class='verb'>help</span>. The station is not very far from here.", bn: "অবশ্যই! আমি সাহায্য করতে আনন্দিত। স্টেশনটি এখান থেকে খুব দূরে নেই।" },
+        { person: "A", en: "Great! Can you <span class='verb'>describe</span> the route for me?", bn: "দারুণ! আপনি আমার জন্য রুটটি বর্ণনা করতে পারবেন?" },
+        { person: "B", en: "Sure! <span class='verb'>Go</span> straight down this street for about 500 meters.", bn: "নিশ্চিতভাবে! এই রাস্তা দিয়ে সোজা প্রায় ৫০০ মিটার যান।" },
+        { person: "A", en: "Okay, I'm following you. What should I <span class='verb'>do</span> after that?", bn: "ঠিক আছে, আমি বুঝছি। তার পরে আমার কী করা উচিত?" },
+        { person: "B", en: "When you <span class='verb'>reach</span> the traffic light, <span class='verb'>turn</span> left.", bn: "যখন আপনি ট্রাফিক লাইটে পৌঁছান, বাম দিকে মোড় নিন।" },
+        { person: "A", en: "Left at the traffic light. Got it! How far will it <span class='verb'>be</span> from there?", bn: "ট্রাফিক লাইটে বাম দিকে। বুঝেছি! সেখান থেকে এটি কতদূর হবে?" },
+        { person: "B", en: "Just about 200 meters more. You can't <span class='verb'>miss</span> it - there's a big red building right next to it.", bn: "আরও মাত্র ২০০ মিটার। আপনি এটি মিস করতে পারবেন না - এর পাশে একটি বড় লাল বিল্ডিং আছে।" },
+        { person: "A", en: "Perfect! One more question - do you <span class='verb'>know</span> if there's a taxi stand nearby in case I <span class='verb'>need</span> one?", bn: "নিখুঁত! একটি আরও প্রশ্ন - আপনি জানেন কি কাছাকাছি কোন ট্যাক্সি স্ট্যান্ড আছে যদি আমার প্রয়োজন হয়?" },
+        { person: "B", en: "Yes, there's one right at the station. But I <span class='verb'>suggest</span> you <span class='verb'>take</span> the bus - it's cheaper and more convenient.", bn: "হ্যাঁ, স্টেশনে একটি আছে। তবে আমি আপনাকে বাস নিতে পরামর্শ দিই - এটি সাশ্রয়ী এবং আরও সুবিধাজনক।" },
+        { person: "A", en: "Thank you so much! I really <span class='verb'>appreciate</span> your help. Have a great day!", bn: "অনেক অনেক ধন্যবাদ! আমি সত্যিই আপনার সাহায্যের প্রশংসা করি। আপনার দিনটি চমৎকার হোক!" },
+        { person: "B", en: "You're welcome! Good luck with your journey. <span class='verb'>Enjoy</span> your trip!", bn: "আপনাকে স্বাগতম! আপনার যাত্রায় সৌভাগ্য। আপনার ভ্রমণ উপভোগ করুন!" }
+      ], verbs: [
+        { en: "Help", bn: "সাহায্য করা", v1: "help", v2: "helped", v3: "helped" },
+        { en: "Look for", bn: "খুঁজা", v1: "look", v2: "looked", v3: "looked" },
+        { en: "Describe", bn: "বর্ণনা করা", v1: "describe", v2: "described", v3: "described" },
+        { en: "Turn", bn: "ঘোরানো", v1: "turn", v2: "turned", v3: "turned" },
+        { en: "Know", bn: "জানা", v1: "know", v2: "knew", v3: "known" },
+        { en: "Need", bn: "প্রয়োজন", v1: "need", v2: "needed", v3: "needed" },
+        { en: "Appreciate", bn: "প্রশংসা করা", v1: "appreciate", v2: "appreciated", v3: "appreciated" },
+        { en: "Enjoy", bn: "উপভোগ করা", v1: "enjoy", v2: "enjoyed", v3: "enjoyed" }
+      ]},
+      5: { title: "Small Talk", emoji: "💬", dialogues: [
+        { person: "A", en: "Beautiful day, isn't it? I really <span class='verb'>enjoy</span> this warm weather.", bn: "সুন্দর দিন, তাই না? আমি এই উষ্ণ আবহাওয়া সত্যিই উপভোগ করি।" },
+        { person: "B", en: "Absolutely! It's perfect for <span class='verb'>going</span> out. Do you <span class='verb'>plan</span> to <span class='verb'>do</span> anything special today?", bn: "একদম! এটি বাইরে যাওয়ার জন্য নিখুঁত। তুমি আজ কিছু বিশেষ করার পরিকল্পনা করছো?" },
+        { person: "A", en: "I'm thinking of <span class='verb'>visiting</span> the park. Have you been there recently?", bn: "আমি পার্ক ভিজিট করার কথা ভাবছি। তুমি সম্প্রতি সেখানে গেছো?" },
+        { person: "B", en: "Yes! I went last weekend. The flowers are <span class='verb'>blooming</span> beautifully this season.", bn: "হ্যাঁ! আমি গত সপ্তাহান্তে গেছিলাম। এই মৌসুমে ফুলগুলি সুন্দরভাবে ফুটছে।" },
+        { person: "A", en: "That's wonderful! What kind of flowers did you <span class='verb'>see</span>?", bn: "এটি দুর্দান্ত! আপনি কী ধরনের ফুল দেখেছেন?" },
+        { person: "B", en: "There were roses, tulips, and cherry blossoms. The whole park was like a beautiful garden. I really <span class='verb'>recommend</span> you <span class='verb'>go</span> there.", bn: "গোলাপ, টিউলিপ এবং চেরি ব্লসম ছিল। পুরো পার্কটি একটি সুন্দর বাগানের মতো ছিল। আমি সত্যিই আপনাকে সেখানে যেতে সুপারিশ করি।" },
+        { person: "A", en: "I'll definitely <span class='verb'>go</span> this weekend then. Do you <span class='verb'>know</span> what time it <span class='verb'>opens</span>?", bn: "আমি তাহলে এই সপ্তাহান্তে অবশ্যই যাব। এটি কখন খোলে তা তুমি জানো?" },
+        { person: "B", en: "I think it <span class='verb'>opens</span> at 8 AM. The best time to <span class='verb'>visit</span> is in the morning when it's not crowded.", bn: "আমি মনে করি এটি সকাল ৮টায় খোলে। সকালে ভিজিট করা সবচেয়ে ভালো যখন এটি ভিড়হীন থাকে।" },
+        { person: "A", en: "Good tip! I <span class='verb'>prefer</span> going early to <span class='verb'>avoid</span> crowds anyway.", bn: "ভালো পরামর্শ! আমি যাইহোক ভিড় এড়াতে তাড়াতাড়ি যেতে পছন্দ করি।" },
+        { person: "B", en: "By the way, do you <span class='verb'>have</span> any plans for summer? I'm thinking of <span class='verb'>taking</span> a vacation.", bn: "যাইহোক, গ্রীষ্মের জন্য তোমার কোন পরিকল্পনা আছে? আমি ছুটি নেওয়ার কথা ভাবছি।" },
+        { person: "A", en: "I'm considering a trip to the beach. Where are you thinking of <span class='verb'>going</span>?", bn: "আমি সৈকতে একটি ভ্রমণ বিবেচনা করছি। তুমি কোথায় যাওয়ার কথা ভাবছো?" },
+        { person: "B", en: "Maybe somewhere with mountains or nature. I need to <span class='verb'>escape</span> the city for a while and <span class='verb'>relax</span>.", bn: "সম্ভবত পর্বত বা প্রকৃতির সাথে কোথাও। আমাকে কিছু সময়ের জন্য শহর থেকে পালাতে এবং শিথিল করতে হবে।" }
+      ], verbs: [
+        { en: "Enjoy", bn: "উপভোগ করা", v1: "enjoy", v2: "enjoyed", v3: "enjoyed" },
+        { en: "Plan", bn: "পরিকল্পনা করা", v1: "plan", v2: "planned", v3: "planned" },
+        { en: "Visit", bn: "দেখা", v1: "visit", v2: "visited", v3: "visited" },
+        { en: "See", bn: "দেখা", v1: "see", v2: "saw", v3: "seen" },
+        { en: "Recommend", bn: "সুপারিশ করা", v1: "recommend", v2: "recommended", v3: "recommended" },
+        { en: "Avoid", bn: "এড়ানো", v1: "avoid", v2: "avoided", v3: "avoided" },
+        { en: "Escape", bn: "পালানো", v1: "escape", v2: "escaped", v3: "escaped" },
+        { en: "Relax", bn: "শিথিল করা", v1: "relax", v2: "relaxed", v3: "relaxed" }
+      ]},
+      6: { title: "At a Restaurant", emoji: "🍽️", dialogues: [
+        { person: "A", en: "Good evening! We have a reservation for two under the name Smith.", bn: "শুভ সন্ধ্যা! আমাদের স্মিথ নামে দুজনের জন্য একটি রিজার্ভেশন আছে।" },
+        { person: "B", en: "Welcome! Let me <span class='verb'>check</span> our system. Yes, I found it! Please <span class='verb'>come</span> this way.", bn: "স্বাগতম! আমাকে আমাদের সিস্টেম চেক করতে দিন। হ্যাঁ, আমি এটি খুঁজে পেয়েছি! দয়করে এই পথে আসুন।" },
+        { person: "A", en: "Thank you. This is a lovely place. I <span class='verb'>hear</span> you have excellent cuisine.", bn: "ধন্যবাদ। এটি একটি সুন্দর জায়গা। আমি শুনেছি আপনার দুর্দান্ত খাবার আছে।" },
+        { person: "B", en: "Indeed! We're quite proud of our menu. Can I <span class='verb'>get</span> you something to <span class='verb'>drink</span>?", bn: "নিশ্চয়! আমরা আমাদের মেনুতে বেশ গর্বিত। আমি আপনার জন্য কিছু পানীয় নিয়ে আসতে পারি?" },
+        { person: "A", en: "I'll <span class='verb'>have</span> a glass of red wine, please. What would you <span class='verb'>recommend</span>?", bn: "আমি একগ্লাস লাল ওয়াইন নিব, দয়করে। আপনি কী সুপারিশ করবেন?" },
+        { person: "B", en: "Our house wine is excellent. I also <span class='verb'>suggest</span> our appetizers - the stuffed mushrooms are fantastic.", bn: "আমাদের হাউস ওয়াইন চমৎকার। আমি আমাদের অ্যাপেটাইজারও সুপারিশ করি - স্টাফড মাশরুম দুর্দান্ত।" },
+        { person: "A", en: "That sounds delicious! We'll <span class='verb'>take</span> that. What do you <span class='verb'>recommend</span> for the main course?", bn: "এটি সুস্বাদু শোনাচ্ছে! আমরা সেটা নিব। মূল খাবারের জন্য আপনি কী সুপারিশ করেন?" },
+        { person: "B", en: "The grilled salmon is our specialty. Many customers really <span class='verb'>love</span> it. We also <span class='verb'>serve</span> an excellent pasta primavera.", bn: "গ্রিল করা স্যালমন আমাদের বিশেষত্ব। অনেক গ্রাহক এটি সত্যিই ভালোবাসেন। আমরা একটি চমৎকার পাস্তা প্রিমাভেরাও পরিবেশন করি।" },
+        { person: "A", en: "The salmon sounds perfect. I'll <span class='verb'>have</span> that with a side salad. What about you?", bn: "স্যালমন নিখুঁত শোনাচ্ছে। আমি সাইড সালাড সহ সেটা নিব। তুমি কী নিবে?" },
+        { person: "B", en: "I'll <span class='verb'>get</span> the pasta primavera with extra vegetables, please.", bn: "আমি অতিরিক্ত সবজি সহ পাস্তা প্রিমাভেরা নিব, দয়করে।" },
+        { person: "A", en: "Great! And please <span class='verb'>bring</span> us some bread while we <span class='verb'>wait</span>.", bn: "দারুণ! এবং দয়করে আমরা অপেক্ষা করার সময় আমাদের কিছু রুটি নিয়ে আসুন।" },
+        { person: "B", en: "Of course! I'll <span class='verb'>bring</span> those right away. Your order will be <span class='verb'>prepared</span> soon. Enjoy your meal!", bn: "নিশ্চিতভাবে! আমি এখনই সেগুলি নিয়ে আসব। আপনার অর্ডার শীঘ্রই প্রস্তুত হবে। আপনার খাবার উপভোগ করুন!" }
+      ], verbs: [
+        { en: "Check", bn: "চেক করা", v1: "check", v2: "checked", v3: "checked" },
+        { en: "Come", bn: "আসা", v1: "come", v2: "came", v3: "come" },
+        { en: "Hear", bn: "শোনা", v1: "hear", v2: "heard", v3: "heard" },
+        { en: "Have", bn: "নেওয়া", v1: "have", v2: "had", v3: "had" },
+        { en: "Serve", bn: "পরিবেশন করা", v1: "serve", v2: "served", v3: "served" },
+        { en: "Recommend", bn: "সুপারিশ করা", v1: "recommend", v2: "recommended", v3: "recommended" },
+        { en: "Prepare", bn: "প্রস্তুত করা", v1: "prepare", v2: "prepared", v3: "prepared" },
+        { en: "Bring", bn: "নিয়ে আসা", v1: "bring", v2: "brought", v3: "brought" }
+      ]},
+      7: { title: "Shopping", emoji: "🛍️", dialogues: [
+        { person: "A", en: "Hi! I'm looking for a blue jacket. Can you <span class='verb'>help</span> me <span class='verb'>find</span> one?", bn: "হাই! আমি একটি নীল জ্যাকেট খুঁজছি। তুমি আমাকে একটি খুঁজে পেতে সাহায্য করতে পারবে?" },
+        { person: "B", en: "Of course! We have a great selection. What size do you <span class='verb'>wear</span>?", bn: "অবশ্যই! আমাদের দুর্দান্ত কালেকশন আছে। তুমি কী সাইজ পরো?" },
+        { person: "A", en: "Medium, please. I also like brands that are eco-friendly. Do you <span class='verb'>stock</span> any?", bn: "মাঝারি, দয়করে। আমি এমন ব্র্যান্ডও পছন্দ করি যা পরিবেশবান্ধব। আপনি কোন স্টক করেন?" },
+        { person: "B", en: "Excellent choice! We have a new collection from an eco-friendly brand. Let me <span class='verb'>show</span> you some options.", bn: "চমৎকার পছন্দ! আমাদের একটি পরিবেশবান্ধব ব্র্যান্ড থেকে নতুন কালেকশন আছে। আমাকে আপনাকে কিছু অপশন দেখাতে দিন।" },
+        { person: "A", en: "Perfect! I really <span class='verb'>appreciate</span> that. These jackets look amazing! Can I <span class='verb'>try</span> this one on?", bn: "নিখুঁত! আমি সত্যিই তার প্রশংসা করি। এই জ্যাকেটগুলি অসাধারণ দেখাচ্ছে! আমি এটি পরে দেখতে পারি?" },
+        { person: "B", en: "Sure! The changing room is over there. <span class='verb'>Take</span> as many as you'd like to <span class='verb'>try</span> on.", bn: "নিশ্চিত! চেঞ্জিং রুম সেখানে। যতটি চেষ্টা করতে চাও তাই নিয়ে যাও।" },
+        { person: "A", en: "Thanks! This one fits perfectly! How much does it <span class='verb'>cost</span>?", bn: "ধন্যবাদ! এটি নিখুঁতভাবে ফিট করেছে! এটি কত দামের?" },
+        { person: "B", en: "That one is $89. But we're currently <span class='verb'>offering</span> a 20% discount on all jackets today!", bn: "সেটি $৮৯। কিন্তু আমরা বর্তমানে সব জ্যাকেটে ২০% ছাড় দিচ্ছি আজ!" },
+        { person: "A", en: "Wow, that's a great deal! I'll <span class='verb'>take</span> it. Do you <span class='verb'>accept</span> card payments?", bn: "ওয়াও, এটি একটি দুর্দান্ত ডিল! আমি এটি নেব। আপনি কার্ড পেমেন্ট গ্রহণ করেন?" },
+        { person: "B", en: "Yes, we <span class='verb'>accept</span> all major credit cards and digital payment options. Let me <span class='verb'>process</span> your purchase.", bn: "হ্যাঁ, আমরা সব প্রধান ক্রেডিট কার্ড এবং ডিজিটাল পেমেন্ট অপশন গ্রহণ করি। আমাকে আপনার ক্রয় প্রক্রিয়া করতে দিন।" },
+        { person: "A", en: "Perfect! <span class='verb'>Ring</span> it up, please. Can you also <span class='verb'>wrap</span> it as a gift?", bn: "নিখুঁত! এটি রিং করুন, দয়করে। আপনি এটি উপহার হিসাবে প্যাক করতে পারবেন?" },
+        { person: "B", en: "Of course! We <span class='verb'>offer</span> complimentary gift wrapping. Here's your receipt. Thank you for shopping with us!", bn: "অবশ্যই! আমরা বিনামূল্যে গিফট র্যাপিং অফার করি। এখানে আপনার রসিদ। আমাদের সাথে কেনাকাটার জন্য ধন্যবাদ!" }
+      ], verbs: [
+        { en: "Help", bn: "সাহায্য করা", v1: "help", v2: "helped", v3: "helped" },
+        { en: "Find", bn: "খুঁজে পাওয়া", v1: "find", v2: "found", v3: "found" },
+        { en: "Wear", bn: "পরা", v1: "wear", v2: "wore", v3: "worn" },
+        { en: "Show", bn: "দেখানো", v1: "show", v2: "showed", v3: "shown" },
+        { en: "Try", bn: "চেষ্টা করা", v1: "try", v2: "tried", v3: "tried" },
+        { en: "Cost", bn: "দামের", v1: "cost", v2: "cost", v3: "cost" },
+        { en: "Accept", bn: "গ্রহণ করা", v1: "accept", v2: "accepted", v3: "accepted" },
+        { en: "Wrap", bn: "মোড়ানো", v1: "wrap", v2: "wrapped", v3: "wrapped" }
+      ]},
+      8: { title: "At the Bank", emoji: "🏦", dialogues: [
+        { person: "A", en: "Good morning! I'd like to <span class='verb'>open</span> a savings account.", bn: "সুপ্রভাত! আমি একটি সঞ্চয় অ্যাকাউন্ট খুলতে চাই।" },
+        { person: "B", en: "Excellent! That's a great decision. I'll <span class='verb'>assist</span> you with that. May I <span class='verb'>have</span> your ID, please?", bn: "দুর্দান্ত! এটি একটি দুর্দান্ত সিদ্ধান্ত। আমি আপনাকে এতে সহায়তা করব। আমি আপনার আইডি নিতে পারি, দয়করে?" },
+        { person: "A", en: "Here's my passport. I also brought proof of address.", bn: "এখানে আমার পাসপোর্ট। আমি ঠিকানার প্রমাণও নিয়ে এসেছি।" },
+        { person: "B", en: "Perfect! Let me <span class='verb'>verify</span> these documents. What is your annual income?", bn: "নিখুঁত! আমাকে এই ডকুমেন্টগুলি যাচাই করতে দিন। আপনার বার্ষিক আয় কত?" },
+        { person: "A", en: "I earn about $50,000 per year. What interest rate will I <span class='verb'>receive</span> on my savings?", bn: "আমি বছরে প্রায় $৫০,০০০ আয় করি। আমার সঞ্চয়ের জন্য আমি কত সুদের হার পাব?" },
+        { person: "B", en: "We're currently <span class='verb'>offering</span> 3.5% annual interest. We also <span class='verb'>provide</span> a welcome bonus of $100 for new accounts.", bn: "আমরা বর্তমানে ৩.৫% বার্ষিক সুদ দিচ্ছি। আমরা নতুন অ্যাকাউন্টের জন্য $१०० স্বাগত বোনাসও প্রদান করি।" },
+        { person: "A", en: "That sounds great! What fees will I have to <span class='verb'>pay</span>?", bn: "এটি দুর্দান্ত শোনাচ্ছে! আমাকে কী ফি দিতে হবে?" },
+        { person: "B", en: "There's no monthly maintenance fee if you <span class='verb'>maintain</span> a minimum balance of $500. Online transfers are free, but ATM withdrawals outside our network cost $3.", bn: "যদি আপনি $५०० ন্যূনতম ব্যাল্যান্স রাখেন তাহলে কোন মাসিক রক্ষণাবেক্ষণ ফি নেই। অনলাইন ট্রান্সফার বিনামূল্যে, কিন্তু আমাদের নেটওয়ার্কের বাইরে এটিএম উত্তোলন $३ খরচ করে।" },
+        { person: "A", en: "That's reasonable. Can I <span class='verb'>set</span> up automatic deposits from my employer?", bn: "এটি যুক্তিসঙ্গত। আমি আমার নিয়োগকর্তা থেকে স্বয়ংক্রিয় জমা সেট আপ করতে পারি?" },
+        { person: "B", en: "Absolutely! I'll <span class='verb'>provide</span> you with the necessary information to <span class='verb'>set</span> that up. Would you also like to <span class='verb'>apply</span> for a debit card?", bn: "একদম! আমি আপনাকে এটি সেট আপ করার জন্য প্রয়োজনীয় তথ্য প্রদান করব। আপনি একটি ডেবিট কার্ডের জন্যও আবেদন করতে চান?" },
+        { person: "A", en: "Yes, please! How long does it take to <span class='verb'>receive</span> the card?", bn: "হ্যাঁ, দয়করে! কার্ড পেতে কতক্ষণ লাগে?" },
+        { person: "B", en: "It usually <span class='verb'>takes</span> about 5-7 business days to <span class='verb'>arrive</span>. I'll <span class='verb'>complete</span> all your paperwork now.", bn: "এটি সাধারণত ৫-७ কার্যদিবস আসতে লাগে। আমি এখন আপনার সব কাগজপত্র সম্পন্ন করব।" }
+      ], verbs: [
+        { en: "Open", bn: "খোলা", v1: "open", v2: "opened", v3: "opened" },
+        { en: "Assist", bn: "সহায়তা করা", v1: "assist", v2: "assisted", v3: "assisted" },
+        { en: "Have", bn: "থাকা", v1: "have", v2: "had", v3: "had" },
+        { en: "Verify", bn: "যাচাই করা", v1: "verify", v2: "verified", v3: "verified" },
+        { en: "Provide", bn: "প্রদান করা", v1: "provide", v2: "provided", v3: "provided" },
+        { en: "Offer", bn: "অফার করা", v1: "offer", v2: "offered", v3: "offered" },
+        { en: "Complete", bn: "সম্পন্ন করা", v1: "complete", v2: "completed", v3: "completed" },
+        { en: "Maintain", bn: "বজায় রাখা", v1: "maintain", v2: "maintained", v3: "maintained" }
+      ]},
+      9: { title: "Booking a Hotel", emoji: "🏨", dialogues: [
+        { person: "A", en: "Hello! I'd like to <span class='verb'>book</span> a room for three nights.", bn: "নমস্কার! আমি তিন রাতের জন্য একটি কক্ষ বুক করতে চাই।" },
+        { person: "B", en: "Great! I'd be happy to <span class='verb'>help</span> you. What dates will you <span class='verb'>need</span> the room?", bn: "দারুণ! আমি আপনাকে সাহায্য করতে আনন্দিত। আপনি কোন তারিখে কক্ষ প্রয়োজন?" },
+        { person: "A", en: "From March 15th to March 18th. What types of rooms do you <span class='verb'>have</span> available?", bn: "মার্চ १५ থেকে মার্চ १८। আপনার কোন ধরনের কক্ষ উপলব্ধ আছে?" },
+        { person: "B", en: "We <span class='verb'>offer</span> single, double, and suite rooms. Each room <span class='verb'>includes</span> free Wi-Fi and air conditioning. What suits your needs best?", bn: "আমরা একক, ডবল এবং স্যুট কক্ষ অফার করি। প্রতিটি কক্ষে বিনামূল্যে ওয়াই-ফাই এবং এয়ার কন্ডিশনিং আছে। কোনটি আপনার প্রয়োজন অনুসারে সবচেয়ে উপযুক্ত?" },
+        { person: "A", en: "I'd prefer a double room. What are the rates, and do you <span class='verb'>have</span> any special packages?", bn: "আমি একটি ডবল রুম পছন্দ করব। হার কত এবং আপনার কোন বিশেষ প্যাকেজ আছে?" },
+        { person: "B", en: "Our double rooms are $120 per night. We currently <span class='verb'>offer</span> a package that <span class='verb'>includes</span> breakfast and dinner. It's $180 per night.", bn: "আমাদের ডবল রুম রাত প্রতি $१२०। আমরা বর্তমানে একটি প্যাকেজ অফার করি যা নাস্তা এবং রাতের খাবার অন্তর্ভুক্ত করে। এটি রাত প্রতি $१८०।" },
+        { person: "A", en: "That package sounds wonderful! I'll <span class='verb'>take</span> the double room with the meal package. How do I <span class='verb'>pay</span>?", bn: "সেই প্যাকেজটি দুর্দান্ত শোনাচ্ছে! আমি খাবার প্যাকেজ সহ ডবল রুম নেব। আমি কিভাবে অর্থ প্রদান করি?" },
+        { person: "B", en: "We <span class='verb'>accept</span> credit cards, debit cards, and online payments. I'll <span class='verb'>need</span> your name and email address to <span class='verb'>confirm</span> the booking.", bn: "আমরা ক্রেডিট কার্ড, ডেবিট কার্ড এবং অনলাইন পেমেন্ট গ্রহণ করি। বুকিং নিশ্চিত করতে আমার আপনার নাম এবং ইমেল ঠিকানা প্রয়োজন।" },
+        { person: "A", en: "My name is John Miller and my email is john.miller@example.com. Do you require a deposit?", bn: "আমার নাম জন মিলার এবং আমার ইমেল জন.মিলার@example.com। আপনার একটি ডিপোজিট প্রয়োজন?" },
+        { person: "B", en: "We <span class='verb'>require</span> a 20% deposit to <span class='verb'>secure</span> your booking. The remaining balance is due upon arrival. Shall I <span class='verb'>process</span> the deposit now?", bn: "আমরা আপনার বুকিং সুরক্ষিত করতে २०% ডিপোজিট প্রয়োজন। অবশিষ্ট ব্যালেন্স আগমনের সময় দেওয়া হবে। আমি এখন ডিপোজিট প্রক্রিয়া করব?" },
+        { person: "A", en: "Yes, please proceed. I'm looking forward to my stay. Is there anything special I should <span class='verb'>know</span> about the hotel?", bn: "হ্যাঁ, দয়করে এগিয়ে যান। আমি আমার থাকার জন্য অপেক্ষা করছি। হোটেল সম্পর্কে আমার কোন বিশেষ কিছু জানা উচিত?" },
+        { person: "B", en: "We <span class='verb'>offer</span> room service 24/7, and check-out time is at 11 AM. We also <span class='verb'>have</span> a gym and swimming pool. Enjoy your stay!", bn: "আমরা २४/७ রুম সার্ভিস অফার করি এবং চেক-আউট সময় সকাল११টায়। আমাদের জিম এবং সুইমিং পুলও আছে। আপনার থাকা উপভোগ করুন!" }
+      ], verbs: [
+        { en: "Book", bn: "বুক করা", v1: "book", v2: "booked", v3: "booked" },
+        { en: "Help", bn: "সাহায্য করা", v1: "help", v2: "helped", v3: "helped" },
+        { en: "Need", bn: "প্রয়োজন", v1: "need", v2: "needed", v3: "needed" },
+        { en: "Have", bn: "থাকা", v1: "have", v2: "had", v3: "had" },
+        { en: "Offer", bn: "অফার করা", v1: "offer", v2: "offered", v3: "offered" },
+        { en: "Include", bn: "অন্তর্ভুক্ত করা", v1: "include", v2: "included", v3: "included" },
+        { en: "Confirm", bn: "নিশ্চিত করা", v1: "confirm", v2: "confirmed", v3: "confirmed" },
+        { en: "Secure", bn: "সুরক্ষিত করা", v1: "secure", v2: "secured", v3: "secured" }
+      ]},
+      10: { title: "At the Doctor", emoji: "🏥", dialogues: [
+        { person: "A", en: "Good morning, Doctor. I haven't been feeling well for the past week.", bn: "সুপ্রভাত, ডাক্তার। আমি গত সপ্তাহ ধরে ভালো অনুভব করছি না।" },
+        { person: "B", en: "I'm sorry to <span class='verb'>hear</span> that. Can you <span class='verb'>describe</span> your symptoms?", bn: "এটি শুনে আমি দুঃখিত। আপনি আপনার উপসর্গগুলি বর্ণনা করতে পারবেন?" },
+        { person: "A", en: "Yes, I have a persistent headache, and my body <span class='verb'>aches</span> all over. I also <span class='verb'>have</span> a slight fever.", bn: "হ্যাঁ, আমার ক্রমাগত মাথা ব্যথা আছে এবং সারা শরীরে ব্যথা অনুভব করছি। আমার হালকা জ্বরও আছে।" },
+        { person: "B", en: "How long have you had this fever? And when did the headache <span class='verb'>start</span>?", bn: "আপনার এই জ্বর কতদিন ধরে আছে? এবং মাথা ব্যথা কখন শুরু হয়েছিল?" },
+        { person: "A", en: "The fever started three days ago, and the headache about five days ago. I <span class='verb'>tried</span> over-the-counter medicine, but it didn't help much.", bn: "জ্বর তিন দিন আগে শুরু হয়েছিল এবং মাথা ব্যথা প্রায় পাঁচ দিন আগে। আমি ওভার-দ্য-কাউন্টার ওষুধ চেষ্টা করেছিলাম, কিন্তু এটি বেশি সাহায্য করেনি।" },
+        { person: "B", en: "Let me <span class='verb'>examine</span> you. I'll <span class='verb'>check</span> your temperature and blood pressure.", bn: "আমাকে আপনাকে পরীক্ষা করতে দিন। আমি আপনার তাপমাত্রা এবং রক্তচাপ পরীক্ষা করব।" },
+        { person: "A", en: "Okay, I'm ready. Should I be concerned about anything serious?", bn: "ঠিক আছে, আমি প্রস্তুত। আমি কোন গুরুতর কিছু নিয়ে চিন্তা করব?" },
+        { person: "B", en: "Based on your symptoms, it seems like the flu. I'll <span class='verb'>prescribe</span> some antiviral medication and antibiotics just in case.", bn: "আপনার উপসর্গের উপর ভিত্তি করে, এটি ফ্লু বলে মনে হয়। আমি কিছু অ্যান্টিভাইরাল ওষুধ এবং সতর্কতার জন্য অ্যান্টিবায়োটিক প্রদান করব।" },
+        { person: "A", en: "Should I <span class='verb'>stay</span> home and <span class='verb'>rest</span>, or can I go to work?", bn: "আমি বাড়িতে থাকব এবং বিশ্রাম নেব, নাকি কাজে যেতে পারি?" },
+        { person: "B", en: "I strongly <span class='verb'>advise</span> you to <span class='verb'>stay</span> home for at least 3-4 days and <span class='verb'>get</span> plenty of rest. Drink lots of fluids and avoid strenuous activities.", bn: "আমি আপনাকে কমপক্ষে ३-४ দিন বাড়িতে থাকার জন্য দৃঢ়ভাবে পরামর্শ দিচ্ছি এবং প্রচুর বিশ্রাম নিন। প্রচুর তরল পান এবং কঠোর কার্যকলাপ এড়িয়ে চলুন।" },
+        { person: "A", en: "I understand. Should I <span class='verb'>call</span> you if my condition gets worse?", bn: "আমি বুঝি। যদি আমার অবস্থা আরও খারাপ হয় তাহলে আমি আপনাকে ডাকব?" },
+        { person: "B", en: "Yes, please don't <span class='verb'>hesitate</span> to <span class='verb'>call</span> if you experience severe chest pain, difficulty breathing, or if your fever doesn't <span class='verb'>improve</span> after two days.", bn: "হ্যাঁ, দয়করে যদি আপনি গুরুতর বুকের ব্যথা, শ্বাসকষ্ট অনুভব করেন বা আপনার জ্বর দুই দিনের পর উন্নত না হয় তাহলে ডাকতে দ্বিধা করবেন না।" }
+      ], verbs: [
+        { en: "Feel", bn: "অনুভব করা", v1: "feel", v2: "felt", v3: "felt" },
+        { en: "Hear", bn: "শোনা", v1: "hear", v2: "heard", v3: "heard" },
+        { en: "Describe", bn: "বর্ণনা করা", v1: "describe", v2: "described", v3: "described" },
+        { en: "Have", bn: "থাকা", v1: "have", v2: "had", v3: "had" },
+        { en: "Examine", bn: "পরীক্ষা করা", v1: "examine", v2: "examined", v3: "examined" },
+        { en: "Prescribe", bn: "প্রদান করা", v1: "prescribe", v2: "prescribed", v3: "prescribed" },
+        { en: "Advise", bn: "পরামর্শ দেওয়া", v1: "advise", v2: "advised", v3: "advised" },
+        { en: "Improve", bn: "উন্নত হওয়া", v1: "improve", v2: "improved", v3: "improved" }
+      ]},
+      11: { title: "Job Interview", emoji: "💼", dialogues: [
+        { person: "A", en: "Thank you for <span class='verb'>meeting</span> me today. I'm very excited about this position.", bn: "আজ আমার সাথে দেখা করার জন্য ধন্যবাদ। আমি এই পদ সম্পর্কে অত্যন্ত উত্তেজিত।" },
+        { person: "B", en: "Welcome! We're pleased to have you here. Let's start by asking you to <span class='verb'>tell</span> us about yourself and your professional background.", bn: "স্বাগতম! আমরা আপনাকে এখানে পেয়ে আনন্দিত। চলুন আপনাকে নিজের এবং আপনার পেশাদার পটভূমি সম্পর্কে বলতে বলি।" },
+        { person: "A", en: "I've <span class='verb'>worked</span> in the tech industry for 8 years. I <span class='verb'>started</span> as a junior developer and <span class='verb'>progressed</span> to a senior position.", bn: "আমি টেক ইন্ডাস্ট্রিতে ८ বছর কাজ করেছি। আমি জুনিয়র ডেভেলপার হিসাবে শুরু করেছিলাম এবং সিনিয়র পদে অগ্রসর হয়েছিলাম।" },
+        { person: "B", en: "That's impressive! Can you <span class='verb'>describe</span> a major project you <span class='verb'>led</span>?", bn: "এটি চিত্তাকর্ষক! আপনি নেতৃত্ব দিয়েছেন এমন একটি প্রধান প্রকল্প বর্ণনা করতে পারবেন?" },
+        { person: "A", en: "Yes, I <span class='verb'>led</span> a team of 12 developers in building a mobile application that <span class='verb'>served</span> over 2 million users.", bn: "হ্যাঁ, আমি একটি মোবাইল অ্যাপ্লিকেশন তৈরিতে १२ জন ডেভেলপারের একটি দল নেতৃত্ব দিয়েছি যা २ মিলিয়নের বেশি ব্যবহারকারীদের সেবা করেছে।" },
+        { person: "B", en: "That's great! What <span class='verb'>challenges</span> did you <span class='verb'>face</span>, and how did you <span class='verb'>overcome</span> them?", bn: "এটি দুর্দান্ত! আপনি কী চ্যালেঞ্জের মুখোমুখি হয়েছিলেন এবং আপনি কীভাবে সেগুলি অতিক্রম করেছিলেন?" },
+        { person: "A", en: "One major challenge was <span class='verb'>managing</span> the tight deadline. I <span class='verb'>implemented</span> agile methodologies and <span class='verb'>improved</span> team efficiency by 40%.", bn: "একটি প্রধান চ্যালেঞ্জ ছিল কঠোর সময়সীমা পরিচালনা করা। আমি চটপটে পদ্ধতি প্রয়োগ করেছিলাম এবং দল দক্ষতা ४०% উন্নত করেছিলাম।" },
+        { person: "B", en: "Excellent! Why do you want to <span class='verb'>join</span> our company specifically?", bn: "দুর্দান্ত! আপনি বিশেষভাবে আমাদের কোম্পানিতে কেন যোগ দিতে চান?" },
+        { person: "A", en: "I really <span class='verb'>admire</span> your company's mission and values. I've <span class='verb'>researched</span> your recent projects, and I'm impressed with the innovation.", bn: "আমি সত্যিই আপনার কোম্পানির মিশন এবং মূল্যবোধের প্রশংসা করি। আমি আপনার সম্প্রতির প্রকল্পগুলি গবেষণা করেছি এবং উদ্ভাবন নিয়ে আমি মুগ্ধ।" },
+        { person: "B", en: "That's wonderful to <span class='verb'>hear</span>! What are your salary expectations?", bn: "এটি শোনা আনন্দদায়ক! আপনার বেতনের প্রত্যাশা কী?" },
+        { person: "A", en: "Based on my experience and industry standards, I <span class='verb'>expect</span> a salary in the range of $90,000 to $110,000 annually.", bn: "আমার অভিজ্ঞতা এবং শিল্প মান অনুযায়ী, আমি বার্ষিক $९०,००० থেকে $११०,००० এর মধ্যে বেতন প্রত्যাশা করি।" },
+        { person: "B", en: "That's within our budget. When can you <span class='verb'>start</span> working if we <span class='verb'>offer</span> you the position?", bn: "এটি আমাদের বাজেটের মধ্যে। আমরা আপনাকে এই পদ অফার করলে আপনি কখন কাজ শুরু করতে পারবেন?" },
+        { person: "A", en: "I can <span class='verb'>start</span> in two weeks after I <span class='verb'>hand</span> in my resignation at my current job.", bn: "আমি দুই সপ্তাহে শুরু করতে পারি আমার বর্তমান চাকরিতে আমার পদত্যাগপত্র দেওয়ার পরে।" }
+      ], verbs: [
+        { en: "Meet", bn: "দেখা করা", v1: "meet", v2: "met", v3: "met" },
+        { en: "Tell", bn: "বলা", v1: "tell", v2: "told", v3: "told" },
+        { en: "Work", bn: "কাজ করা", v1: "work", v2: "worked", v3: "worked" },
+        { en: "Lead", bn: "নেতৃত্ব দেওয়া", v1: "lead", v2: "led", v3: "led" },
+        { en: "Overcome", bn: "অতিক্রম করা", v1: "overcome", v2: "overcame", v3: "overcome" },
+        { en: "Implement", bn: "বাস্তবায়ন করা", v1: "implement", v2: "implemented", v3: "implemented" },
+        { en: "Join", bn: "যোগ দেওয়া", v1: "join", v2: "joined", v3: "joined" },
+        { en: "Expect", bn: "প্রত्যাশা করা", v1: "expect", v2: "expected", v3: "expected" }
+      ]},
+      12: { title: "Teacher-Student Talk", emoji: "📚", dialogues: [
+        { person: "A", en: "Miss, I don't quite <span class='verb'>understand</span> today's lesson on grammar. Can you <span class='verb'>explain</span> it again?", bn: "মিস, আমি আজকের ব্যাকরণ পাঠটি পুরোপুরি বুঝি না। আপনি এটি আবার ব্যাখ্যা করতে পারবেন?" },
+        { person: "B", en: "Of course! I'm happy to <span class='verb'>help</span>. Let me <span class='verb'>break</span> it down into simpler concepts.", bn: "অবশ্যই! আমি সাহায্য করতে আনন্দিত। আমাকে এটি সহজ ধারণায় ভেঙে ফেলতে দিন।" },
+        { person: "A", en: "What's the difference between past tense and present perfect? I always <span class='verb'>confuse</span> them.", bn: "অতীত কাল এবং বর্তমান নিখুঁতের মধ্যে পার্থক্য কী? আমি সর্বদা তাদের গোলমাল করি।" },
+        { person: "B", en: "Good question! Past tense <span class='verb'>describes</span> an action that <span class='verb'>happened</span> at a specific time. Present perfect <span class='verb'>describes</span> an action that <span class='verb'>started</span> in the past but still affects the present.", bn: "ভালো প্রশ্ন! অতীত কাল একটি নির্দিষ্ট সময়ে ঘটে এমন একটি ক্রিয়া বর্ণনা করে। বর্তমান নিখুঁত একটি ক্রিয়া বর্ণনা করে যা অতীতে শুরু হয়েছিল কিন্তু বর্তমানকে এখনও প্রভাবিত করে।" },
+        { person: "A", en: "Ah, now I <span class='verb'>see</span> the difference! Can you <span class='verb'>give</span> me some examples?", bn: "আহ, এখন আমি পার্থক্য দেখছি! আপনি আমাকে কিছু উদাহরণ দিতে পারবেন?" },
+        { person: "B", en: "Sure! 'I ate breakfast at 8 AM' - that's past tense. 'I have eaten breakfast today' - that's present perfect. <span class='verb'>See</span> the difference?", bn: "নিশ্চিত! 'আমি সকাল ८টায় নাস্তা খেয়েছি' - এটি অতীত কাল। 'আমি আজ নাস্তা খেয়েছি' - এটি বর্তমান নিখুঁত। পার্থক্য দেখছো?" },
+        { person: "A", en: "Yes, that's clearer now. How should I <span class='verb'>practice</span> this concept to <span class='verb'>improve</span> my skills?", bn: "হ্যাঁ, এখন এটি পরিষ্কার। আমার দক্ষতা উন্নত করতে এই ধারণাটি কীভাবে অনুশীলন করব?" },
+        { person: "B", en: "I'd <span class='verb'>recommend</span> you <span class='verb'>write</span> 10 sentences each day using both tenses. Also, try <span class='verb'>reading</span> English books and articles to see how native speakers <span class='verb'>use</span> these tenses.", bn: "আমি আপনাকে প্রতিদিন উভয় কাল ব্যবহার করে १० টি বাক্য লিখতে সুপারিশ করি। এছাড়াও, ইংরেজি বই এবং নিবন্ধ পড়ার চেষ্টা করুন দেশীয় বক্তারা কীভাবে এই কালগুলি ব্যবহার করে তা দেখতে।" },
+        { person: "A", en: "That's a good idea. When is the homework due? I need to <span class='verb'>submit</span> it.", bn: "এটি একটি ভালো ধারণা। হোমওয়ার্ক কখন জমা দেওয়া হবে? আমাকে এটি জমা দিতে হবে।" },
+        { person: "B", en: "Please <span class='verb'>submit</span> your homework by next Friday. Try to <span class='verb'>include</span> examples of both tenses you've learned.", bn: "দয়করে পরের শুক্রবারের মধ্যে আপনার হোমওয়ার্ক জমা দিন। আপনি যে উভয় কালই শিখেছেন তার উদাহরণ অন্তর্ভুক্ত করার চেষ্টা করুন।" },
+        { person: "A", en: "Will do! If I <span class='verb'>have</span> any more questions, can I <span class='verb'>come</span> to you during office hours?", bn: "নিশ্চিত! যদি আমার আরও প্রশ্ন থাকে, আমি অফিস আওয়ারের সময় আপনার কাছে যেতে পারি?" },
+        { person: "B", en: "Absolutely! My office hours are on Mondays and Wednesdays from 3 to 5 PM. I'm always happy to <span class='verb'>help</span> students who <span class='verb'>put</span> in the effort.", bn: "একদম! আমার অফিস আওয়ার সোমবার এবং বুধবার দুপুর ३টা থেকে ५টা পর্যন্ত। যে শিক্ষার্থীরা চেষ্টা করে তাদের সাহায্য করতে আমি সর্বদা খুশি।" }
+      ], verbs: [
+        { en: "Understand", bn: "বোঝা", v1: "understand", v2: "understood", v3: "understood" },
+        { en: "Explain", bn: "ব্যাখ্যা করা", v1: "explain", v2: "explained", v3: "explained" },
+        { en: "Help", bn: "সাহায্য করা", v1: "help", v2: "helped", v3: "helped" },
+        { en: "Break", bn: "ভেঙ্গে ফেলা", v1: "break", v2: "broke", v3: "broken" },
+        { en: "Practice", bn: "অনুশীলন করা", v1: "practice", v2: "practiced", v3: "practiced" },
+        { en: "Improve", bn: "উন্নত করা", v1: "improve", v2: "improved", v3: "improved" },
+        { en: "Submit", bn: "জমা দেওয়া", v1: "submit", v2: "submitted", v3: "submitted" },
+        { en: "Include", bn: "অন্তর্ভুক্ত করা", v1: "include", v2: "included", v3: "included" }
+      ]},
+      13: { title: "Office Meeting", emoji: "📊", dialogues: [
+        { person: "A", en: "Good morning, everyone. Let's <span class='verb'>begin</span> our quarterly meeting. I'd like to <span class='verb'>discuss</span> our Q3 performance.", bn: "সুপ্রভাত সবাইকে। আমাদের ত্রৈমাসিক মিটিং শুরু করি। আমি আমাদের Q३ কর্মক्ষमता আলোচনা করতে চাই।" },
+        { person: "B", en: "Great! I have the reports here. Our sales have <span class='verb'>increased</span> by 25% compared to Q2. The marketing team deserves credit for this success.", bn: "দারুণ! আমার কাছে রিপোর্ট আছে। আমাদের বিক্রয় Q२ এর তুলনায় २५% বৃদ্ধি পেয়েছে। মার্কেটিং টিম এই সাফল্যের জন্য কৃতিত্বের যোগ্য।" },
+        { person: "A", en: "That's excellent news! However, I'd like to <span class='verb'>identify</span> areas where we need to <span class='verb'>improve</span>. Have you <span class='verb'>noticed</span> any challenges?", bn: "এটি চমৎকার খবর! তবে আমি উন্নতির প্রয়োজন এমন ক্ষেত্র চিহ্নিত করতে চাই। আপনি কি কোনো চ্যালেঞ্জ লক্ষ্য করেছেন?" },
+        { person: "B", en: "Yes, we've <span class='verb'>experienced</span> some delays in product delivery. The supply chain issues <span class='verb'>have</span> affected our timeline.", bn: "হ্যাঁ, আমরা পণ্য সরবরাহে কিছু বিলম্ব অনুভব করেছি। সাপ্লাই চেইন সমস্যা আমাদের সময়সূচি প্রভাবিত করেছে।" },
+        { person: "A", en: "I see. What <span class='verb'>measures</span> can we <span class='verb'>take</span> to <span class='verb'>resolve</span> this issue quickly?", bn: "আমি বুঝি। এই সমস্যা দ্রুত সমাধান করতে আমরা কী ব্যবস্থা নিতে পারি?" },
+        { person: "B", en: "I <span class='verb'>recommend</span> we <span class='verb'>establish</span> backup suppliers and <span class='verb'>negotiate</span> better delivery terms. This could <span class='verb'>help</span> us <span class='verb'>avoid</span> future delays.", bn: "আমি পরামর্শ দিচ্ছি যে আমরা ব্যাকআপ সরবরাহকারী স্থাপন করি এবং ভাল ডেলিভারি শর্তাবলী আলোচনা করি। এটি আমাদের ভবিষ্যতের বিলম্ব এড়াতে সাহায্য করতে পারে।" },
+        { person: "A", en: "Excellent suggestions! Can you <span class='verb'>prepare</span> a detailed action plan by next week?", bn: "দুর্দান্ত পরামর্শ! আপনি পরের সপ্তাহের মধ্যে একটি বিস্তারিত কর্ম পরিকল্পনা প্রস্তুত করতে পারবেন?" },
+        { person: "B", en: "Absolutely! I'll also <span class='verb'>coordinate</span> with the supply chain team and <span class='verb'>gather</span> their input. We should be able to <span class='verb'>present</span> a comprehensive plan.", bn: "একদম! আমি সরবরাহ শৃঙ্খল দলের সাথেও সমন্বয় করব এবং তাদের ইনপুট সংগ্রহ করব। আমরা একটি ব্যাপক পরিকল্পনা উপস্থাপন করতে সক্ষম হব।" },
+        { person: "A", en: "Perfect! Now let's <span class='verb'>discuss</span> our budget for next quarter. Do we <span class='verb'>need</span> to <span class='verb'>allocate</span> additional funds anywhere?", bn: "নিখুঁত! এখন আমাদের পরবর্তী ত্রৈমাসিকের বাজেট আলোচনা করি। আমরা কোথাও অতিরিক্ত তহবিল বরাদ্দ করতে হবে?" },
+        { person: "B", en: "Yes, the IT department has <span class='verb'>requested</span> additional funding for new software and infrastructure upgrades. I'd <span class='verb'>recommend</span> we <span class='verb'>approve</span> this.", bn: "হ্যাঁ, আইটি বিভাগ নতুন সফটওয়্যার এবং অবকাঠামো আপগ্রেডের জন্য অতিরিক্ত তহবিলের অনুরোধ করেছে। আমি এটি অনুমোদন করার সুপারিশ করি।" },
+        { person: "A", en: "How much are they asking for? I'd like to <span class='verb'>review</span> the budget proposal before making a decision.", bn: "তারা কত চাইছে? সিদ্ধান্ত নেওয়ার আগে আমি বাজেট প্রস্তাব পর্যালোচনা করতে চাই।" },
+        { person: "B", en: "They've <span class='verb'>submitted</span> a proposal requesting $150,000. I believe this investment will <span class='verb'>improve</span> our operational efficiency significantly.", bn: "তারা $१५०,००० অনুরোধ করে একটি প্রস্তাব জমা দিয়েছে। আমি বিশ্বাস করি এই বিনিয়োগ আমাদের অপারেশনাল দক্ষতা উল्लेখযোগ্যভাবে উন्নत করবে।" }
+      ], verbs: [
+        { en: "Begin", bn: "শুরু করা", v1: "begin", v2: "began", v3: "begun" },
+        { en: "Discuss", bn: "আলোচনা করা", v1: "discuss", v2: "discussed", v3: "discussed" },
+        { en: "Increase", bn: "বৃদ্ধি করা", v1: "increase", v2: "increased", v3: "increased" },
+        { en: "Improve", bn: "উন্নত করা", v1: "improve", v2: "improved", v3: "improved" },
+        { en: "Recommend", bn: "সুপারিশ করা", v1: "recommend", v2: "recommended", v3: "recommended" },
+        { en: "Allocate", bn: "বরাদ্দ করা", v1: "allocate", v2: "allocated", v3: "allocated" },
+        { en: "Approve", bn: "অনুমোদন করা", v1: "approve", v2: "approved", v3: "approved" },
+        { en: "Review", bn: "পর্যালোচনা করা", v1: "review", v2: "reviewed", v3: "reviewed" }
+      ]},
+      14: { title: "Customer Service", emoji: "☎️", dialogues: [
+        { person: "A", en: "Hello, I have a complaint about my recent purchase. The product I <span class='verb'>received</span> arrived damaged.", bn: "নমস্কার, আমার সাম্প্রতিক কেনাকাটা নিয়ে একটি অভিযোগ আছে। আমি যে পণ্যটি পেয়েছি তা ক্ষতিগ্রস্ত অবস্থায় এসেছে।" },
+        { person: "B", en: "I'm very sorry to <span class='verb'>hear</span> that! I truly <span class='verb'>apologize</span> for the inconvenience. Can you <span class='verb'>describe</span> the damage for me?", bn: "এটি শুনে আমি অত্যন্ত দুঃখিত! অসুবিধার জন্য আমি আন্তরিকভাবে ক্ষমা চাইছি। আপনি কি ক্ষতিটির বর্ণনা দিতে পারবেন?" },
+        { person: "A", en: "The screen has a big crack, and the device doesn't <span class='verb'>turn</span> on. I <span class='verb'>need</span> either a replacement or a full refund.", bn: "স্ক্রিনে একটি বড় ফাটল আছে এবং ডিভাইসটি চালু হচ্ছে না। আমার হয় একটি নতুন পণ্য (replacement) অথবা পুরো টাকা ফেরত (refund) প্রয়োজন।" },
+        { person: "B", en: "Absolutely, I completely <span class='verb'>understand</span> your frustration. Let me <span class='verb'>verify</span> your order number so I can <span class='verb'>assist</span> you properly.", bn: "অবশ্যই, আমি আপনার হতাশা বুঝতে পারছি। আমাকে আপনার অর্ডার নম্বরটি যাচাই করতে দিন যাতে আমি আপনাকে সঠিকভাবে সাহায্য করতে পারি।" },
+        { person: "A", en: "My order number is #12345. I <span class='verb'>purchased</span> it three days ago. I have photos of the damage as well.", bn: "আমার অর্ডার নম্বর হলো #১২৩৪৫। আমি এটি তিন দিন আগে কিনেছি। আমার কাছে ক্ষতির ছবিগুলোও আছে।" },
+        { person: "B", en: "Perfect! Please <span class='verb'>send</span> me those photos to our email. While you <span class='verb'>do</span> that, I can immediately <span class='verb'>process</span> a replacement order.", bn: "চমৎকার! দয়া করে ছবিগুলো আমাদের ইমেইলে পাঠিয়ে দিন। আপনি সেটি করতে করতে আমি এখনই একটি রিপ্লেসমেন্ট অর্ডারের প্রক্রিয়া শুরু করছি।" },
+        { person: "A", en: "That's great! How long will the replacement <span class='verb'>take</span> to <span class='verb'>arrive</span>?", bn: "খুব ভালো! নতুন পণ্যটি পৌঁছাতে কতদিন সময় লাগবে?" },
+        { person: "B", en: "We'll <span class='verb'>send</span> it via express shipping, so it should <span class='verb'>arrive</span> within 2-3 business days. Also, you don't <span class='verb'>need</span> to <span class='verb'>return</span> the damaged item immediately.", bn: "আমরা এটি এক্সপ্রেস শিপিংয়ের মাধ্যমে পাঠাবো, তাই ২-৩ কার্যদিবসের মধ্যেই এটি পৌঁছে যাবে। এছাড়া, ক্ষতিগ্রস্ত পণ্যটি আপনাকে এখনই ফেরত দিতে হবে না।" },
+        { person: "A", en: "I appreciate your help! Will I <span class='verb'>receive</span> a tracking number?", bn: "আপনার সাহায্যের জন্য ধন্যবাদ! আমি কি একটি ট্র্যাকিং নম্বর পাব?" },
+        { person: "B", en: "Yes, I'll <span class='verb'>email</span> you a tracking number within the next hour. You can <span class='verb'>track</span> your replacement order in real-time.", bn: "হ্যাঁ, আগামী এক ঘণ্টার মধ্যে আমি আপনাকে একটি ট্র্যাকিং নম্বর ইমেইল করব। আপনি রিয়েল-টাইমে আপনার রিপ্লেসমেন্ট অর্ডারটি ট্র্যাক করতে পারবেন।" },
+        { person: "A", en: "Perfect! Is there anything else I <span class='verb'>need</span> to <span class='verb'>do</span> on my end?", bn: "চমৎকার! আমার পক্ষ থেকে আর কি কিছু করার প্রয়োজন আছে?" },
+        { person: "B", en: "Just <span class='verb'>send</span> those photos, and we'll <span class='verb'>take</span> care of everything. We truly <span class='verb'>value</span> your business, and I apologize again for this experience. Thank you for your patience!", bn: "শুধু ছবিগুলো পাঠিয়ে দিন, বাকি সব আমরা দেখে নেব। আমরা আপনার ব্যবসার মূল্যায়ন করি এবং এই অভিজ্ঞতার জন্য আমি আবারও ক্ষমা চাইছি। আপনার ধৈর্যের জন্য ধন্যবাদ!" }
+      ], verbs: [
+        { en: "Receive", bn: "গ্রহণ করা/পাওয়া", v1: "receive", v2: "received", v3: "received" },
+        { en: "Hear", bn: "শোনা", v1: "hear", v2: "heard", v3: "heard" },
+        { en: "Apologize", bn: "ক্ষমা চাওয়া", v1: "apologize", v2: "apologized", v3: "apologized" },
+        { en: "Describe", bn: "বর্ণনা করা", v1: "describe", v2: "described", v3: "described" },
+        { en: "Turn on", bn: "চালু করা", v1: "turn", v2: "turned", v3: "turned" },
+        { en: "Process", bn: "প্রক্রিয়া করা", v1: "process", v2: "processed", v3: "processed" },
+        { en: "Send", bn: "পাঠানো", v1: "send", v2: "sent", v3: "sent" },
+        { en: "Track", bn: "অনুসরণ করা/ট্র্যাক করা", v1: "track", v2: "tracked", v3: "tracked" }
+      ]},
+      15: { title: "Project Discussion", emoji: "🎯", dialogues: [
+        { person: "A", en: "Let's <span class='verb'>review</span> the project timeline. When do we <span class='verb'>plan</span> to <span class='verb'>complete</span> phase one?", bn: "চলুন প্রকল্পের সময়সূচী পর্যালোচনা করি। আমরা কখন প্রথম ধাপ শেষ করার পরিকল্পনা করছি?" },
+        { person: "B", en: "We're currently on track. Based on our progress, I <span class='verb'>estimate</span> we'll <span class='verb'>finish</span> by the end of next month.", bn: "আমরা বর্তমানে সঠিক পথেই আছি। আমাদের অগ্রগতির ভিত্তিতে, আমি অনুমান করছি যে আমরা আগামী মাসের শেষ নাগাদ শেষ করতে পারব।" },
+        { person: "A", en: "That's good news! <span class='verb'>Have</span> you <span class='verb'>encountered</span> any obstacles that we should <span class='verb'>address</span>?", bn: "এটি ভালো খবর! আপনি কি এমন কোনো বাধার সম্মুখীন হয়েছেন যা আমাদের সমাধান করা উচিত?" },
+        { person: "B", en: "Actually, yes. We <span class='verb'>need</span> additional resources for the development team. The current team size is <span class='verb'>limiting</span> our progress.", bn: "আসলে, হ্যাঁ। আমাদের ডেভেলপমেন্ট টিমের জন্য অতিরিক্ত জনবল প্রয়োজন। বর্তমান টিমের আকার আমাদের অগ্রগতিকে সীমিত করছে।" },
+        { person: "A", en: "How many additional people do you <span class='verb'>need</span>? I'll <span class='verb'>work</span> on getting budget approval.", bn: "আপনার অতিরিক্ত কতজন লোক প্রয়োজন? আমি বাজেট অনুমোদনের বিষয়ে কাজ শুরু করছি।" },
+        { person: "B", en: "I'd <span class='verb'>recommend</span> we <span class='verb'>hire</span> three more developers and one project coordinator. This will significantly <span class='verb'>boost</span> our productivity.", bn: "আমি আরও তিনজন ডেভেলপার এবং একজন প্রজেক্ট কোঅর্ডিনেটর নিয়োগ দেওয়ার পরামর্শ দেব। এটি আমাদের উৎপাদনশীলতা উল্লেখযোগ্যভাবে বৃদ্ধি করবে।" },
+        { person: "A", en: "Understood. Let me <span class='verb'>talk</span> to HR immediately. In the meantime, can we <span class='verb'>optimize</span> our current workflow to <span class='verb'>maximize</span> efficiency?", bn: "বুঝতে পেরেছি। আমাকে এখনই এইচআর-এর সাথে কথা বলতে দিন। এরই মধ্যে, দক্ষতা বৃদ্ধির জন্য আমরা কি আমাদের বর্তমান কাজের ধারা আরও উন্নত করতে পারি?" },
+        { person: "B", en: "Good idea! I'll <span class='verb'>analyze</span> our current processes and <span class='verb'>identify</span> areas for improvement. I can <span class='verb'>prepare</span> a report by Friday.", bn: "চমৎকার আইডিয়া! আমি আমাদের বর্তমান প্রক্রিয়াগুলো বিশ্লেষণ করব এবং উন্নয়নের ক্ষেত্রগুলো চিহ্নিত করব। আমি শুক্রবারের মধ্যে একটি রিপোর্ট তৈরি করতে পারব।" },
+        { person: "A", en: "Perfect! Let's also <span class='verb'>set</span> up weekly progress meetings to <span class='verb'>track</span> our milestones. Are there any budget concerns I should <span class='verb'>know</span> about?", bn: "চমৎকার! আমাদের মাইলস্টোনগুলো ট্র্যাক করার জন্য চলুন সাপ্তাহিক প্রগতি বৈঠকের ব্যবস্থা করি। বাজেট নিয়ে কি এমন কোনো উদ্বেগ আছে যা আমার জানা উচিত?" },
+        { person: "B", en: "The budget looks good for now, but we should <span class='verb'>allocate</span> some contingency funds for unexpected expenses. I'd <span class='verb'>suggest</span> around 15-20% of the project budget.", bn: "বাজেট আপাতত ঠিক আছে, তবে আমাদের অপ্রত্যাশিত খরচের জন্য কিছু জরুরি তহবিল বরাদ্দ রাখা উচিত। আমি প্রকল্পের বাজেটের প্রায় ১৫-২০% পরামর্শ দেব।" },
+        { person: "A", en: "That's reasonable. I'll <span class='verb'>coordinate</span> with finance to <span class='verb'>ensure</span> we <span class='verb'>have</span> this approved. One last thing - can you <span class='verb'>provide</span> me with the risk assessment for this phase?", bn: "এটি যুক্তিসঙ্গত। আমি অর্থ বিভাগের সাথে সমন্বয় করব যাতে এটি অনুমোদিত হয়। শেষ একটি কথা - আপনি কি আমাকে এই ধাপের ঝুঁকি মূল্যায়নের রিপোর্টটি দিতে পারবেন?" },
+        { person: "B", en: "Yes, I'll <span class='verb'>compile</span> a comprehensive risk assessment and <span class='verb'>present</span> it at our next meeting. This will <span class='verb'>help</span> us <span class='verb'>anticipate</span> and <span class='verb'>mitigate</span> potential issues.", bn: "হ্যাঁ, আমি একটি পূর্ণাঙ্গ ঝুঁকি মূল্যায়ন রিপোর্ট সংকলন করব এবং আমাদের পরবর্তী সভায় সেটি উপস্থাপন করব। এটি আমাদের সম্ভাব্য সমস্যাগুলো অনুমান করতে এবং তা প্রশমিত করতে সাহায্য করবে।" }
+      ], verbs: [
+        { en: "Review", bn: "পর্যালোচনা করা", v1: "review", v2: "reviewed", v3: "reviewed" },
+        { en: "Plan", bn: "পরিকল্পনা করা", v1: "plan", v2: "planned", v3: "planned" },
+        { en: "Complete", bn: "সম্পূর্ণ করা", v1: "complete", v2: "completed", v3: "completed" },
+        { en: "Estimate", bn: "অনুমান করা", v1: "estimate", v2: "estimated", v3: "estimated" },
+        { en: "Allocate", bn: "বরাদ্দ করা", v1: "allocate", v2: "allocated", v3: "allocated" },
+        { en: "Coordinate", bn: "সমন্বয় করা", v1: "coordinate", v2: "coordinated", v3: "coordinated" },
+        { en: "Mitigate", bn: "প্রশমিত করা/কমানো", v1: "mitigate", v2: "mitigated", v3: "mitigated" },
+        { en: "Anticipate", bn: "পূর্বানুমান করা", v1: "anticipate", v2: "anticipated", v3: "anticipated" }
+      ]},
+      16: { title: "Airport Check-in", emoji: "✈️", dialogues: [
+        { person: "A", en: "Good morning! I'd like to <span class='verb'>check</span> in for my flight to Paris. My flight number is AF 214.", bn: "শুভ সকাল! আমি প্যারিসের ফ্লাইটের জন্য চেক-ইন করতে চাই। আমার ফ্লাইট নম্বর AF 214।" },
+        { person: "B", en: "Perfect! May I <span class='verb'>have</span> your passport and booking confirmation, please?", bn: "চমৎকার! আমি কি আপনার পাসপোর্ট এবং বুকিং কনফার্মেশন পেতে পারি?" },
+        { person: "A", en: "Here's my passport and confirmation. I'm also <span class='verb'>carrying</span> two check-in bags.", bn: "এই যে আমার পাসপোর্ট এবং কনফার্মেশন। আমার সাথে চেক-ইন করার জন্য দুটি ব্যাগও আছে।" },
+        { person: "B", en: "Thank you. Let me <span class='verb'>weigh</span> your bags. Please <span class='verb'>place</span> them on the scale.", bn: "ধন্যবাদ। আমাকে আপনার ব্যাগগুলো ওজন করতে দিন। দয়া করে সেগুলো স্কেলের ওপর রাখুন।" },
+        { person: "A", en: "Okay. How much luggage am I allowed? I want to make sure I'm within the weight limit.", bn: "ঠিক আছে। আমার জন্য কতটুকু মালামাল বহন করার অনুমতি আছে? আমি নিশ্চিত করতে চাই যে আমি ওজন সীমার মধ্যেই আছি।" },
+        { person: "B", en: "You're allowed 23 kg per bag. Your first bag is 20 kg - perfect! The second bag is 22 kg, which is also within the limit.", bn: "আপনি প্রতি ব্যাগে ২৩ কেজি পর্যন্ত নিতে পারবেন। আপনার প্রথম ব্যাগটি ২০ কেজি - একদম ঠিক আছে! দ্বিতীয় ব্যাগটি ২২ কেজি, যা সীমার মধ্যেই আছে।" },
+        { person: "A", en: "Great! Do I also <span class='verb'>need</span> to <span class='verb'>declare</span> anything?", bn: "খুব ভালো! আমার কি বিশেষ কিছু ঘোষণা (declare) করার প্রয়োজন আছে?" },
+        { person: "B", en: "Do you <span class='verb'>have</span> any prohibited items or items that <span class='verb'>require</span> declaration?", bn: "আপনার কাছে কি কোনো নিষিদ্ধ বস্তু বা এমন কিছু আছে যা ঘোষণা করার প্রয়োজন?" },
+        { person: "A", en: "No, nothing special. Just regular personal items and some electronics for my trip.", bn: "না, বিশেষ কিছু নেই। শুধু সাধারণ ব্যক্তিগত জিনিসপত্র এবং আমার ভ্রমণের জন্য কিছু ইলেকট্রনিক্স আছে।" },
+        { person: "B", en: "Excellent! Your gate is number 12. Boarding will <span class='verb'>begin</span> at 10:30 AM. Here are your boarding passes.", bn: "চমৎকার! আপনার গেট নম্বর ১২। বোর্ডিং সকাল ১০:৩০ টায় শুরু হবে। এই যে আপনার বোর্ডিং পাস।" },
+        { person: "A", en: "Perfect! Can you <span class='verb'>tell</span> me where the security checkpoint is?", bn: "ঠিক আছে! আপনি কি আমাকে বলতে পারবেন সিকিউরিটি চেকপয়েন্ট কোথায়?" },
+        { person: "B", en: "It's right over there, just past the departure hall. Have a wonderful flight, and <span class='verb'>enjoy</span> your time in Paris!", bn: "এটি ঠিক ওখানেই, ডিপার্চার হলটি পার হলেই। আপনার ফ্লাইট শুভ হোক এবং প্যারিসে আপনার সময়টি উপভোগ করুন!" }
+      ], verbs: [
+        { en: "Check in", bn: "চেক ইন করা", v1: "check", v2: "checked", v3: "checked" },
+        { en: "Have", bn: "থাকা/দেওয়া", v1: "have", v2: "had", v3: "had" },
+        { en: "Weigh", bn: "ওজন করা", v1: "weigh", v2: "weighed", v3: "weighed" },
+        { en: "Place", bn: "রাখা", v1: "place", v2: "placed", v3: "placed" },
+        { en: "Need", bn: "প্রয়োজন হওয়া", v1: "need", v2: "needed", v3: "needed" },
+        { en: "Declare", bn: "ঘোষণা করা", v1: "declare", v2: "declared", v3: "declared" },
+        { en: "Tell", bn: "বলা", v1: "tell", v2: "told", v3: "told" },
+        { en: "Enjoy", bn: "উপভোগ করা", v1: "enjoy", v2: "enjoyed", v3: "enjoyed" }
+      ]},
+      17: { title: "Grocery Shopping", emoji: "🛒", dialogues: [
+        { person: "A", en: "Excuse me! Where can I <span class='verb'>find</span> fresh vegetables?", bn: "মাফ করবেন! আমি টাটকা শাকসবজি কোথায় পেতে পারি?" },
+        { person: "B", en: "They're in aisle three, right next to the fruits section. We just <span class='verb'>received</span> a fresh shipment this morning.", bn: "সেগুলো তিন নম্বর আইলে (সারি), ফলের সেকশনের ঠিক পাশেই আছে। আমরা আজ সকালেই টাটকা সবজির একটি চালান পেয়েছি।" },
+        { person: "A", en: "That's perfect! I also <span class='verb'>need</span> milk and bread. How much do they <span class='verb'>cost</span>?", bn: "চমৎকার! আমার দুধ এবং পাউরুটিও প্রয়োজন। সেগুলোর দাম কত?" },
+        { person: "B", en: "Milk is $3.99 per liter, and fresh bread is $2.49 per loaf. Both are on sale this week!", bn: "দুধ প্রতি লিটার ৩.৯৯ ডলার, এবং টাটকা পাউরুটি প্রতি প্যাকেট ২.৪৯ ডলার। এই সপ্তাহে দুটির ওপরই ছাড় চলছে!" },
+        { person: "A", en: "Great! I'll <span class='verb'>take</span> two loaves of bread and three liters of milk. Do you <span class='verb'>have</span> any organic options?", bn: "খুব ভালো! আমি দুই প্যাকেট পাউরুটি এবং তিন লিটার দুধ নেব। আপনাদের কাছে কি কোনো অর্গানিক বিকল্প আছে?" },
+        { person: "B", en: "Yes, we <span class='verb'>stock</span> organic products in a separate section. Organic milk and bread are about 30% more expensive, but they're worth it.", bn: "হ্যাঁ, আমরা আলাদা একটি সেকশনে অর্গানিক পণ্য রাখি। অর্গানিক দুধ এবং পাউরুটি প্রায় ৩০% বেশি দামি, কিন্তু সেগুলো স্বাস্থ্যকর।" },
+        { person: "A", en: "I'll <span class='verb'>go</span> for the organic option. Can you <span class='verb'>show</span> me where they are?", bn: "আমি অর্গানিকটাই নেব। আপনি কি আমাকে দেখিয়ে দিতে পারেন সেগুলো কোথায়?" },
+        { person: "B", en: "Of course! Follow me. It's just over there. By the way, do you <span class='verb'>need</span> any other items? We have a great selection of fresh fish and meat today.", bn: "অবশ্যই! আমার সাথে আসুন। ওটা ঠিক ওখানেই। ভালো কথা, আপনার কি অন্য কিছু লাগবে? আমাদের কাছে আজ টাটকা মাছ এবং মাংসের ভালো কালেকশন আছে।" },
+        { person: "A", en: "Actually, yes! I'm planning to <span class='verb'>cook</span> dinner tonight. I'll <span class='verb'>take</span> some salmon and vegetables. How much is the salmon?", bn: "আসলে, হ্যাঁ! আমি আজ রাতে রাতের খাবার রান্না করার পরিকল্পনা করছি। আমি কিছু স্যামন মাছ এবং সবজি নেব। স্যামন মাছের দাম কত?" },
+        { person: "B", en: "The fresh salmon is $12.99 per kilogram. It's of excellent quality. I'd also <span class='verb'>recommend</span> our fresh garlic and herbs - they'll <span class='verb'>enhance</span> your dish.", bn: "টাটকা স্যামন প্রতি কেজি ১২.৯৯ ডলার। এটি খুব উন্নত মানের। আমি আমাদের টাটকা রসুন এবং ভেষজ মশলার (herbs) কথা বলব—এগুলো আপনার রান্নার স্বাদ আরও বাড়িয়ে দেবে।" },
+        { person: "A", en: "Sounds delicious! Please <span class='verb'>pack</span> everything carefully. I don't want the vegetables to <span class='verb'>get</span> crushed.", bn: "শুনতে বেশ সুস্বাদু মনে হচ্ছে! দয়া করে সবকিছু সাবধানে প্যাক করবেন। আমি চাই না সবজিগুলো থেঁতলে যাক।" },
+        { person: "B", en: "Don't worry! I'll <span class='verb'>put</span> the vegetables in a separate bag and the heavier items at the bottom. Let me <span class='verb'>help</span> you <span class='verb'>load</span> everything. Is there anything else you <span class='verb'>need</span>?", bn: "চিন্তা করবেন না! আমি সবজিগুলো আলাদা ব্যাগে রাখব এবং ভারী জিনিসগুলো নিচে রাখব। আমাকে সাহায্য করতে দিন সবকিছু গুছিয়ে নিতে। আপনার কি আর কিছু লাগবে?" }
+      ], verbs: [
+        { en: "Find", bn: "খুঁজে পাওয়া", v1: "find", v2: "found", v3: "found" },
+        { en: "Receive", bn: "পাওয়া/গ্রহণ করা", v1: "receive", v2: "received", v3: "received" },
+        { en: "Need", bn: "প্রয়োজন হওয়া", v1: "need", v2: "needed", v3: "needed" },
+        { en: "Cost", bn: "দাম হওয়া", v1: "cost", v2: "cost", v3: "cost" },
+        { en: "Take", bn: "নেওয়া", v1: "take", v2: "took", v3: "taken" },
+        { en: "Have", bn: "থাকা", v1: "have", v2: "had", v3: "had" },
+        { en: "Recommend", bn: "সুপারিশ করা/পরামর্শ দেওয়া", v1: "recommend", v2: "recommended", v3: "recommended" },
+        { en: "Enhance", bn: "বৃদ্ধি করা/উন্নত করা", v1: "enhance", v2: "enhanced", v3: "enhanced" }
+      ]},
+      18: { title: "Borrowing Items", emoji: "🤝", dialogues: [
+        { person: "A", en: "Hi! Can I <span class='verb'>borrow</span> your pen? Mine doesn't <span class='verb'>work</span> anymore.", bn: "হাই! আমি কি তোমার কলমটা ধার নিতে পারি? আমারটা আর কাজ করছে না।" },
+        { person: "B", en: "Of course! <span class='verb'>Take</span> it. When will you <span class='verb'>return</span> it?", bn: "অবশ্যই! এই নাও। তুমি এটা কখন ফেরত দেবে?" },
+        { person: "A", en: "I'll <span class='verb'>give</span> it back tomorrow. Thanks so much for <span class='verb'>helping</span> me out!", bn: "আমি এটা কাল ফেরত দেব। আমাকে সাহায্য করার জন্য অনেক ধন্যবাদ!" },
+        { person: "B", en: "No problem! It's not urgent. You can <span class='verb'>keep</span> it as long as you <span class='verb'>need</span>.", bn: "কোনো সমস্যা নেই! এটা জরুরি কিছু নয়। তোমার যতক্ষণ প্রয়োজন তুমি এটা রাখতে পারো।" },
+        { person: "A", en: "I really <span class='verb'>appreciate</span> your kindness. By the way, do you <span class='verb'>have</span> a spare pencil as well?", bn: "তোমার দয়ার জন্য আমি সত্যিই কৃতজ্ঞ। ভালো কথা, তোমার কাছে কি বাড়তি কোনো পেন্সিলও আছে?" },
+        { person: "B", en: "Yes, I have some pencils. <span class='verb'>Here</span> you go. How many do you <span class='verb'>need</span>?", bn: "হ্যাঁ, আমার কাছে কিছু পেন্সিল আছে। এই যে নাও। তোমার কটা লাগবে?" },
+        { person: "A", en: "Two would be great. I promise I'll <span class='verb'>return</span> everything by tomorrow.", bn: "দুটো হলে খুব ভালো হয়। আমি কথা দিচ্ছি কালকের মধ্যে সব ফেরত দিয়ে দেব।" },
+        { person: "B", en: "Don't <span class='verb'>worry</span> about it. I <span class='verb'>trust</span> you. If you ever <span class='verb'>need</span> anything else, just <span class='verb'>ask</span>.", bn: "এটা নিয়ে চিন্তা করো না। আমি তোমাকে বিশ্বাস করি। যদি তোমার আর কিছু লাগে, তবে শুধু বলবে।" },
+        { person: "A", en: "You're the best! I really <span class='verb'>appreciate</span> having such a helpful friend. I'll definitely <span class='verb'>repay</span> the favor soon.", bn: "তুমি সেরা! তোমার মতো একজন সাহায্যকারী বন্ধু পেয়ে আমি সত্যিই কৃতজ্ঞ। আমি অবশ্যই খুব শীঘ্রই এই উপকারের প্রতিদান দেব।" },
+        { person: "B", en: "Friends <span class='verb'>help</span> each other. That's what friendship is all about! By the way, are you <span class='verb'>going</span> to the cafeteria later?", bn: "বন্ধুরা একে অপরকে সাহায্য করেই থাকে। বন্ধুত্ব তো এমনই! ভালো কথা, তুমি কি পরে ক্যাফেটেরিয়াতে যাচ্ছ?" },
+        { person: "A", en: "Yes, I am. Would you like to <span class='verb'>join</span> me for lunch?", bn: "হ্যাঁ, যাচ্ছি। তুমি কি দুপুরের খাবারের জন্য আমার সাথে যোগ দেবে?" },
+        { person: "B", en: "I'd love to! Let's <span class='verb'>go</span> together after class. It'll be fun!", bn: "আমি যেতে পছন্দ করব! চলো ক্লাসের পর একসাথে যাই। খুব মজা হবে!" }
+      ], verbs: [
+        { en: "Borrow", bn: "ধার করা", v1: "borrow", v2: "borrowed", v3: "borrowed" },
+        { en: "Work", bn: "কাজ করা", v1: "work", v2: "worked", v3: "worked" },
+        { en: "Take", bn: "নেওয়া", v1: "take", v2: "took", v3: "taken" },
+        { en: "Return", bn: "ফেরত দেওয়া", v1: "return", v2: "returned", v3: "returned" },
+        { en: "Give", bn: "দেওয়া", v1: "give", v2: "gave", v3: "given" },
+        { en: "Help", bn: "সাহায্য করা", v1: "help", v2: "helped", v3: "helped" },
+        { en: "Trust", bn: "বিশ্বাস করা", v1: "trust", v2: "trusted", v3: "trusted" },
+        { en: "Join", bn: "যোগ দেওয়া", v1: "join", v2: "joined", v3: "joined" }
+      ]},
+      19: { title: "Apologizing", emoji: "😔", dialogues: [
+        { person: "A", en: "I'm so sorry for being late. I <span class='verb'>missed</span> my bus, and I got stuck in traffic.", bn: "দেরি হওয়ার জন্য আমি খুবই দুঃখিত। আমি বাস মিস করেছিলাম এবং ট্র্যাফিকে আটকে গিয়েছিলাম।" },
+        { person: "B", en: "That's okay. I <span class='verb'>understand</span>. These things <span class='verb'>happen</span> sometimes.", bn: "ঠিক আছে। আমি বুঝতে পারছি। মাঝে মাঝে এমনটা হয়েই থাকে।" },
+        { person: "A", en: "I truly <span class='verb'>regret</span> it. I should have <span class='verb'>left</span> earlier to avoid the traffic.", bn: "আমি সত্যিই এর জন্য অনুতপ্ত। ট্র্যাফিক এড়াতে আমার আরও আগে বের হওয়া উচিত ছিল।" },
+        { person: "B", en: "Don't <span class='verb'>worry</span> about it. It <span class='verb'>happens</span> to everyone. Let's not <span class='verb'>waste</span> time and <span class='verb'>get</span> started.", bn: "এটা নিয়ে চিন্তা করবেন না। এটা সবার সাথেই হয়। চলুন সময় নষ্ট না করে শুরু করা যাক।" },
+        { person: "A", en: "Thank you so much for <span class='verb'>understanding</span>. I really <span class='verb'>appreciate</span> your patience. I promise this won't <span class='verb'>happen</span> again.", bn: "বোঝার জন্য আপনাকে অনেক ধন্যবাদ। আমি আপনার ধৈর্যের প্রশংসা করি। আমি কথা দিচ্ছি এমনটা আর হবে না।" },
+        { person: "B", en: "I <span class='verb'>believe</span> you. Everyone <span class='verb'>makes</span> mistakes sometimes. The important thing is that you're here now.", bn: "আমি আপনাকে বিশ্বাস করি। প্রত্যেকেই মাঝে মাঝে ভুল করে। বড় কথা হলো আপনি এখন এখানে এসেছেন।" },
+        { person: "A", en: "I <span class='verb'>feel</span> terrible about this. How can I <span class='verb'>make</span> it up to you?", bn: "আমার খুব খারাপ লাগছে। আমি কীভাবে এই ভুলের ক্ষতিপূরণ করতে পারি?" },
+        { person: "B", en: "There's no need to <span class='verb'>make</span> up for anything. Just be on time next time. That's all I ask.", bn: "ক্ষতিপূরণ দেওয়ার কোনো প্রয়োজন নেই। শুধু পরের বার ঠিক সময়ে আসবেন। আমি এটুকুই চাই।" },
+        { person: "A", en: "I <span class='verb'>promise</span> you, I'll be more careful about timing from now on.", bn: "আমি আপনাকে কথা দিচ্ছি, এখন থেকে সময়ের ব্যাপারে আমি আরও সতর্ক থাকব।" },
+        { person: "B", en: "Good. I <span class='verb'>accept</span> your apology. Now, let's focus on what we need to <span class='verb'>accomplish</span> today.", bn: "বেশ। আমি আপনার ক্ষমা প্রার্থনা গ্রহণ করছি। এখন, আজ আমাদের যা যা সম্পন্ন করতে হবে সেদিকে মনোযোগ দেই।" },
+        { person: "A", en: "Thank you again. I really <span class='verb'>value</span> our relationship and don't want anything to <span class='verb'>damage</span> it.", bn: "আপনাকে আবারও ধন্যবাদ। আমি আমাদের সম্পর্ককে সত্যিই মূল্যায়ন করি এবং চাই না কোনো কিছু এর ক্ষতি করুক।" },
+        { person: "B", en: "I know you do. We're good. Now let's <span class='verb'>move</span> forward and <span class='verb'>make</span> the best of our time together.", bn: "আমি জানি আপনি করেন। সব ঠিক আছে। এখন চলুন সামনে এগিয়ে যাই এবং আমাদের সময়ের সেরা ব্যবহার করি।" }
+      ], verbs: [
+        { en: "Miss", bn: "মিস করা/ফেলে আসা", v1: "miss", v2: "missed", v3: "missed" },
+        { en: "Understand", bn: "বুঝতে পারা", v1: "understand", v2: "understood", v3: "understood" },
+        { en: "Happen", bn: "ঘটা", v1: "happen", v2: "happened", v3: "happened" },
+        { en: "Regret", bn: "অনুশোচনা করা", v1: "regret", v2: "regretted", v3: "regretted" },
+        { en: "Leave", bn: "ত্যাগ করা/বের হওয়া", v1: "leave", v2: "left", v3: "left" },
+        { en: "Worry", bn: "চিন্তা করা", v1: "worry", v2: "worried", v3: "worried" },
+        { en: "Appreciate", bn: "প্রশংসা করা/মূল্য দেওয়া", v1: "appreciate", v2: "appreciated", v3: "appreciated" },
+        { en: "Promise", bn: "কথা দেওয়া/প্রতিজ্ঞা করা", v1: "promise", v2: "promised", v3: "promised" }
+      ]},
+      20: { title: "Talking about Hobbies", emoji: "🎨", dialogues: [
+        { person: "A", en: "What do you like to <span class='verb'>do</span> in your free time? Do you <span class='verb'>have</span> any hobbies?", bn: "আপনি অবসর সময়ে কী করতে পছন্দ করেন? আপনার কি কোনো শখ আছে?" },
+        { person: "B", en: "Yes! I really <span class='verb'>enjoy</span> <span class='verb'>reading</span> books. I <span class='verb'>love</span> mystery novels especially. What about you?", bn: "হ্যাঁ! আমি বই পড়তে খুব পছন্দ করি। আমি বিশেষ করে রহস্য উপন্যাস ভালোবাসি। আপনার খবর কী?" },
+        { person: "A", en: "I <span class='verb'>love</span> <span class='verb'>playing</span> guitar! I've been <span class='verb'>learning</span> for about three years now.", bn: "আমি গিটার বাজাতে ভালোবাসি! আমি প্রায় তিন বছর ধরে শিখছি।" },
+        { person: "B", en: "That's amazing! How often do you <span class='verb'>practice</span>? Do you ever <span class='verb'>perform</span> for others?", bn: "দারুণ তো! আপনি কতদিন অন্তর অনুশীলন করেন? আপনি কি কখনো অন্যদের সামনে পারফর্ম করেছেন?" },
+        { person: "A", en: "I <span class='verb'>practice</span> about an hour every day. I haven't <span class='verb'>performed</span> publicly yet, but I'm thinking about it.", bn: "আমি প্রতিদিন প্রায় এক ঘণ্টা অনুশীলন করি। আমি এখনও জনসম্মুখে পারফর্ম করিনি, তবে ভাবছি করব।" },
+        { person: "B", en: "You should! I'm sure you're very good. I'd love to <span class='verb'>hear</span> you <span class='verb'>play</span> sometime.", bn: "আপনার করা উচিত! আমি নিশ্চিত আপনি খুব ভালো বাজান। আমি কোনো এক সময় আপনার বাজনা শুনতে খুব পছন্দ করব।" },
+        { person: "A", en: "Thank you! Maybe I can <span class='verb'>invite</span> you to a jam session sometime. But besides guitar, I also <span class='verb'>enjoy</span> <span class='verb'>hiking</span> and outdoor activities.", bn: "ধন্যবাদ! হয়তো আমি কোনো একদিন আপনাকে জ্যাম সেশনে আমন্ত্রণ জানাতে পারি। তবে গিটার ছাড়াও আমি হাইকিং এবং বাইরের অন্যান্য কর্মকাণ্ড পছন্দ করি।" },
+        { person: "B", en: "Hiking is wonderful! Have you <span class='verb'>climbed</span> any mountains? I <span class='verb'>want</span> to <span class='verb'>start</span> <span class='verb'>hiking</span> soon.", bn: "হাইকিং চমৎকার! আপনি কি কোনো পাহাড়ে চড়েছেন? আমিও খুব শীঘ্রই হাইকিং শুরু করতে চাই।" },
+        { person: "A", en: "Yes! I've <span class='verb'>climbed</span> several mountains. I can <span class='verb'>recommend</span> some great trails if you'd like.", bn: "হ্যাঁ! আমি বেশ কিছু পাহাড়ে চড়েছি। আপনি চাইলে আমি কিছু ভালো পথের (trails) কথা বলতে পারি।" },
+        { person: "B", en: "That would be wonderful! I'd really <span class='verb'>appreciate</span> any recommendations. How <span class='verb'>long</span> are the hikes usually?", bn: "সেটা খুব ভালো হবে! আপনার যে কোনো পরামর্শের আমি প্রশংসা করব। হাইকিং সাধারণত কতক্ষণ সময় নেয়?" },
+        { person: "A", en: "It <span class='verb'>depends</span>! Some are short, about two hours, while others can <span class='verb'>take</span> the whole day. It all <span class='verb'>depends</span> on your fitness level and preference.", bn: "এটা নির্ভর করে! কিছু ছোট, প্রায় দুই ঘণ্টা লাগে, আবার অন্যগুলো পুরো দিন নিতে পারে। এটা পুরোপুরি আপনার শারীরিক সক্ষমতা এবং পছন্দের ওপর নির্ভর করে।" },
+        { person: "B", en: "Well, I'm quite fit, so I think I can <span class='verb'>handle</span> longer hikes. When do you think we could <span class='verb'>go</span> hiking together?", bn: "আমি বেশ ফিট, তাই আমার মনে হয় আমি দীর্ঘ হাইকিং সামলাতে পারব। আপনার কী মনে হয়, আমরা কবে একসাথে হাইকিংয়ে যেতে পারি?" },
+        { person: "A", en: "How about next weekend? I'm <span class='verb'>planning</span> to <span class='verb'>go</span> to a beautiful trail near the mountains. You're welcome to <span class='verb'>join</span> me!", bn: "আগামী সপ্তাহান্ত কেমন হবে? আমি পাহাড়ের কাছের একটি সুন্দর ট্রেইলে যাওয়ার পরিকল্পনা করছি। আপনি চাইলে আমার সাথে যোগ দিতে পারেন!" }
+      ], verbs: [
+        { en: "Do", bn: "করা", v1: "do", v2: "did", v3: "done" },
+        { en: "Have", bn: "থাকা/আছে", v1: "have", v2: "had", v3: "had" },
+        { en: "Enjoy", bn: "উপভোগ করা", v1: "enjoy", v2: "enjoyed", v3: "enjoyed" },
+        { en: "Love", bn: "ভালোবাসা/পছন্দ করা", v1: "love", v2: "loved", v3: "loved" },
+        { en: "Practice", bn: "অনুশীলন করা", v1: "practice", v2: "practiced", v3: "practiced" },
+        { en: "Recommend", bn: "সুপারিশ করা", v1: "recommend", v2: "recommended", v3: "recommended" },
+        { en: "Climb", bn: "চড়া/আরোহণ করা", v1: "climb", v2: "climbed", v3: "climbed" },
+        { en: "Depend", bn: "নির্ভর করা", v1: "depend", v2: "depended", v3: "depended" }
+      ]},
+    };
+
+    let currentHideA = false;
+    let currentHideB = false;
+
+    function initApp() {
+      renderScenarioButtons();
+      loadScenario(1);
+    }
+
+    function renderScenarioButtons() {
+      const container = document.getElementById("scenario-btns");
+      container.innerHTML = Object.keys(dialogues).map(key => {
+        const scen = dialogues[key];
+        return `<button class="scenario-btn ${key == currentScenario ? 'active' : ''}" id="btn-${key}" onclick="loadScenario(${key})">${scen.emoji} ${scen.title}</button>`;
+      }).join("");
+    }
+
+    function loadScenario(id) {
+      currentScenario = id;
+      
+      // আপডেট অ্যাক্টিভ বাটন স্টাইল
+      document.querySelectorAll(".scenario-btn").forEach(btn => btn.classList.remove("active"));
+      document.getElementById(`btn-${id}`).classList.add("active");
+
+      renderChat();
+      renderVerbs();
+    }
+
+    function renderChat() {
+      const chatContainer = document.getElementById("chat");
+      const scenario = dialogues[currentScenario];
+      
+      chatContainer.innerHTML = scenario.dialogues.map((d, index) => {
+        const isHidden = (d.person === 'A' && hidePersonA) || (d.person === 'B' && hidePersonB);
+        const bubbleClass = d.person === 'A' ? 'bubble-a' : 'bubble-b';
+        
+        if (isHidden) {
+          return `<div class="hidden-placeholder" onclick="revealBubble(${index})">Click to reveal Person ${d.person}'s line 👤</div>`;
+        }
+
+        return `
+          <div class="chat-bubble ${bubbleClass}">
+            <div class="flex items-start gap-2">
+              <button class="audio-btn" onclick="speak('${d.en.replace(/'/g, "\\'")}')">🔊</button>
+              <div>
+                <p class="text-lg font-medium">${d.en}</p>
+                <p class="text-sm opacity-80 mt-1 border-t border-white/20 pt-1">${d.bn}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderVerbs() {
+      const verbs = dialogues[currentScenario].verbs;
+      const verbHTML = verbs.map(v => `
+        <div class="verb-box animate-fade-in-up">
+          <div class="verb-eng">${v.en}</div>
+          <div class="verb-ben">${v.bn}</div>
+          <div class="verb-forms">
+            <div class="verb-form">${v.v1}</div>
+            <div class="verb-form">${v.v2}</div>
+            <div class="verb-form">${v.v3}</div>
+          </div>
+        </div>
+      `).join("");
+
+      document.getElementById("verbs-desk").innerHTML = verbHTML;
+      document.getElementById("verbs-mobile").innerHTML = verbHTML;
+    }
+
+    function toggleHideA() {
+      hidePersonA = !hidePersonA;
+      document.getElementById("hide-a-btn").classList.toggle("active", hidePersonA);
+      renderChat();
+    }
+
+    function toggleHideB() {
+      hidePersonB = !hidePersonB;
+      document.getElementById("hide-b-btn").classList.toggle("active", hidePersonB);
+      renderChat();
+    }
+
+    function resetView() {
+      hidePersonA = false;
+      hidePersonB = false;
+      document.getElementById("hide-a-btn").classList.remove("active");
+      document.getElementById("hide-b-btn").classList.remove("active");
+      renderChat();
+    }
+
+    function revealBubble(index) {
+      // এই ফাংশনটি শুধু ওই নির্দিষ্ট বাবলটি দেখাবে
+      renderChat(); 
+    }
+
+    function speak(text) {
+      const msg = new SpeechSynthesisUtterance();
+      // HTML ট্যাগ রিমুভ করা
+      msg.text = text.replace(/<[^>]*>/g, '');
+      window.speechSynthesis.speak(msg);
+    }
+
+    // অ্যাপ চালু করা
+    window.onload = initApp;
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c9a95fe77dcfc55',t:'MTc3MDM4MDI2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
