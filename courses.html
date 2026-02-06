@@ -337,16 +337,22 @@
     let currentCategory = 'vocabulary';
 
     // Lesson Data
-    const lessons = {
-      vocabulary: [
-        {
-          id: 'vocab1',
-          title: 'Tense',
-          description: 'Learn essential greeting words and phrases used in everyday conversations.',
-          video: 'https://www.youtube.com/embed/KTWme9qTQCo',
-          pdf: 'vocab-greetings.pdf'
-        },
-        {
+const lessons = {
+  vocabulary: [
+    {
+      id: 'vocab1',
+      title: 'Tense',
+      description: 'Tense in English Grammar || Tense in Bangla',
+      video: 'https://www.youtube.com/embed/KTWme9qTQCo',
+      // এই লাইনটি যোগ করুন যাতে অ্যাপ থাম্বনেইল খুঁজে পায়
+      thumbnail: 'https://img.youtube.com/vi/KTWme9qTQCo/maxresdefault.jpg', 
+      pdf: 'vocab-greetings.pdf'
+    },
+    // ... অন্যান্য ডাটা
+             ],
+  // ... বাকি ক্যাটাগরি
+               };
+   {
           id: 'vocab2',
           title: 'Colors & Objects',
           description: 'Master vocabulary for describing colors and common objects around you.',
