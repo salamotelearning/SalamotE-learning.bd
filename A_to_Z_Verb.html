@@ -334,7 +334,7 @@
   <div id="app-wrapper" class="h-full w-full verbs-bg overflow-auto"><!-- Header -->
    <header class="bg-white shadow-md sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-6">
-     <h1 id="app-title" class="font-display text-3xl md:text-4xl font-bold gradient-text">A-Z Daily Verbs Learning App</h1>
+     <h1 id="app-title" class="font-display text-3xl md:text-4xl font-bold gradient-text">A-Z Daily Verbs</h1>
      <p id="app-subtitle" class="text-sm md:text-base text-gray-600 mt-1">Master English Verbs with Grammar Patterns</p>
     </div>
    </header><!-- Sticky Alphabet Navigation -->
@@ -413,15 +413,58 @@
     // Complete Verbs Database (10 verbs per letter)
     const verbsData = {
       A: [
-        { verb: 'Abandon', bengali: 'পরিত্যাগ করা' },
-        { verb: 'Accept', bengali: 'গ্রহণ করা' },
-        { verb: 'Achieve', bengali: 'অর্জন করা' },
-        { verb: 'Acknowledge', bengali: 'স্বীকার করা' },
-        { verb: 'Act', bengali: 'অভিনয় করা' },
-        { verb: 'Activate', bengali: 'সক্রিয় করা' },
-        { verb: 'Adapt', bengali: 'খাপ খাইয়ে নেওয়া' },
-        { verb: 'Add', bengali: 'যোগ করা' },
-        { verb: 'Advance', bengali: 'এগিয়ে যাওয়া' },
+  
+
+  { verb: 'Accept', bengali: 'গ্রহণ করা', v2_v3: 'Accepted', sentence: 'He accepted the gift because the price was acceptable.' },
+  { verb: 'Achieve', bengali: 'অর্জন করা', v2_v3: 'Achieved', sentence: 'I achieved the goal because it was achievable.' },
+  { verb: 'Act', bengali: 'অভিনয়/কাজ করা', v2_v3: 'Acted', sentence: 'She acted quickly because she is very active.' },
+  { verb: 'Add', bengali: 'যোগ করা', v2_v3: 'Added', sentence: 'Please add the cost of additional milk to the bill.' },
+  { verb: 'Admire', bengali: 'প্রশংসা করা', v2_v3: 'Admired', sentence: 'I admired his honesty, which is an admirable quality.' },
+  { verb: 'Admit', bengali: 'স্বীকার করা', v2_v3: 'Admitted', sentence: 'He admitted the mistake once admissible proof was shown.' },
+  { verb: 'Adopt', bengali: 'দত্তক/গ্রহণ করা', v2_v3: 'Adopted', sentence: 'They adopted a child and became adoptive parents.' },
+  { verb: 'Adore', bengali: 'গভীরভাবে ভালোবাসা', v2_v3: 'Adored', sentence: 'She adored the kitten because it was so adorable.' },
+  { verb: 'Advise', bengali: 'উপদেশ দেওয়া', v2_v3: 'Advised', sentence: 'He advised me that taking a rest is advisable.' },
+  { verb: 'Affect', bengali: 'প্রভাবিত করা', v2_v3: 'Affected', sentence: 'The rain affected the crops, leaving the farmers affected.' },
+  { verb: 'Afford', bengali: 'সামর্থ্য হওয়া', v2_v3: 'Afforded', sentence: 'I afforded the car because the monthly EMI was affordable.' },
+  { verb: 'Agree', bengali: 'রাজি হওয়া', v2_v3: 'Agreed', sentence: 'We agreed on the plan as the terms were agreeable.' },
+  { verb: 'Alarm', bengali: 'সতর্ক/ভীত করা', v2_v3: 'Alarmed', sentence: 'The news alarmed us because the situation was alarming.' },
+  { verb: 'Alert', bengali: 'সতর্ক করা', v2_v3: 'Alerted', sentence: 'He alerted the guards to stay alert at night.' },
+  { verb: 'Allow', bengali: 'অনুমতি দেওয়া', v2_v3: 'Allowed', sentence: 'The teacher allowed the allowable limit of two mistakes.' },
+  { verb: 'Amuse', bengali: 'আনন্দ দেওয়া', v2_v3: 'Amused', sentence: 'The clown amused the kids with an amusing story.' },
+  { verb: 'Analyze', bengali: 'বিশ্লেষণ করা', v2_v3: 'Analyzed', sentence: 'She analyzed the data using her analytical skills.' },
+  { verb: 'Announce', bengali: 'ঘোষণা করা', v2_v3: 'Announced', sentence: 'They announced the winner in an announced meeting.' },
+  { verb: 'Annoy', bengali: 'বিরক্ত করা', v2_v3: 'Annoyed', sentence: 'He annoyed me with his annoying habits.' },
+  { verb: 'Answer', bengali: 'উত্তর দেওয়া', v2_v3: 'Answered', sentence: 'He answered the call as he was answerable to the boss.' },
+  { verb: 'Apologize', bengali: 'ক্ষমা চাওয়া', v2_v3: 'Apologized', sentence: 'She apologized for the delay in an apologetic tone.' },
+  { verb: 'Appear', bengali: 'উপস্থিত হওয়া', v2_v3: 'Appeared', sentence: 'He appeared calm despite the apparent danger.' },
+  { verb: 'Apply', bengali: 'আবেদন করা', v2_v3: 'Applied', sentence: 'I applied for the job where my skills are applicable.' },
+  { verb: 'Appoint', bengali: 'নিয়োগ দেওয়া', v2_v3: 'Appointed', sentence: 'They appointed him at the appointed time.' },
+  { verb: 'Appreciate', bengali: 'প্রশংসা করা', v2_v3: 'Appreciated', sentence: 'I appreciated her help and she felt appreciative.' },
+  { verb: 'Approve', bengali: 'অনুমোদন করা', v2_v3: 'Approved', sentence: 'The manager approved the approved budget list.' },
+  { verb: 'Argue', bengali: 'তর্ক করা', v2_v3: 'Argued', sentence: 'They argued over a point that was clearly arguable.' },
+  { verb: 'Arrange', bengali: 'ব্যবস্থা করা', v2_v3: 'Arranged', sentence: 'I arranged the flowers in an arranged pattern.' },
+  { verb: 'Arrest', bengali: 'গ্রেপ্তার করা', v2_v3: 'Arrested', sentence: 'Police arrested the man and he remained arrested.' },
+  { verb: 'Arrive', bengali: 'পৌঁছানো', v2_v3: 'Arrived', sentence: 'The guest arrived and looked like a newly arrived person.' },
+  { verb: 'Ask', bengali: 'জিজ্ঞাসা করা', v2_v3: 'Asked', sentence: 'He asked for the asking price of the house.' },
+  { verb: 'Assess', bengali: 'মূল্যায়ন করা', v2_v3: 'Assessed', sentence: 'We assessed the damage which was easily assessable.' },
+  { verb: 'Assist', bengali: 'সাহায্য করা', v2_v3: 'Assisted', sentence: 'He assisted me while working as an assistant manager.' },
+  { verb: 'Assure', bengali: 'নিশ্চিত করা', v2_v3: 'Assured', sentence: 'He assured me with an assured smile.' },
+  { verb: 'Attach', bengali: 'সংযুক্ত করা', v2_v3: 'Attached', sentence: 'I attached the file to the attached email.' },
+  { verb: 'Attack', bengali: 'আক্রমণ করা', v2_v3: 'Attacked', sentence: 'They attacked the enemy with an attacking strategy.' },
+  { verb: 'Attempt', bengali: 'চেষ্টা করা', v2_v3: 'Attempted', sentence: 'He attempted the task in an attempted manner.' },
+  { verb: 'Attend', bengali: 'উপস্থিত থাকা', v2_v3: 'Attended', sentence: 'I attended the class and remained attentive.' },
+  { verb: 'Attract', bengali: 'আকর্ষণ করা', v2_v3: 'Attracted', sentence: 'The flower attracted bees because it was attractive.' },
+  { verb: 'Avoid', bengali: 'এড়িয়ে চলা', v2_v3: 'Avoided', sentence: 'We avoided the accident as it was avoidable.' },
+  { verb: 'Awake', bengali: 'জাগ্রত করা', v2_v3: 'Awoke/Awoken', sentence: 'The noise awoke me, and I stayed awake all night.' },
+  { verb: 'Award', bengali: 'পুরস্কৃত করা', v2_v3: 'Awarded', sentence: 'They awarded the awarded student a medal.' },
+  { verb: 'Adjust', bengali: 'মানিয়ে নেওয়া', v2_v3: 'Adjusted', sentence: 'He adjusted the seat because it was adjustable.' },
+  { verb: 'Amaze', bengali: 'বিস্মিত করা', v2_v3: 'Amazed', sentence: 'The magic amazed me; it was truly amazing.' },
+  { verb: 'Amplify', bengali: 'বাড়ানো', v2_v3: 'Amplified', sentence: 'He amplified the sound using an amplified speaker.' },
+  { verb: 'Amuse', bengali: 'আনন্দ দেওয়া', v2_v3: 'Amused', sentence: 'The joke amused the amused audience.' },
+  { verb: 'Animate', bengali: 'প্রাণবন্ত করা', v2_v3: 'Animated', sentence: 'He animated the story with animated gestures.' },
+  { verb: 'Anticipate', bengali: 'প্রত্যাশা করা', v2_v3: 'Anticipated', sentence: 'We anticipated the rain, so the anticipated delay happened.' },
+  { verb: 'Arouse', bengali: 'জাগ্রত করা', v2_v3: 'Aroused', sentence: 'The speech aroused an arousing sense of hope.' },
+  { verb: 'Assemble', bengali: 'একত্রিত করা', v2_v3: 'Assembled', sentence: 'They assembled the parts into an assembled unit.' },
         { verb: 'Advise', bengali: 'পরামর্শ দেওয়া' }
       ],
       B: [
