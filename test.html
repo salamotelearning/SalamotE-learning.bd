@@ -1,0 +1,2077 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grand Exam - English Learning Assessment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-body { font-family: 'Inter', sans-serif; }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s ease-out forwards;
+            z-index: 1000;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+        }
+        
+        .timer-warning {
+            animation: pulse-glow 1s infinite;
+        }
+        
+        @keyframes slide-up {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .animate-slide-up {
+            animation: slide-up 0.5s ease-out forwards;
+        }
+        
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        
+        .question-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .option-btn:hover:not(.selected):not(.correct):not(.incorrect) {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border-color: #6366f1;
+        }
+        
+        .option-btn.selected {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border-color: #4f46e5;
+        }
+        
+        .option-btn.correct {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: #059669;
+        }
+        
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border-color: #dc2626;
+        }
+        
+        .progress-fill {
+            transition: width 0.5s ease;
+        }
+        
+        .score-circle {
+            transition: stroke-dashoffset 1s ease;
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body bg-gradient-to-br from-slate-50 via-indigo-50 to-violet-50">
+  <div id="app-container" class="h-full w-full overflow-auto"><!-- Start Screen -->
+   <div id="start-screen" class="min-h-full flex items-center justify-center p-6">
+    <div class="max-w-2xl w-full bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 md:p-12 text-center animate-slide-up">
+     <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg">
+      <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+     </div>
+     <h1 id="exam-title" class="font-display text-4xl md:text-5xl text-gray-800 mb-3">Grand Examination</h1>
+     <p id="exam-subtitle" class="text-lg text-indigo-600 font-medium mb-8">English Learning Assessment</p>
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-4">
+       <div class="text-3xl mb-2">
+        📚
+       </div>
+       <h3 class="font-semibold text-gray-800">Vocabulary</h3>
+       <p class="text-sm text-gray-600">10 Questions • 10 Marks</p>
+      </div>
+      <div class="bg-gradient-to-br from-violet-50 to-purple-100 rounded-xl p-4">
+       <div class="text-3xl mb-2">
+        ✍️
+       </div>
+       <h3 class="font-semibold text-gray-800">Verbs</h3>
+       <p class="text-sm text-gray-600">10 Questions • 10 Marks</p>
+      </div>
+      <div class="bg-gradient-to-br from-pink-50 to-rose-100 rounded-xl p-4">
+       <div class="text-3xl mb-2">
+        💬
+       </div>
+       <h3 class="font-semibold text-gray-800">Dialogues</h3>
+       <p class="text-sm text-gray-600">10 Questions • 10 Marks</p>
+      </div>
+     </div>
+     <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8">
+      <div class="flex items-center justify-center gap-2 text-amber-700">
+       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+       </svg><span class="font-semibold">Time Limit: 15 Minutes</span>
+      </div>
+      <p class="text-sm text-amber-600 mt-1">Total: 30 Questions • 30 Marks • Pass: 15 Marks</p>
+     </div><button onclick="startExam()" class="w-full md:w-auto px-12 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300"> Start Examination 🚀 </button>
+    </div>
+   </div><!-- Exam Screen -->
+   <div id="exam-screen" class="hidden min-h-full flex flex-col"><!-- Header -->
+    <header class="sticky top-0 bg-white/90 backdrop-blur-sm border-b border-indigo-100 z-50">
+     <div class="max-w-4xl mx-auto px-4 py-3">
+      <div class="flex items-center justify-between gap-4"><!-- Timer -->
+       <div id="timer-display" class="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-violet-500 text-white px-4 py-2 rounded-xl font-mono font-bold text-lg">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg><span id="timer">15:00</span>
+       </div><!-- Progress -->
+       <div class="flex-1 max-w-xs">
+        <div class="flex justify-between text-sm text-gray-600 mb-1"><span>Progress</span> <span id="progress-text">0/30</span>
+        </div>
+        <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+         <div id="progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-violet-500 progress-fill" style="width: 0%"></div>
+        </div>
+       </div><!-- Submit --> <button onclick="confirmSubmit()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"> Submit </button>
+      </div>
+     </div>
+    </header><!-- Questions Container -->
+    <main class="flex-1 max-w-4xl mx-auto w-full px-4 py-6">
+     <div id="questions-container" class="space-y-6"></div>
+    </main><!-- Submit Confirmation Modal -->
+    <div id="submit-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-slide-up">
+      <h3 class="font-display text-2xl text-gray-800 mb-2">Submit Exam?</h3>
+      <p id="submit-warning" class="text-gray-600 mb-6"></p>
+      <div class="flex gap-3"><button onclick="hideSubmitModal()" class="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"> Continue Exam </button> <button onclick="submitExam()" class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold rounded-xl transition-colors"> Submit Now </button>
+      </div>
+     </div>
+    </div>
+   </div><!-- Results Screen -->
+   <div id="results-screen" class="hidden min-h-full p-4 md:p-6">
+    <div class="max-w-4xl mx-auto"><!-- Score Card -->
+     <div id="score-card" class="bg-white rounded-3xl shadow-2xl p-8 mb-6 text-center animate-slide-up">
+      <div class="relative w-48 h-48 mx-auto mb-6">
+       <svg class="w-full h-full transform -rotate-90"><circle cx="96" cy="96" r="88" fill="none" stroke="#e5e7eb" stroke-width="12" /> <circle id="score-circle" cx="96" cy="96" r="88" fill="none" stroke="url(#scoreGradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="553" class="score-circle" /> <defs>
+         <lineargradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#6366f1" />
+          <stop offset="100%" stop-color="#8b5cf6" />
+         </lineargradient>
+        </defs>
+       </svg>
+       <div class="absolute inset-0 flex flex-col items-center justify-center"><span id="score-number" class="font-display text-5xl text-gray-800">0</span> <span class="text-gray-500 font-medium">/30 Marks</span>
+       </div>
+      </div>
+      <h2 id="result-title" class="font-display text-3xl text-gray-800 mb-2"></h2>
+      <p id="result-message" class="text-gray-600 mb-6"></p><!-- Section Scores -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+       <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-4">
+        <div class="text-2xl mb-1">
+         📚
+        </div>
+        <h4 class="font-semibold text-gray-800">Vocabulary</h4>
+        <p id="vocab-score" class="text-2xl font-bold text-indigo-600">0/10</p>
+       </div>
+       <div class="bg-gradient-to-br from-violet-50 to-purple-100 rounded-xl p-4">
+        <div class="text-2xl mb-1">
+         ✍️
+        </div>
+        <h4 class="font-semibold text-gray-800">Verbs</h4>
+        <p id="verb-score" class="text-2xl font-bold text-violet-600">0/10</p>
+       </div>
+       <div class="bg-gradient-to-br from-pink-50 to-rose-100 rounded-xl p-4">
+        <div class="text-2xl mb-1">
+         💬
+        </div>
+        <h4 class="font-semibold text-gray-800">Dialogues</h4>
+        <p id="dialogue-score" class="text-2xl font-bold text-pink-600">0/10</p>
+       </div>
+      </div><button onclick="restartExam()" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all"> Take Exam Again 🔄 </button>
+     </div><!-- Review Section -->
+     <div class="bg-white rounded-3xl shadow-xl p-6 md:p-8">
+      <h3 class="font-display text-2xl text-gray-800 mb-6 flex items-center gap-2"><span>📋</span> Answer Review</h3>
+      <div id="review-container" class="space-y-4"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+        // ============================================
+        // DATA CONFIGURATION - PASTE YOUR DATA HERE
+        // ============================================
+        
+        const EXAM_DATA = {
+            // VOCABULARY DATA: Add your words from Vocabulary A-Z
+            vocabulary: [
+    { word: 'Ability', meaning: 'ক্ষমতা', sentence: 'She has the ability to speak five languages fluently.' },
+    { word: 'Abandon', meaning: 'পরিত্যাগ করা', sentence: 'He decided to abandon his old job and start a new career.' },
+    { word: 'Accurate', meaning: 'নির্ভুল', sentence: 'The weather forecast was accurate this time.' },
+    { word: 'Achieve', meaning: 'অর্জন করা', sentence: 'She worked hard to achieve her goals.' },
+    { word: 'Afford', meaning: 'সামর্থ্য রাখা', sentence: 'They cannot afford a luxury vacation this year.' },
+    { word: 'Baggage', meaning: 'ব্যাগেজ', sentence: 'Please collect your baggage from the conveyor belt.' },
+    { word: 'Bargain', meaning: 'দর-কষাকষি', sentence: 'I found an amazing bargain at the market today.' },
+    { word: 'Basic', meaning: 'মৌলিক', sentence: 'Understanding basic mathematics is essential for students.' },
+    { word: 'Benefit', meaning: 'সুবিধা', sentence: 'Exercise provides many health benefits.' },
+    { word: 'Beverage', meaning: 'পানীয়', sentence: 'We serve hot and cold beverages at the cafe.' },
+    { word: 'Capable', meaning: 'সক্ষম', sentence: 'She is capable of handling this challenging project.' },
+    { word: 'Confident', meaning: 'আত্মবিশ্বাসী', sentence: 'He felt confident about his exam performance.' },
+    { word: 'Confirm', meaning: 'নিশ্চিত করা', sentence: 'Please confirm your attendance at the meeting.' },
+    { word: 'Confuse', meaning: 'বিভ্রান্ত করা', sentence: 'The complicated instructions confuse most users.' },
+    { word: 'Crucial', meaning: 'অত্যন্ত গুরুত্বপূর্ণ', sentence: 'Time management is crucial for success.' },
+    { word: 'Decision', meaning: 'সিদ্ধান্ত', sentence: 'Making the right decision requires careful consideration.' },
+    { word: 'Delay', meaning: 'বিলম্ব', sentence: 'There was a delay in the flight departure.' },
+    { word: 'Deserve', meaning: 'যোগ্য', sentence: 'She deserves recognition for her hard work.' },
+    { word: 'Device', meaning: 'যন্ত্র', sentence: 'This device helps measure temperature accurately.' },
+    { word: 'Display', meaning: 'প্রদর্শন করা', sentence: 'The museum will display ancient artifacts next month.' },
+    { word: 'Eager', meaning: 'আগ্রহী', sentence: 'The eager students listened attentively to the lecture.' },
+    { word: 'Effort', meaning: 'প্রচেষ্টা', sentence: 'Success requires consistent effort and dedication.' },
+    { word: 'Elegant', meaning: 'সুন্দর', sentence: 'She wore an elegant dress to the party.' },
+    { word: 'Entire', meaning: 'সম্পূর্ণ', sentence: 'The entire project took three months to complete.' },
+    { word: 'Evidence', meaning: 'প্রমাণ', sentence: 'There is strong evidence supporting this scientific theory.' },
+    { word: 'Familiar', meaning: 'পরিচিত', sentence: 'This place looks familiar but I cannot remember when I visited.' },
+    { word: 'Fancy', meaning: 'অলংকৃত', sentence: 'They had a fancy dinner at an upscale restaurant.' },
+    { word: 'Flavor', meaning: 'স্বাদ', sentence: 'This dessert has a unique flavor of chocolate and vanilla.' },
+    { word: 'Flexible', meaning: 'নমনীয়', sentence: 'A flexible schedule allows workers to maintain work-life balance.' },
+    { word: 'Frequent', meaning: 'ঘন ঘন', sentence: 'He makes frequent trips to the office.' },
+    { word: 'Gather', meaning: 'সংগ্রহ করা', sentence: 'The family gathered around the dinner table.' },
+    { word: 'Generous', meaning: 'উদার', sentence: 'A generous person always helps others in need.' },
+    { word: 'Gesture', meaning: 'অঙ্গভঙ্গি', sentence: 'She made a friendly gesture by smiling warmly.' },
+    { word: 'Glance', meaning: 'দৃষ্টি নিক্ষেপ করা', sentence: 'He took a quick glance at the newspaper.' },
+    { word: 'Gradual', meaning: 'ক্রমান্বয়ী', sentence: 'The gradual change in weather is quite noticeable.' },
+    { word: 'Habit', meaning: 'অভ্যাস', sentence: 'Reading before bed is my favorite habit.' },
+    { word: 'Harsh', meaning: 'কঠোর', sentence: 'The harsh weather conditions made travel difficult.' },
+    { word: 'Hazard', meaning: 'বিপদ', sentence: 'Smoking is a serious health hazard.' },
+    { word: 'Hesitate', meaning: 'সংকোচ করা', sentence: 'Do not hesitate to ask for help when needed.' },
+    { word: 'Humble', meaning: 'নম্র', sentence: 'Despite his success, he remains humble and grounded.' },
+    { word: 'Identify', meaning: 'চিহ্নিত করা', sentence: 'Can you identify the main character in this movie?' },
+    { word: 'Ignore', meaning: 'উপেক্ষা করা', sentence: 'It is wrong to ignore someone who needs help.' },
+    { word: 'Impact', meaning: 'প্রভাব', sentence: 'Technology has a huge impact on modern society.' },
+    { word: 'Improve', meaning: 'উন্নত করা', sentence: 'Practice will help you improve your English skills.' },
+    { word: 'Involve', meaning: 'জড়িত করা', sentence: 'This project will involve the entire team.' },
+    { word: 'Jealous', meaning: 'ঈর্ষান্বিত', sentence: 'He felt jealous when his friend got promoted.' },
+    { word: 'Jolly', meaning: 'আনন্দময়', sentence: 'The jolly atmosphere at the party was infectious.' },
+    { word: 'Journey', meaning: 'যাত্রা', sentence: 'Our journey across Europe was unforgettable.' },
+    { word: 'Jumble', meaning: 'গোলমাল', sentence: 'The room was in complete jumble after the party.' },
+    { word: 'Justify', meaning: 'ন্যায্যতা দেওয়া', sentence: 'Can you justify your decision to leave the company?' },
+    { word: 'Keen', meaning: 'আগ্রহী', sentence: 'She is keen on learning new languages.' },
+    { word: 'Keep', meaning: 'রাখা', sentence: 'Please keep this document safe and secure.' },
+    { word: 'Kindness', meaning: 'দয়া', sentence: 'Her kindness towards animals is truly remarkable.' },
+    { word: 'Kitchen', meaning: 'রসোই', sentence: 'We designed a modern kitchen with latest appliances.' },
+    { word: 'Knot', meaning: 'গিঁট', sentence: 'He tied a tight knot to secure the rope.' },
+    { word: 'Label', meaning: 'লেবেল', sentence: 'Check the label on the product before buying.' },
+    { word: 'Latest', meaning: 'সর্বশেষ', sentence: 'She always wears the latest fashion trends.' },
+    { word: 'Leisure', meaning: 'অবসর', sentence: 'I enjoy spending my leisure time reading books.' },
+    { word: 'Likely', meaning: 'সম্ভবত', sentence: 'It is likely to rain tomorrow according to the forecast.' },
+    { word: 'Loyal', meaning: 'অনুগত', sentence: 'A loyal friend stands by you in difficult times.' },
+    { word: 'Maintain', meaning: 'বজায় রাখা', sentence: 'Regular exercise helps maintain good health.' },
+    { word: 'Manner', meaning: 'আচরণ', sentence: 'He spoke in a polite manner to everyone.' },
+    { word: 'Margin', meaning: 'মার্জিন', sentence: 'We won the game by a narrow margin.' },
+    { word: 'Maximum', meaning: 'সর্বোচ্চ', sentence: 'The maximum speed limit on highways is strictly enforced.' },
+    { word: 'Memory', meaning: 'স্মৃতি', sentence: 'Those childhood memories will stay with me forever.' },
+    { word: 'Natural', meaning: 'প্রাকৃতিক', sentence: 'Natural ingredients are better for your health.' },
+    { word: 'Nearby', meaning: 'কাছাকাছি', sentence: 'There is a grocery store nearby our house.' },
+    { word: 'Necessary', meaning: 'প্রয়োজনীয়', sentence: 'It is necessary to follow safety guidelines at work.' },
+    { word: 'Notice', meaning: 'লক্ষ্য করা', sentence: 'Did you notice the new decoration in the office?' },
+    { word: 'Notion', meaning: 'ধারণা', sentence: 'The notion that money brings happiness is false.' },
+    { word: 'Obvious', meaning: 'স্পষ্ট', sentence: 'It is obvious that he did not prepare for the exam.' },
+    { word: 'Occasion', meaning: 'অনুষ্ঠান', sentence: 'The wedding was a special occasion for the family.' },
+    { word: 'Offer', meaning: 'প্রস্তাব', sentence: 'The job offer was too good to refuse.' },
+    { word: 'Option', meaning: 'বিকল্প', sentence: 'You have multiple options to choose from.' },
+    { word: 'Ordinary', meaning: 'সাধারণ', sentence: 'It was an ordinary day with nothing special.' },
+    { word: 'Particular', meaning: 'বিশেষ', sentence: 'He has no particular preference in music.' },
+    { word: 'Pause', meaning: 'বিরাম', sentence: 'There was a pause before he answered the question.' },
+    { word: 'Persuade', meaning: 'প্ররোচিত করা', sentence: 'She tried to persuade him to join the team.' },
+    { word: 'Polite', meaning: 'ভদ্র', sentence: 'It is important to be polite in social situations.' },
+    { word: 'Precise', meaning: 'সঠিক', sentence: 'His precise measurements ensured accuracy.' },
+    { word: 'Quality', meaning: 'গুণমান', sentence: 'We always maintain high quality standards.' },
+    { word: 'Quantity', meaning: 'পরিমাণ', sentence: 'The quantity of production increased significantly.' },
+    { word: 'Quarrel', meaning: 'ঝগড়া', sentence: 'Their quarrel lasted for several hours.' },
+    { word: 'Queue', meaning: 'সারি', sentence: 'There was a long queue at the ticket counter.' },
+    { word: 'Quickly', meaning: 'দ্রুত', sentence: 'He quickly finished his homework before dinner.' },
+    { word: 'Rare', meaning: 'বিরল', sentence: 'This is a rare opportunity that you should not miss.' },
+    { word: 'Reasonable', meaning: 'যুক্তিসঙ্গত', sentence: 'The price is quite reasonable for such quality.' },
+    { word: 'Regret', meaning: 'অনুশোচনা', sentence: 'He expressed regret for his harsh words.' },
+    { word: 'Reliable', meaning: 'নির্ভরযোগ্য', sentence: 'She is a reliable person who always keeps her promises.' },
+    { word: 'Remind', meaning: 'মনে করিয়ে দেওয়া', sentence: 'Please remind me about the meeting tomorrow.' },
+    { word: 'Scarce', meaning: 'দুর্লভ', sentence: 'Clean water is scarce in some regions.' },
+    { word: 'Sensible', meaning: 'বুদ্ধিমান', sentence: 'A sensible decision requires careful thinking.' },
+    { word: 'Significant', meaning: 'উল্লেখযোগ্য', sentence: 'This discovery has significant implications for science.' },
+    { word: 'Sincere', meaning: 'আন্তরিক', sentence: 'His sincere apology was accepted by everyone.' },
+    { word: 'Strategy', meaning: 'কৌশল', sentence: 'A good strategy is essential for business success.' },
+    { word: 'Talent', meaning: 'প্রতিভা', sentence: 'She has exceptional talent in painting.' },
+    { word: 'Target', meaning: 'লক্ষ্য', sentence: 'Our target is to increase sales by fifty percent.' },
+    { word: 'Tendency', meaning: 'প্রবণতা', sentence: 'He has a tendency to arrive late for meetings.' },
+    { word: 'Thrilled', meaning: 'অত্যন্ত আনন্দিত', sentence: 'The children were thrilled to see the surprise.' },
+    { word: 'Tough', meaning: 'কঠিন', sentence: 'This is a tough decision with no easy answer.' },
+    { word: 'Ultimate', meaning: 'চূড়ান্ত', sentence: 'Winning the championship is the ultimate goal.' },
+    { word: 'Unique', meaning: 'অনন্য', sentence: 'Each person has a unique fingerprint.' },
+    { word: 'Update', meaning: 'আপডেট', sentence: 'The software update includes important security fixes.' },
+    { word: 'Urgent', meaning: 'জরুরি', sentence: 'This is an urgent matter that requires immediate attention.' },
+    { word: 'Utility', meaning: 'উপযোগিতা', sentence: 'The utility of this tool is undeniable.' },
+    { word: 'Vacant', meaning: 'শূন্য', sentence: 'The vacant position was filled quickly.' },
+    { word: 'Vague', meaning: 'অস্পষ্ট', sentence: 'His vague answer did not satisfy the audience.' },
+    { word: 'Valid', meaning: 'বৈধ', sentence: 'Your passport must be valid for travel.' },
+    { word: 'Variety', meaning: 'বৈচিত্র্য', sentence: 'The store offers a wide variety of products.' },
+    { word: 'Visible', meaning: 'দৃশ্যমান', sentence: 'The stars are visible on clear nights.' },
+    { word: 'Wander', meaning: 'ঘুরে বেড়ানো', sentence: 'We decided to wander through the streets of the city.' },
+    { word: 'Wealthy', meaning: 'সমৃদ্ধ', sentence: 'The wealthy businessman donated to charity.' },
+    { word: 'Weird', meaning: 'অভুত', sentence: 'That was a weird coincidence that happened yesterday.' },
+    { word: 'Willing', meaning: 'ইচ্ছুক', sentence: 'Are you willing to help with this project?' },
+    { word: 'Wisdom', meaning: 'জ্ঞান', sentence: 'Ancient wisdom is often found in philosophical texts.' },
+    { word: 'Xenon', meaning: 'জেনন', sentence: 'Xenon is a noble gas used in lighting.' },
+    { word: 'Xerox', meaning: 'জেরক্স', sentence: 'Please xerox these documents for the meeting.' },
+    { word: 'Xylophone', meaning: 'জাইলোফোন', sentence: 'The musician played a beautiful melody on the xylophone.' },
+    { word: 'X-ray', meaning: 'এক্স-রে', sentence: 'The doctor ordered an X-ray to check for fractures.' },
+    { word: 'Xeric', meaning: 'শুষ্ক', sentence: 'Xeric plants survive in dry climates.' },
+    { word: 'Yacht', meaning: 'ইয়ট', sentence: 'The luxury yacht sailed across the ocean.' },
+    { word: 'Yard', meaning: 'আঙ্গিনা', sentence: 'The children played in the backyard.' },
+    { word: 'Yawn', meaning: 'হাই তোলা', sentence: 'He began to yawn during the boring lecture.' },
+    { word: 'Yearly', meaning: 'বার্ষিক', sentence: 'We have a yearly meeting with our partners.' },
+    { word: 'Yet', meaning: 'এখনো', sentence: 'The project is not finished yet.' },
+    { word: 'Zap', meaning: 'ঝলকানি দেওয়া', sentence: 'Use the remote to zap between channels.' },
+    { word: 'Zeal', meaning: 'উৎসাহ', sentence: 'She approached the task with great zeal and enthusiasm.' },
+    { word: 'Zigzag', meaning: 'জিগজ্যাগ', sentence: 'The path made a zigzag pattern through the mountains.' },
+    { word: 'Zip', meaning: 'জিপ', sentence: 'Please zip up your jacket before going outside.' },
+    { word: 'Zone', meaning: 'অঞ্চল', sentence: 'This is a restricted zone with no entry allowed.' }
+            ],
+            
+            // VERB DATA: Add your verbs from Verb A-Z
+            verbs: [
+  // A
+  { verb: 'Accept', bengali: 'গ্রহণ করা' },
+  { verb: 'Achieve', bengali: 'অর্জন করা' },
+  { verb: 'Act', bengali: 'অভিনয়/কাজ করা' },
+  { verb: 'Add', bengali: 'যোগ করা' },
+  { verb: 'Admire', bengali: 'প্রশংসা করা' },
+  { verb: 'Admit', bengali: 'স্বীকার করা' },
+  { verb: 'Adopt', bengali: 'দত্তক/গ্রহণ করা' },
+  { verb: 'Adore', bengali: 'গভীরভাবে ভালোবাসা' },
+  { verb: 'Advise', bengali: 'উপদেশ দেওয়া' },
+  { verb: 'Affect', bengali: 'প্রভাবিত করা' },
+  { verb: 'Afford', bengali: 'সামর্থ্য হওয়া' },
+  { verb: 'Agree', bengali: 'রাজি হওয়া' },
+  { verb: 'Alarm', bengali: 'সতর্ক/ভীত করা' },
+  { verb: 'Alert', bengali: 'সতর্ক করা' },
+  { verb: 'Allow', bengali: 'অনুমতি দেওয়া' },
+  { verb: 'Amuse', bengali: 'আনন্দ দেওয়া' },
+  { verb: 'Analyze', bengali: 'বিশ্লেষণ করা' },
+  { verb: 'Announce', bengali: 'ঘোষণা করা' },
+  { verb: 'Annoy', bengali: 'বিরক্ত করা' },
+  { verb: 'Answer', bengali: 'উত্তর দেওয়া' },
+  { verb: 'Apologize', bengali: 'ক্ষমা চাওয়া' },
+  { verb: 'Appear', bengali: 'উপস্থিত হওয়া' },
+  { verb: 'Apply', bengali: 'আবেদন করা' },
+  { verb: 'Appoint', bengali: 'নিয়োগ দেওয়া' },
+  { verb: 'Appreciate', bengali: 'প্রশংসা করা' },
+  { verb: 'Approve', bengali: 'অনুমোদন করা' },
+  { verb: 'Argue', bengali: 'তর্ক করা' },
+  { verb: 'Arrange', bengali: 'ব্যবস্থা করা' },
+  { verb: 'Arrest', bengali: 'গ্রেপ্তার করা' },
+  { verb: 'Arrive', bengali: 'পৌঁছানো' },
+  { verb: 'Ask', bengali: 'জিজ্ঞাসা করা' },
+  { verb: 'Assess', bengali: 'মূল্যায়ন করা' },
+  { verb: 'Assist', bengali: 'সাহায্য করা' },
+  { verb: 'Assure', bengali: 'নিশ্চিত করা' },
+  { verb: 'Attach', bengali: 'সংযুক্ত করা' },
+  { verb: 'Attack', bengali: 'আক্রমণ করা' },
+  { verb: 'Attempt', bengali: 'চেষ্টা করা' },
+  { verb: 'Attend', bengali: 'উপস্থিত থাকা' },
+  { verb: 'Attract', bengali: 'আকর্ষণ করা' },
+  { verb: 'Avoid', bengali: 'এড়িয়ে চলা' },
+  { verb: 'Awake', bengali: 'জাগ্রত করা' },
+  { verb: 'Award', bengali: 'পুরস্কৃত করা' },
+  { verb: 'Adjust', bengali: 'মানিয়ে নেওয়া' },
+  { verb: 'Amaze', bengali: 'বিস্মিত করা' },
+  { verb: 'Amplify', bengali: 'বাড়ানো' },
+  { verb: 'Animate', bengali: 'প্রাণবন্ত করা' },
+  { verb: 'Anticipate', bengali: 'প্রত্যাশা করা' },
+  { verb: 'Arouse', bengali: 'জাগ্রত করা' },
+  { verb: 'Assemble', bengali: 'একত্রিত করা' },
+
+  // B
+  { verb: 'Balance', bengali: 'ভারসাম্য রক্ষা করা' },
+  { verb: 'Ban', bengali: 'নিষিদ্ধ করা' },
+  { verb: 'Bathe', bengali: 'গোসল করা' },
+  { verb: 'Bear', bengali: 'সহ্য করা/বহন করা' },
+  { verb: 'Beautify', bengali: 'সুন্দর করা' },
+  { verb: 'Beg', bengali: 'ভিক্ষা করা/অনুরোধ করা' },
+  { verb: 'Behave', bengali: 'আচরণ করা' },
+  { verb: 'Believe', bengali: 'বিশ্বাস করা' },
+  { verb: 'Belong', bengali: 'অধীন হওয়া/থাকা' },
+  { verb: 'Bend', bengali: 'বাঁকানো' },
+  { verb: 'Benefit', bengali: 'উপকৃত হওয়া' },
+  { verb: 'Betray', bengali: 'বিশ্বাসঘাতকতা করা' },
+  { verb: 'Bewilder', bengali: 'হতবুদ্ধি করা' },
+  { verb: 'Bind', bengali: 'বাঁধাই করা' },
+  { verb: 'Bite', bengali: 'কামড়ানো' },
+  { verb: 'Blame', bengali: 'দোষারোপ করা' },
+  { verb: 'Bleed', bengali: 'রক্তক্ষরণ হওয়া' },
+  { verb: 'Bless', bengali: 'আশীর্বাদ করা' },
+  { verb: 'Blind', bengali: 'অন্ধ করা' },
+  { verb: 'Block', bengali: 'আটকে দেওয়া' },
+  { verb: 'Bloom', bengali: 'ফুল ফোটা' },
+  { verb: 'Blow', bengali: 'বাতাস বয়ে যাওয়া' },
+  { verb: 'Blush', bengali: 'লজ্জায় লাল হওয়া' },
+  { verb: 'Boast', bengali: 'অহংকার করা' },
+  { verb: 'Boil', bengali: 'সিদ্ধ করা' },
+  { verb: 'Book', bengali: 'বুকিং দেওয়া' },
+  { verb: 'Bore', bengali: 'বিরক্ত করা' },
+  { verb: 'Borrow', bengali: 'ধার করা' },
+  { verb: 'Bother', bengali: 'বিরক্ত করা' },
+  { verb: 'Bounce', bengali: 'লাফানো' },
+  { verb: 'Bound', bengali: 'সীমাবদ্ধ করা' },
+  { verb: 'Bow', bengali: 'মাথা নত করা' },
+  { verb: 'Break', bengali: 'ভাঙা' },
+  { verb: 'Breathe', bengali: 'শ্বাস নেওয়া' },
+  { verb: 'Breed', bengali: 'বংশবৃদ্ধি করা' },
+  { verb: 'Brief', bengali: 'সংক্ষেপে বলা' },
+  { verb: 'Brighten', bengali: 'উজ্জ্বল করা' },
+  { verb: 'Bring', bengali: 'আনা' },
+  { verb: 'Broaden', bengali: 'প্রশস্ত করা' },
+  { verb: 'Brush', bengali: 'ব্রাশ করা' },
+  { verb: 'Build', bengali: 'নির্মাণ করা' },
+  { verb: 'Bump', bengali: 'ধাক্কা লাগা' },
+  { verb: 'Burn', bengali: 'পোড়ানো/পোড়া' },
+  { verb: 'Burst', bengali: 'ফেটে যাওয়া' },
+  { verb: 'Bury', bengali: 'সমাহিত করা' },
+  { verb: 'Buy', bengali: 'কেনা' },
+  { verb: 'Buzz', bengali: 'গুনগুন করা' },
+  { verb: 'Broadcast', bengali: 'প্রচার করা' },
+  { verb: 'Brutalize', bengali: 'নিষ্ঠুর হওয়া' },
+  { verb: 'Baffle', bengali: 'হতভম্ব করা' },
+
+  // C
+  { verb: 'Calculate', bengali: 'গণনা করা' },
+  { verb: 'Call', bengali: 'ডাকা' },
+  { verb: 'Cancel', bengali: 'বাতিল করা' },
+  { verb: 'Capture', bengali: 'বন্দি করা' },
+  { verb: 'Care', bengali: 'যত্ন নেওয়া' },
+  { verb: 'Carry', bengali: 'বহন করা' },
+  { verb: 'Celebrate', bengali: 'উদযাপন করা' },
+  { verb: 'Challenge', bengali: 'চ্যালেঞ্জ করা' },
+  { verb: 'Change', bengali: 'পরিবর্তন করা' },
+  { verb: 'Charge', bengali: 'চার্জ করা/অভিযোগ আনা' },
+  { verb: 'Chase', bengali: 'তাড়া করা' },
+  { verb: 'Chat', bengali: 'গল্প করা' },
+  { verb: 'Check', bengali: 'পরীক্ষা করা' },
+  { verb: 'Cheer', bengali: 'আনন্দ দেওয়া' },
+  { verb: 'Chew', bengali: 'চিবানো' },
+  { verb: 'Choose', bengali: 'পছন্দ করা' },
+  { verb: 'Circle', bengali: 'বৃত্তাকারে ঘোরা' },
+  { verb: 'Claim', bengali: 'দাবি করা' },
+  { verb: 'Clap', bengali: 'তালি দেওয়া' },
+  { verb: 'Clarify', bengali: 'স্পষ্ট করা' },
+  { verb: 'Classify', bengali: 'শ্রেণিবিভাগ করা' },
+  { verb: 'Clean', bengali: 'পরিষ্কার করা' },
+  { verb: 'Clear', bengali: 'স্পষ্ট/পরিষ্কার করা' },
+  { verb: 'Climb', bengali: 'আরোহণ করা' },
+  { verb: 'Close', bengali: 'বন্ধ করা' },
+  { verb: 'Coach', bengali: 'প্রশিক্ষণ দেওয়া' },
+  { verb: 'Collect', bengali: 'সংগ্রহ করা' },
+  { verb: 'Color', bengali: 'রঙ করা' },
+  { verb: 'Combine', bengali: 'একত্রিত করা' },
+  { verb: 'Comfort', bengali: 'আরাম দেওয়া' },
+  { verb: 'Command', bengali: 'আদেশ করা' },
+  { verb: 'Communicate', bengali: 'যোগাযোগ করা' },
+  { verb: 'Compare', bengali: 'তুলনা করা' },
+  { verb: 'Compete', bengali: 'প্রতিযোগিতা করা' },
+  { verb: 'Complain', bengali: 'অভিযোগ করা' },
+  { verb: 'Complete', bengali: 'সম্পন্ন করা' },
+  { verb: 'Compose', bengali: 'রচনা করা' },
+  { verb: 'Concentrate', bengali: 'মনোযোগ দেওয়া' },
+  { verb: 'Concern', bengali: 'উদ্বিগ্ন করা' },
+  { verb: 'Conclude', bengali: 'উপসংহার টানা' },
+  { verb: 'Confess', bengali: 'দোষ স্বীকার করা' },
+  { verb: 'Confuse', bengali: 'বিভ্রান্ত করা' },
+  { verb: 'Connect', bengali: 'যুক্ত করা' },
+  { verb: 'Consider', bengali: 'বিবেচনা করা' },
+  { verb: 'Construct', bengali: 'নির্মাণ করা' },
+  { verb: 'Consult', bengali: 'পরামর্শ করা' },
+  { verb: 'Contain', bengali: 'ধারণ করা' },
+  { verb: 'Continue', bengali: 'চালিয়ে যাওয়া' },
+  { verb: 'Control', bengali: 'নিয়ন্ত্রণ করা' },
+  { verb: 'Cook', bengali: 'রান্না করা' },
+
+  // D
+  { verb: 'Damage', bengali: 'ক্ষতি করা' },
+  { verb: 'Dance', bengali: 'নাচ করা' },
+  { verb: 'Dare', bengali: 'সাহস করা' },
+  { verb: 'Deceive', bengali: 'প্রতারণা করা' },
+  { verb: 'Decide', bengali: 'সিদ্ধান্ত নেওয়া' },
+  { verb: 'Declare', bengali: 'ঘোষণা করা' },
+  { verb: 'Decorate', bengali: 'সাজানো' },
+  { verb: 'Decrease', bengali: 'কমানো' },
+  { verb: 'Dedicate', bengali: 'উৎসর্গ করা' },
+  { verb: 'Defeat', bengali: 'পরাজিত করা' },
+  { verb: 'Defend', bengali: 'রক্ষা করা' },
+  { verb: 'Define', bengali: 'সংজ্ঞায়িত করা' },
+  { verb: 'Delay', bengali: 'দেরি করা' },
+  { verb: 'Delight', bengali: 'আনন্দিত করা' },
+  { verb: 'Deliver', bengali: 'পৌঁছে দেওয়া' },
+  { verb: 'Demonstrate', bengali: 'প্রদর্শন করা' },
+  { verb: 'Depend', bengali: 'নির্ভর করা' },
+  { verb: 'Describe', bengali: 'বর্ণনা করা' },
+  { verb: 'Deserve', bengali: 'যোগ্য হওয়া' },
+  { verb: 'Design', bengali: 'নকশা করা' },
+  { verb: 'Destroy', bengali: 'ধ্বংস করা' },
+  { verb: 'Detach', bengali: 'বিচ্ছিন্ন করা' },
+  { verb: 'Detect', bengali: 'শনাক্ত করা' },
+  { verb: 'Determine', bengali: 'সংকল্প করা' },
+  { verb: 'Develop', bengali: 'উন্নত করা' },
+  { verb: 'Devote', bengali: 'মনোনিবেশ করা' },
+  { verb: 'Dictate', bengali: 'হুকুম দেওয়া' },
+  { verb: 'Die', bengali: 'মারা যাওয়া' },
+  { verb: 'Differ', bengali: 'ভিন্ন হওয়া' },
+  { verb: 'Differentiate', bengali: 'পার্থক্য করা' },
+  { verb: 'Dig', bengali: 'খনন করা' },
+  { verb: 'Digest', bengali: 'হজম করা' },
+  { verb: 'Diminish', bengali: 'হ্রাস পাওয়া' },
+  { verb: 'Direct', bengali: 'পরিচালনা করা' },
+  { verb: 'Disagree', bengali: 'অসম্মত হওয়া' },
+  { verb: 'Disappear', bengali: 'অদৃশ্য হওয়া' },
+  { verb: 'Disappoint', bengali: 'হতাশ করা' },
+  { verb: 'Discard', bengali: 'ফেলে দেওয়া' },
+  { verb: 'Discover', bengali: 'আবিষ্কার করা' },
+  { verb: 'Discuss', bengali: 'আলোচনা করা' },
+  { verb: 'Disguise', bengali: 'ছদ্মবেশ ধারণ করা' },
+  { verb: 'Dislike', bengali: 'অপছন্দ করা' },
+  { verb: 'Dismiss', bengali: 'বরখাস্ত করা' },
+  { verb: 'Display', bengali: 'প্রদর্শন করা' },
+  { verb: 'Distinguish', bengali: 'পার্থক্য করা' },
+  { verb: 'Distribute', bengali: 'বিতরণ করা' },
+  { verb: 'Disturb', bengali: 'বিরক্ত করা' },
+  { verb: 'Divide', bengali: 'ভাগ করা' },
+  { verb: 'Do', bengali: 'করা' },
+  { verb: 'Double', bengali: 'দ্বিগুণ করা' },
+
+  // E
+  { verb: 'Earn', bengali: 'উপার্জন করা' },
+  { verb: 'Ease', bengali: 'সহজ করা' },
+  { verb: 'Eat', bengali: 'খাওয়া' },
+  { verb: 'Echo', bengali: 'প্রতিধ্বনিত হওয়া' },
+  { verb: 'Economize', bengali: 'মিতব্যয়ী হওয়া' },
+  { verb: 'Edit', bengali: 'সম্পাদনা করা' },
+  { verb: 'Educate', bengali: 'শিক্ষা দেওয়া' },
+  { verb: 'Effect', bengali: 'কার্যকর করা' },
+  { verb: 'Elaborate', bengali: 'বিস্তারিত বলা' },
+  { verb: 'Elect', bengali: 'নির্বাচিত করা' },
+  { verb: 'Elevate', bengali: 'উন্নত/উঁচু করা' },
+  { verb: 'Eliminate', bengali: 'বর্জন/বাদ দেওয়া' },
+  { verb: 'Embarrass', bengali: 'লজ্জিত করা' },
+  { verb: 'Embrace', bengali: 'আলিঙ্গন করা' },
+  { verb: 'Emerge', bengali: 'উত্থিত হওয়া' },
+  { verb: 'Emphasize', bengali: 'গুরুত্ব দেওয়া' },
+  { verb: 'Employ', bengali: 'নিয়োগ দেওয়া' },
+  { verb: 'Empty', bengali: 'খালি করা' },
+  { verb: 'Enable', bengali: 'সক্ষম করা' },
+  { verb: 'Enchant', bengali: 'মুগ্ধ করা' },
+  { verb: 'Enclose', bengali: 'সংযুক্ত করা' },
+  { verb: 'Encourage', bengali: 'উৎসাহিত করা' },
+  { verb: 'End', bengali: 'শেষ করা' },
+  { verb: 'Endanger', bengali: 'বিপন্ন করা' },
+  { verb: 'Endure', bengali: 'সহ্য করা' },
+  { verb: 'Energize', bengali: 'উদ্যমী করা' },
+  { verb: 'Enforce', bengali: 'বলবৎ করা' },
+  { verb: 'Engage', bengali: 'নিযুক্ত করা' },
+  { verb: 'Enhance', bengali: 'বৃদ্ধি করা' },
+  { verb: 'Enjoy', bengali: 'উপভোগ করা' },
+  { verb: 'Enlarge', bengali: 'বড় করা' },
+  { verb: 'Enlighten', bengali: 'আলোকিত করা' },
+  { verb: 'Enquire', bengali: 'অনুসন্ধান করা' },
+  { verb: 'Enrage', bengali: 'ক্ষিপ্ত করা' },
+  { verb: 'Enrich', bengali: 'সমৃদ্ধ করা' },
+  { verb: 'Ensure', bengali: 'নিশ্চিত করা' },
+  { verb: 'Enter', bengali: 'প্রবেশ করা' },
+  { verb: 'Entertain', bengali: 'বিনোদন দেওয়া' },
+  { verb: 'Enthuse', bengali: 'উদীপ্ত করা' },
+  { verb: 'Entitle', bengali: 'অধিকার দেওয়া' },
+  { verb: 'Entrust', bengali: 'অর্পণ করা' },
+  { verb: 'Enumerate', bengali: 'গণনা করা' },
+  { verb: 'Envy', bengali: 'ঈর্ষা করা' },
+  { verb: 'Equal', bengali: 'সমান হওয়া' },
+  { verb: 'Equip', bengali: 'সজ্জিত করা' },
+  { verb: 'Erase', bengali: 'মুছে ফেলা' },
+  { verb: 'Escape', bengali: 'পালিয়ে যাওয়া' },
+  { verb: 'Establish', bengali: 'প্রতিষ্ঠা করা' },
+  { verb: 'Estimate', bengali: 'অনুমান করা' },
+  { verb: 'Exaggerate', bengali: 'অতিরঞ্জিত করা' },
+
+  // F
+  { verb: 'Face', bengali: 'মুখোমুখি হওয়া' },
+  { verb: 'Facilitate', bengali: 'সহজতর করা' },
+  { verb: 'Fade', bengali: 'বিবর্ণ হওয়া' },
+  { verb: 'Fail', bengali: 'ব্যর্থ হওয়া' },
+  { verb: 'Faint', bengali: 'অজ্ঞান হওয়া' },
+  { verb: 'Fake', bengali: 'নকল করা' },
+  { verb: 'Fall', bengali: 'পতিত হওয়া' },
+  { verb: 'Falsify', bengali: 'মিথ্যা প্রমাণ করা' },
+  { verb: 'Familiarize', bengali: 'পরিচিত করা' },
+  { verb: 'Fancy', bengali: 'কল্পনা করা/পছন্দ করা' },
+  { verb: 'Fascinate', bengali: 'মুগ্ধ করা' },
+  { verb: 'Fashion', bengali: 'তৈরি করা/আকার দেওয়া' },
+  { verb: 'Fasten', bengali: 'আটকানো' },
+  { verb: 'Favor', bengali: 'অনুগ্রহ করা' },
+  { verb: 'Fear', bengali: 'ভয় পাওয়া' },
+  { verb: 'Feed', bengali: 'খাওয়ানো' },
+  { verb: 'Feel', bengali: 'অনুভব করা' },
+  { verb: 'Fence', bengali: 'বেড়া দেওয়া' },
+  { verb: 'Fetch', bengali: 'গিয়ে নিয়ে আসা' },
+  { verb: 'Fight', bengali: 'যুদ্ধ করা' },
+  { verb: 'Fill', bengali: 'পূর্ণ করা' },
+  { verb: 'Finalize', bengali: 'চূড়ান্ত করা' },
+  { verb: 'Finance', bengali: 'অর্থায়ন করা' },
+  { verb: 'Find', bengali: 'খুঁজে পাওয়া' },
+  { verb: 'Finish', bengali: 'শেষ করা' },
+  { verb: 'Fire', bengali: 'আগুন লাগানো/বরখাস্ত করা' },
+  { verb: 'Fit', bengali: 'উপযুক্ত হওয়া' },
+  { verb: 'Fix', bengali: 'মেরামত করা' },
+  { verb: 'Flash', bengali: 'ঝলকানো' },
+  { verb: 'Flatten', bengali: 'সমতল করা' },
+  { verb: 'Flatter', bengali: 'তোষামোদ করা' },
+  { verb: 'Flavor', bengali: 'স্বাদযুক্ত করা' },
+  { verb: 'Flee', bengali: 'পালিয়ে যাওয়া' },
+  { verb: 'Float', bengali: 'ভাসা' },
+  { verb: 'Flood', bengali: 'প্লাবিত করা' },
+  { verb: 'Flow', bengali: 'প্রবাহিত হওয়া' },
+  { verb: 'Flower', bengali: 'ফুল ফোটা' },
+  { verb: 'Flush', bengali: 'ধুয়ে ফেলা/লাল হওয়া' },
+  { verb: 'Fly', bengali: 'ওড়া' },
+  { verb: 'Focus', bengali: 'মনোযোগ দেওয়া' },
+  { verb: 'Fold', bengali: 'ভাঁজ করা' },
+  { verb: 'Follow', bengali: 'অনুসরণ করা' },
+  { verb: 'Fool', bengali: 'বোকা বানানো' },
+  { verb: 'Forbid', bengali: 'নিষেধ করা' },
+  { verb: 'Force', bengali: 'বলপ্রয়োগ করা' },
+  { verb: 'Forecast', bengali: 'পূর্বাভাস দেওয়া' },
+  { verb: 'Foresee', bengali: 'আগে থেকে দেখা' },
+  { verb: 'Forget', bengali: 'ভুলে যাওয়া' },
+  { verb: 'Forgive', bengali: 'ক্ষমা করা' },
+  { verb: 'Form', bengali: 'গঠন করা' },
+
+  // G
+  { verb: 'Gain', bengali: 'লাভ করা' },
+  { verb: 'Gamble', bengali: 'জুয়া খেলা' },
+  { verb: 'Garden', bengali: 'বাগান করা' },
+  { verb: 'Gather', bengali: 'একত্রিত করা' },
+  { verb: 'Gaze', bengali: 'একদৃষ্টিতে তাকানো' },
+  { verb: 'Generalize', bengali: 'সাধারণীকরণ করা' },
+  { verb: 'Generate', bengali: 'উৎপন্ন করা' },
+  { verb: 'Get', bengali: 'পাওয়া' },
+  { verb: 'Gift', bengali: 'উপহার দেওয়া' },
+  { verb: 'Giggle', bengali: 'ফিকফিক করে হাসা' },
+  { verb: 'Give', bengali: 'দেওয়া' },
+  { verb: 'Glance', bengali: 'এক পলক দেখা' },
+  { verb: 'Glare', bengali: 'তীব্র দৃষ্টিতে তাকানো' },
+  { verb: 'Glide', bengali: 'পিছলে চলা' },
+  { verb: 'Glimpse', bengali: 'এক পলক দেখা' },
+  { verb: 'Glitter', bengali: 'ঝকঝক করা' },
+  { verb: 'Glorify', bengali: 'মহিমান্বিত করা' },
+  { verb: 'Glow', bengali: 'উজ্জ্বল হওয়া' },
+  { verb: 'Glue', bengali: 'আঠা দিয়ে লাগানো' },
+  { verb: 'Go', bengali: 'যাওয়া' },
+  { verb: 'Govern', bengali: 'শাসন করা' },
+  { verb: 'Grab', bengali: 'ছিনিয়ে নেওয়া' },
+  { verb: 'Grace', bengali: 'অলঙ্কৃত করা' },
+  { verb: 'Grade', bengali: 'শ্রেণিভুক্ত করা' },
+  { verb: 'Graduate', bengali: 'স্নাতক হওয়া' },
+  { verb: 'Grant', bengali: 'মঞ্জুর করা' },
+  { verb: 'Grasp', bengali: 'মুঠো করে ধরা/বোঝা' },
+  { verb: 'Gratify', bengali: 'পরিতৃপ্ত করা' },
+  { verb: 'Graze', bengali: 'তৃণ ভক্ষণ করা' },
+  { verb: 'Greet', bengali: 'অভিবাদন জানানো' },
+  { verb: 'Grieve', bengali: 'শোক করা' },
+  { verb: 'Grill', bengali: 'ঝলসানো' },
+  { verb: 'Grin', bengali: 'দাঁত বের করে হাসা' },
+  { verb: 'Grind', bengali: 'চূর্ণ করা' },
+  { verb: 'Grip', bengali: 'শক্ত করে ধরা' },
+  { verb: 'Groan', bengali: 'আর্তনাদ করা' },
+  { verb: 'Groom', bengali: 'পরিচ্ছন্ন করা' },
+  { verb: 'Grope', bengali: 'হাতড়ানো' },
+  { verb: 'Ground', bengali: 'ভিত্তি স্থাপন করা' },
+  { verb: 'Grow', bengali: 'জন্মানো/বৃদ্ধি পাওয়া' },
+  { verb: 'Guarantee', bengali: 'নিশ্চয়তা দেওয়া' },
+  { verb: 'Guard', bengali: 'পাহারা দেওয়া' },
+  { verb: 'Guess', bengali: 'অনুমান করা' },
+  { verb: 'Guide', bengali: 'পথ দেখানো' },
+  { verb: 'Gulp', bengali: 'গপগপ করে গেলা' },
+  { verb: 'Gush', bengali: 'বেগে বের হওয়া' },
+  { verb: 'Guzzle', bengali: 'লোভের সাথে খাওয়া' },
+  { verb: 'Garner', bengali: 'সংগ্রহ করা' },
+
+  // H
+  { verb: 'Habituate', bengali: 'অভ্যস্ত করা' },
+  { verb: 'Hail', bengali: 'অভিবাদন জানানো/শিলাবৃষ্টি হওয়া' },
+  { verb: 'Halt', bengali: 'থামানো' },
+  { verb: 'Hammer', bengali: 'হাতুড়ি দিয়ে মারা' },
+  { verb: 'Handle', bengali: 'পরিচালনা করা' },
+  { verb: 'Hang', bengali: 'ঝোলানো' },
+  { verb: 'Happen', bengali: 'ঘটা' },
+  { verb: 'Harass', bengali: 'হয়ানি করা' },
+  { verb: 'Harmen', bengali: 'ক্ষতি করা' },
+  { verb: 'Harmonize', bengali: 'সামঞ্জস্য করা' },
+  { verb: 'Harness', bengali: 'কাজে লাগানো' },
+  { verb: 'Harvest', bengali: 'ফসল কাটা' },
+  { verb: 'Hasten', bengali: 'ত্বরান্বিত করা' },
+  { verb: 'Hatch', bengali: 'ডিম ফোটানো' },
+  { verb: 'Hate', bengali: 'ঘৃণা করা' },
+  { verb: 'Have', bengali: 'থাকা/আছে' },
+  { verb: 'Heal', bengali: 'সুস্থ হওয়া' },
+  { verb: 'Heap', bengali: 'গাদা করা' },
+  { verb: 'Hear', bengali: 'শোনা' },
+  { verb: 'Heaten', bengali: 'উত্তপ্ত করা' },
+  { verb: 'Heighten', bengali: 'উচ্চ করা/বাড়ানো' },
+  { verb: 'Help', bengali: 'সাহায্য করা' },
+  { verb: 'Hesitate', bengali: 'দ্বিধা করা' },
+  { verb: 'Hide', bengali: 'লুকানো' },
+  { verb: 'Highlight', bengali: 'উজ্জ্বল করা/তুলে ধরা' },
+  { verb: 'Hinder', bengali: 'বাধা দেওয়া' },
+  { verb: 'Hint', bengali: 'আভাস দেওয়া' },
+  { verb: 'Hire', bengali: 'ভাড়া করা' },
+  { verb: 'Hiss', bengali: 'শিস দেওয়া' },
+  { verb: 'Hit', bengali: 'আঘাত করা' },
+  { verb: 'Hoard', bengali: 'মজুত করা' },
+  { verb: 'Hold', bengali: 'ধরা' },
+  { verb: 'Hollow', bengali: 'ফাঁপা করা' },
+  { verb: 'Honor', bengali: 'সম্মান করা' },
+  { verb: 'Hook', bengali: 'আটকানো' },
+  { verb: 'Hop', bengali: 'লাফানো' },
+  { verb: 'Hope', bengali: 'আশা করা' },
+  { verb: 'Horrify', bengali: 'ভীত করা' },
+  { verb: 'Hospitalize', bengali: 'হাসপাতালে ভর্তি করা' },
+  { verb: 'Host', bengali: 'আতিথেয়তা করা' },
+  { verb: 'House', bengali: 'আশ্রয় দেওয়া' },
+  { verb: 'Hover', bengali: 'ঘোরাফেরা করা' },
+  { verb: 'Hug', bengali: 'জড়িয়ে ধরা' },
+  { verb: 'Hum', bengali: 'গুনগুন করা' },
+  { verb: 'Humiliate', bengali: 'অপমান করা' },
+  { verb: 'Hunt', bengali: 'শিকার করা' },
+  { verb: 'Hurl', bengali: 'জোরে নিক্ষেপ করা' },
+  { verb: 'Hurry', bengali: 'তাড়াহুড়ো করা' },
+  { verb: 'Hurt', bengali: 'আঘাত দেওয়া' },
+  { verb: 'Hypothesize', bengali: 'অনুমান করা' },
+
+  // I
+  { verb: 'Identify', bengali: 'শনাক্ত করা' },
+  { verb: 'Ignore', bengali: 'উপেক্ষা করা' },
+  { verb: 'Illuminate', bengali: 'আলোকিত করা' },
+  { verb: 'Illustrate', bengali: 'চিত্রিত/ব্যাখ্যা করা' },
+  { verb: 'Imagine', bengali: 'কল্পনা করা' },
+  { verb: 'Imitate', bengali: 'অনুকরণ করা' },
+  { verb: 'Immerse', bengali: 'নিমজ্জিত করা' },
+  { verb: 'Imply', bengali: 'পরোক্ষভাবে বোঝানো' },
+  { verb: 'Import', bengali: 'আমদানি করা' },
+  { verb: 'Impose', bengali: 'আরোপ করা' },
+  { verb: 'Impress', bengali: 'অভিভূত করা' },
+  { verb: 'Imprison', bengali: 'কারারুদ্ধ করা' },
+  { verb: 'Improve', bengali: 'উন্নত করা' },
+  { verb: 'Inaugurate', bengali: 'উদ্বোধন করা' },
+  { verb: 'Include', bengali: 'অন্তর্ভুক্ত করা' },
+  { verb: 'Increase', bengali: 'বৃদ্ধি করা' },
+  { verb: 'Indicate', bengali: 'নির্দেশ করা' },
+  { verb: 'Induce', bengali: 'প্ররোচিত করা' },
+  { verb: 'Indulge', bengali: 'প্রশ্রয় দেওয়া' },
+  { verb: 'Infect', bengali: 'সংক্রমিত করা' },
+  { verb: 'Infer', bengali: 'অনুমান করা' },
+  { verb: 'Inflate', bengali: 'স্ফীত করা' },
+  { verb: 'Influence', bengali: 'প্রভাবিত করা' },
+  { verb: 'Inform', bengali: 'জানানো' },
+  { verb: 'Inhale', bengali: 'শ্বাস নেওয়া' },
+  { verb: 'Inherit', bengali: 'উত্তরাধিকার পাওয়া' },
+  { verb: 'Initiate', bengali: 'শুরু করা' },
+  { verb: 'Inject', bengali: 'ইনজেকশন দেওয়া' },
+  { verb: 'Injure', bengali: 'আহত করা' },
+  { verb: 'Innovate', bengali: 'উদ্ভাবন করা' },
+  { verb: 'Input', bengali: 'তথ্য প্রদান করা' },
+  { verb: 'Inquire', bengali: 'অনুসন্ধান করা' },
+  { verb: 'Inscribe', bengali: 'খোদাই করা' },
+  { verb: 'Insert', bengali: 'প্রবেশ করানো' },
+  { verb: 'Insist', bengali: 'জেদ করা' },
+  { verb: 'Inspect', bengali: 'পরিদর্শন করা' },
+  { verb: 'Inspire', bengali: 'অনুপ্রাণিত করা' },
+  { verb: 'Install', bengali: 'স্থাপন করা' },
+  { verb: 'Instruct', bengali: 'নির্দেশ দেওয়া' },
+  { verb: 'Insult', bengali: 'অপমান করা' },
+  { verb: 'Integrate', bengali: 'একীভূত করা' },
+  { verb: 'Intend', bengali: 'মনস্থ করা' },
+  { verb: 'Interact', bengali: 'মিথস্ক্রিয়া করা' },
+  { verb: 'Interest', bengali: 'আগ্রহী করা' },
+  { verb: 'Interfere', bengali: 'হস্তক্ষেপ করা' },
+  { verb: 'Interpret', bengali: 'ব্যাখ্যা করা' },
+  { verb: 'Interrupt', bengali: 'বাধা দেওয়া' },
+  { verb: 'Introduce', bengali: 'পরিচয় করানো' },
+  { verb: 'Invent', bengali: 'আবিষ্কার করা' },
+  { verb: 'Invest', bengali: 'বিনিয়োগ করা' },
+  { verb: 'Invite', bengali: 'আমন্ত্রণ জানানো' },
+
+  // J
+  { verb: 'Jab', bengali: 'খোঁচা দেওয়া' },
+  { verb: 'Jail', bengali: 'কারারুদ্ধ করা' },
+  { verb: 'Jam', bengali: 'আটকে যাওয়া/জ্যাম করা' },
+  { verb: 'Jar', bengali: 'ঝাঁকুনি দেওয়া/বিরক্ত করা' },
+  { verb: 'Jeer', bengali: 'উপহাস করা' },
+  { verb: 'Jeopardize', bengali: 'বিপন্ন করা' },
+  { verb: 'Jerk', bengali: 'হ্যাঁচকা টান দেওয়া' },
+  { verb: 'Jest', bengali: 'রসিকতা করা' },
+  { verb: 'Jingle', bengali: 'ঝুনঝুন শব্দ করা' },
+  { verb: 'Job', bengali: 'কাজ করা (চুক্তিভিত্তিক)' },
+  { verb: 'Jog', bengali: 'ধীরে দৌড়ানো' },
+  { verb: 'Join', bengali: 'যুক্ত হওয়া' },
+  { verb: 'Joke', bengali: 'কৌতুক করা' },
+  { verb: 'Jolt', bengali: 'ঝাঁকুনি দেওয়া' },
+  { verb: 'Journal', bengali: 'লিপিবদ্ধ করা' },
+  { verb: 'Journey', bengali: 'ভ্রমণ করা' },
+  { verb: 'Joy', bengali: 'আনন্দ করা' },
+  { verb: 'Judge', bengali: 'বিচার করা' },
+  { verb: 'Juggle', bengali: 'বাজি দেখানো/একসাথে সামলানো' },
+  { verb: 'Jumble', bengali: 'এলোমেলো করা' },
+  { verb: 'Jump', bengali: 'লাফ দেওয়া' },
+  { verb: 'Justify', bengali: 'ন্যায়সংগত প্রমাণ করা' },
+  { verb: 'Juxtapose', bengali: 'পাশাপাশি রাখা' },
+  { verb: 'Jabber', bengali: 'অনর্গল বকা' },
+  { verb: 'Jag', bengali: 'খাঁজকাটা করা' },
+  { verb: 'Jangle', bengali: 'কর্কশ শব্দ করা' },
+  { verb: 'Jaunt', bengali: 'মজা করতে ঘুরে বেড়ানো' },
+  { verb: 'Jazz', bengali: 'প্রাণবন্ত করা' },
+  { verb: 'Jell', bengali: 'জমাট বাঁধা/স্পষ্ট হওয়া' },
+  { verb: 'Jewel', bengali: 'রত্নখচিত করা' },
+  { verb: 'Jib', bengali: 'পেছানো/অসম্মত হওয়া' },
+  { verb: 'Jig', bengali: 'দ্রুত নাচা' },
+  { verb: 'Jiggle', bengali: 'হালকা নাড়ানো' },
+  { verb: 'Jilt', bengali: 'প্রত্যাখ্যান করা (প্রেম)' },
+  { verb: 'Joist', bengali: 'কড়িকাঠ লাগানো' },
+  { verb: 'Jolly', bengali: 'খুশি করা' },
+  { verb: 'Jostle', bengali: 'ধাক্কাধাক্কি করা' },
+  { verb: 'Journalize', bengali: 'হিসাবভুক্ত করা' },
+  { verb: 'Joyride', bengali: 'আনন্দে গাড়ি চালানো' },
+  { verb: 'Jubilate', bengali: 'উল্লাস করা' },
+  { verb: 'Judicialize', bengali: 'আইনি রূপ দেওয়া' },
+  { verb: 'Jump-start', bengali: 'দ্রুত শুরু করা' },
+  { verb: 'Junction', bengali: 'সংযোগ করা' },
+  { verb: 'Junk', bengali: 'ফেলে দেওয়া (অপ্রয়োজনীয়)' },
+  { verb: 'Justle', bengali: 'কনুই দিয়ে ঠেলা' },
+
+  // K
+  { verb: 'Keel', bengali: 'উল্টে যাওয়া' },
+  { verb: 'Keep', bengali: 'রাখা/রক্ষা করা' },
+  { verb: 'Kennel', bengali: 'কুকুরের ঘরে রাখা' },
+  { verb: 'Key', bengali: 'প্রধান বা মূল করা' },
+  { verb: 'Kick', bengali: 'লাথি মারা' },
+  { verb: 'Kid', bengali: 'মজা করা/ঠাট্টা করা' },
+  { verb: 'Kidnap', bengali: 'অপহরণ করা' },
+  { verb: 'Kill', bengali: 'হত্যা করা' },
+  { verb: 'Kindle', bengali: 'আগুন জ্বালানো/জাগিয়ে তোলা' },
+  { verb: 'Kiss', bengali: 'চুম্বন করা' },
+  { verb: 'Knead', bengali: 'ছানা বা মাখা (ময়দা)' },
+  { verb: 'Kneel', bengali: 'হাঁটু গেড়ে বসা' },
+  { verb: 'Knife', bengali: 'ছুরি দিয়ে মারা' },
+  { verb: 'Knight', bengali: 'উপাধি দেওয়া' },
+  { verb: 'Knit', bengali: 'বোনা' },
+  { verb: 'Knock', bengali: 'ধাক্কা দেওয়া/খটখট করা' },
+  { verb: 'Knot', bengali: 'গিট দেওয়া' },
+  { verb: 'Know', bengali: 'জানা' },
+  { verb: 'Knuckle', bengali: 'আঙুলের গাঁট দিয়ে মারা' },
+  { verb: 'Kowtow', bengali: 'সাষ্টাঙ্গে প্রণাম করা' },
+  { verb: 'Kibitz', bengali: 'অযাচিত পরামর্শ দেওয়া' },
+  { verb: 'Kedge', bengali: 'নোঙর ফেলে টানা' },
+  { verb: 'Keen', bengali: 'শোকাতুর বিলাপ করা' },
+  { verb: 'Keep-up', bengali: 'বজায় রাখা' },
+  { verb: 'Kelp', bengali: 'সামুদ্রিক আগাছা পরিষ্কার করা' },
+  { verb: 'Ken', bengali: 'দৃষ্টিগোচর হওয়া/জানা' },
+  { verb: 'Ketchupped', bengali: 'ক্যাচাপ মাখানো' },
+  { verb: 'Kettled', bengali: 'কেটলিতে রান্না করা/ঘেরা' },
+  { verb: 'Keynote', bengali: 'মূল বক্তব্য দেওয়া' },
+  { verb: 'Kibosh', bengali: 'বন্ধ করা/নস্যাৎ করা' },
+  { verb: 'Kick-off', bengali: 'শুরু করা' },
+  { verb: 'Kick-start', bengali: 'দ্রুত শুরু করা' },
+  { verb: 'Kilned', bengali: 'চুল্লিতে পোড়ানো' },
+  { verb: 'Kink', bengali: 'জট পাকানো' },
+  { verb: 'Kipped', bengali: 'ঘুমানো' },
+  { verb: 'Kismetted', bengali: 'ভাগ্যের হাতে ছাড়া' },
+  { verb: 'Kit', bengali: 'সরঞ্জাম দিয়ে সাজানো' },
+  { verb: 'Kited', bengali: 'ভুয়া চেক দেওয়া' },
+  { verb: 'Kitsched', bengali: 'সস্তা শিল্পে সাজানো' },
+  { verb: 'Knacked', bengali: 'কৌশলে করা' },
+  { verb: 'Kneecapped', bengali: 'হাঁটুতে আঘাত করা' },
+  { verb: 'Knocked-out', bengali: 'অজ্ঞান করে দেওয়া' },
+  // L
+  { verb: 'Label', bengali: 'চিহ্নিত করা' },
+  { verb: 'Lack', bengali: 'অভাব হওয়া' },
+  { verb: 'Lament', bengali: 'বিলাপ করা' },
+  { verb: 'Land', bengali: 'অবতরণ করা' },
+  { verb: 'Last', bengali: 'স্থায়ী হওয়া' },
+  { verb: 'Laugh', bengali: 'হাসা' },
+  { verb: 'Launch', bengali: 'শুরু করা/উৎক্ষেপণ করা' },
+  { verb: 'Lay', bengali: 'শুয়ানো/রাখা' },
+  { verb: 'Lead', bengali: 'পরিচালনা করা' },
+  { verb: 'Leak', bengali: 'চুইয়ে পড়া/ফাঁস হওয়া' },
+  { verb: 'Lean', bengali: 'হেলান দেওয়া' },
+  { verb: 'Learn', bengali: 'শেখা' },
+  { verb: 'Lease', bengali: 'ইজারা দেওয়া' },
+  { verb: 'Leave', bengali: 'ত্যাগ করা/ফেলে যাওয়া' },
+  { verb: 'Lecture', bengali: 'বক্তৃতা দেওয়া' },
+  { verb: 'Legalize', bengali: 'বৈধ করা' },
+  { verb: 'Lend', bengali: 'ধার দেওয়া' },
+  { verb: 'Lengthen', bengali: 'দীর্ঘ করা' },
+  { verb: 'Lessen', bengali: 'কমানো' },
+  { verb: 'Level', bengali: 'সমান করা' },
+  { verb: 'License', bengali: 'অনুমতিপত্র দেওয়া' },
+  { verb: 'Lick', bengali: 'চাটা' },
+  { verb: 'Lie', bengali: 'মিথ্যা বলা' },
+  { verb: 'Lift', bengali: 'উত্তোলন করা' },
+  { verb: 'Light', bengali: 'জ্বালানো/আলোকিত করা' },
+  { verb: 'Like', bengali: 'পছন্দ করা' },
+  { verb: 'Limit', bengali: 'সীমাবদ্ধ করা' },
+  { verb: 'Link', bengali: 'যুক্ত করা' },
+  { verb: 'List', bengali: 'তালিকাভুক্ত করা' },
+  { verb: 'Listen', bengali: 'শোনা' },
+  { verb: 'Live', bengali: 'বাস করা/বেঁচে থাকা' },
+  { verb: 'Load', bengali: 'বোঝাই করা' },
+  { verb: 'Loan', bengali: 'ঋণ দেওয়া' },
+  { verb: 'Locate', bengali: 'অবস্থান নির্ণয় করা' },
+  { verb: 'Lock', bengali: 'তালা লাগানো' },
+  { verb: 'Log', bengali: 'লিপিবদ্ধ করা' },
+  { verb: 'Long', bengali: 'দীর্ঘ আকাঙ্ক্ষা করা' },
+  { verb: 'Look', bengali: 'তাকানো' },
+  { verb: 'Loose', bengali: 'মুক্ত করা/আলগা করা' },
+  { verb: 'Lose', bengali: 'হারানো' },
+  { verb: 'Love', bengali: 'ভালোবাসা' },
+  { verb: 'Lower', bengali: 'নামানো/কমানো' },
+  { verb: 'Lubricate', bengali: 'পিচ্ছিল করা' },
+  { verb: 'Lucky', bengali: 'ভাগ্যবান হওয়া' },
+  { verb: 'Lull', bengali: 'শান্ত করা/ঘুম পাড়ানো' },
+  { verb: 'Lumber', bengali: 'ভারী পায়ে চলা' },
+  { verb: 'Lump', bengali: 'পিণ্ড করা/একত্র করা' },
+  { verb: 'Lunch', bengali: 'দুপুরের খাবার খাওয়া' },
+  { verb: 'Lure', bengali: 'প্রলুব্ধ করা' },
+  { verb: 'Lurk', bengali: 'ওত পেতে থাকা' },
+
+  // M
+  { verb: 'Magnify', bengali: 'বিবর্ধিত করা' },
+  { verb: 'Maintain', bengali: 'বজায় রাখা' },
+  { verb: 'Make', bengali: 'তৈরি করা' },
+  { verb: 'Manage', bengali: 'ব্যবস্থাপনা করা' },
+  { verb: 'Manipulate', bengali: 'কৌশলে নিয়ন্ত্রণ করা' },
+  { verb: 'Manufacture', bengali: 'উৎপাদন করা' },
+  { verb: 'Map', bengali: 'মানচিত্রাঙ্কন করা' },
+  { verb: 'March', bengali: 'কুচকাওয়াজ করা' },
+  { verb: 'Mark', bengali: 'চিহ্নিত করা' },
+  { verb: 'Market', bengali: 'বাজারজাত করা' },
+  { verb: 'Marry', bengali: 'বিয়ে করা' },
+  { verb: 'Marvel', bengali: 'বিস্মিত হওয়া' },
+  { verb: 'Master', bengali: 'আয়ত্ত করা' },
+  { verb: 'Match', bengali: 'মিলানো' },
+  { verb: 'Materialize', bengali: 'বাস্তবায়িত করা' },
+  { verb: 'Matter', bengali: 'গুরুত্বপূর্ণ হওয়া' },
+  { verb: 'Mature', bengali: 'পরিণত হওয়া' },
+  { verb: 'Maximize', bengali: 'সর্বাধিক করা' },
+  { verb: 'Mean', bengali: 'বোঝানো' },
+  { verb: 'Measure', bengali: 'পরিমাপ করা' },
+  { verb: 'Mediate', bengali: 'মধ্যস্থতা করা' },
+  { verb: 'Meditate', bengali: 'ধ্যান করা' },
+  { verb: 'Meet', bengali: 'সাক্ষাৎ করা' },
+  { verb: 'Melt', bengali: 'গলানো' },
+  { verb: 'Memorize', bengali: 'মুখস্থ করা' },
+  { verb: 'Mend', bengali: 'মেরামত করা' },
+  { verb: 'Mention', bengali: 'উল্লেখ করা' },
+  { verb: 'Mentor', bengali: 'পরামর্শ দেওয়া' },
+  { verb: 'Merge', bengali: 'একত্রিত করা' },
+  { verb: 'Merit', bengali: 'যোগ্য হওয়া' },
+  { verb: 'Mess', bengali: 'এলোমেলো করা' },
+  { verb: 'Message', bengali: 'বার্তা পাঠানো' },
+  { verb: 'Metamorphose', bengali: 'রূপান্তরিত হওয়া' },
+  { verb: 'Migrate', bengali: 'দেশান্তর হওয়া' },
+  { verb: 'Milk', bengali: 'দুধ দোহানো' },
+  { verb: 'Mime', bengali: 'মূকাভিনয় করা' },
+  { verb: 'Mimic', bengali: 'অনুকরণ করা' },
+  { verb: 'Mind', bengali: 'মনোযোগ দেওয়া/মনে করা' },
+  { verb: 'Mine', bengali: 'খনি থেকে তোলা' },
+  { verb: 'Minimize', bengali: 'সংক্ষিপ্ত করা' },
+  { verb: 'Mirror', bengali: 'প্রতিফলিত করা' },
+  { verb: 'Misbehave', bengali: 'অসদাচরণ করা' },
+  { verb: 'Misguide', bengali: 'ভুল পথে চালিত করা' },
+  { verb: 'Misinterpret', bengali: 'ভুল ব্যাখ্যা করা' },
+  { verb: 'Mislead', bengali: 'ভুল পথে নেওয়া' },
+  { verb: 'Miss', bengali: 'মিস করা/অভাব বোধ করা' },
+  { verb: 'Mistake', bengali: 'ভুল করা' },
+  { verb: 'Mix', bengali: 'মিশ্রিত করা' },
+  { verb: 'Moan', bengali: 'আর্তনাদ করা' },
+  { verb: 'Mock', bengali: 'উপহাস করা' },
+
+  // N
+  { verb: 'Nail', bengali: 'পেরেক দিয়ে আটকানো' },
+  { verb: 'Name', bengali: 'নামকরণ করা' },
+  { verb: 'Nap', bengali: 'তন্দ্রা যাওয়া' },
+  { verb: 'Narrate', bengali: 'বর্ণনা করা' },
+  { verb: 'Narrow', bengali: 'সংকীর্ণ করা' },
+  { verb: 'Nationalize', bengali: 'জাতীয়করণ করা' },
+  { verb: 'Navigate', bengali: 'পথ পরিচালনা করা' },
+  { verb: 'Near', bengali: 'কাছে আসা' },
+  { verb: 'Necessitate', bengali: 'প্রয়োজনীয় করা' },
+  { verb: 'Need', bengali: 'প্রয়োজন হওয়া' },
+  { verb: 'Negate', bengali: 'নাকচ করা' },
+  { verb: 'Neglect', bengali: 'অবহেলা করা' },
+  { verb: 'Negotiate', bengali: 'আলোচনা করা' },
+  { verb: 'Neighbor', bengali: 'প্রতিবেশী হওয়া' },
+  { verb: 'Nerve', bengali: 'সাহস জোগানো' },
+  { verb: 'Nest', bengali: 'বাসা তৈরি করা' },
+  { verb: 'Nettle', bengali: 'বিরক্ত করা' },
+  { verb: 'Network', bengali: 'নেটওয়ার্ক করা' },
+  { verb: 'Neutralize', bengali: 'নিরপেক্ষ/নিষ্ক্রিয় করা' },
+  { verb: 'Nibble', bengali: 'খুঁটে খুঁটে খাওয়া' },
+  { verb: 'Nick', bengali: 'কাটা দাগ দেওয়া' },
+  { verb: 'Nickname', bengali: 'ডাকনাম রাখা' },
+  { verb: 'Nip', bengali: 'চিমটি কাটা' },
+  { verb: 'Nod', bengali: 'মাথা নাড়ানো' },
+  { verb: 'Nominate', bengali: 'মনোনীত করা' },
+  { verb: 'Normalize', bengali: 'স্বাভাবিক করা' },
+  { verb: 'Note', bengali: 'লিপিবদ্ধ করা' },
+  { verb: 'Notice', bengali: 'লক্ষ করা' },
+  { verb: 'Notify', bengali: 'বিজ্ঞপ্তি দেওয়া' },
+  { verb: 'Notion', bengali: 'ধারণা করা (rarely as verb)' },
+  { verb: 'Nourish', bengali: 'পোষণ করা' },
+  { verb: 'Nudge', bengali: 'কনুই দিয়ে ধাক্কা দেওয়া' },
+  { verb: 'Nullify', bengali: 'বাতিল করা' },
+  { verb: 'Numb', bengali: 'অসাড় করা' },
+  { verb: 'Number', bengali: 'সংখ্যা গণনা করা' },
+  { verb: 'Nurse', bengali: 'সেবা করা' },
+  { verb: 'Nurture', bengali: 'লালন-পালন করা' },
+  { verb: 'Nuzzle', bengali: 'নাকে নাক ঘষা' },
+  { verb: 'Nauseate', bengali: 'বমি বমি ভাব করা' },
+  { verb: 'Negligee', bengali: 'উপেক্ষা করা' },
+  { verb: 'Net', bengali: 'জালে ধরা/নিট লাভ করা' },
+  { verb: 'New', bengali: 'নতুন করা (Renew)' },
+  { verb: 'Nib', bengali: 'নিব দিয়ে লেখা/কাটা' },
+  { verb: 'Nictitate', bengali: 'চোখ পিটপিট করা' },
+  { verb: 'Niggle', bengali: 'খুঁতখুঁত করা' },
+  { verb: 'Nightmare', bengali: 'দুঃস্বপ্ন দেখা' },
+  { verb: 'Nitpick', bengali: 'খুঁত ধরা' },
+  { verb: 'Noble', bengali: 'উন্নত করা' },
+  { verb: 'Noise', bengali: 'কোলাহল করা' },
+
+  // O
+  { verb: 'Obey', bengali: 'মান্য করা' },
+  { verb: 'Object', bengali: 'আপত্তি করা' },
+  { verb: 'Oblige', bengali: 'বাধিত করা' },
+  { verb: 'Observe', bengali: 'পর্যবেক্ষণ করা' },
+  { verb: 'Obsess', bengali: 'আচ্ছন্ন করা' },
+  { verb: 'Obstruct', bengali: 'বাধা দেওয়া' },
+  { verb: 'Obtain', bengali: 'লাভ করা/পাওয়া' },
+  { verb: 'Occasion', bengali: 'ঘটানো' },
+  { verb: 'Occupy', bengali: 'দখল করা' },
+  { verb: 'Occur', bengali: 'ঘটা' },
+  { verb: 'Offend', bengali: 'বিরক্ত/অপরাধ করা' },
+  { verb: 'Offer', bengali: 'প্রস্তাব দেওয়া' },
+  { verb: 'Omit', bengali: 'বাদ দেওয়া' },
+  { verb: 'Open', bengali: 'খোলা' },
+  { verb: 'Operate', bengali: 'পরিচালনা করা' },
+  { verb: 'Opine', bengali: 'মত প্রকাশ করা' },
+  { verb: 'Oppose', bengali: 'বিপক্ষে থাকা' },
+  { verb: 'Oppress', bengali: 'অত্যাচার করা' },
+  { verb: 'Opt', bengali: 'বেছে নেওয়া' },
+  { verb: 'Optimize', bengali: 'সর্বোত্তম ব্যবহার করা' },
+  { verb: 'Order', bengali: 'আদেশ করা' },
+  { verb: 'Organize', bengali: 'আয়োজন করা' },
+  { verb: 'Orient', bengali: 'দিকনির্দেশ করা' },
+  { verb: 'Originate', bengali: 'উৎপন্ন হওয়া' },
+  { verb: 'Ornament', bengali: 'সাজানো' },
+  { verb: 'Outline', bengali: 'খসড়া করা' },
+  { verb: 'Outlive', bengali: 'অধিককাল বাঁচা' },
+  { verb: 'Outrage', bengali: 'ক্ষুব্ধ করা' },
+  { verb: 'Overcome', bengali: 'জয় করা' },
+  { verb: 'Overdo', bengali: 'অতিরিক্ত করা' },
+  { verb: 'Overhear', bengali: 'আড়ি পেতে শোনা' },
+  { verb: 'Overlap', bengali: 'একটির ওপর আরেকটি থাকা' },
+  { verb: 'Overlook', bengali: 'উপেক্ষা করা/দেখা' },
+  { verb: 'Overpower', bengali: 'পরাভূত করা' },
+  { verb: 'Overshadow', bengali: 'ম্লান করে দেওয়া' },
+  { verb: 'Overtake', bengali: 'ছাড়িয়ে যাওয়া' },
+  { verb: 'Overthrow', bengali: 'ক্ষমতাচ্যুত করা' },
+  { verb: 'Overwhelm', bengali: 'অভিভূত করা' },
+  { verb: 'Owe', bengali: 'ঋণী থাকা' },
+  { verb: 'Own', bengali: 'মালিক হওয়া' },
+  { verb: 'Oxidize', bengali: 'জারিত হওয়া' },
+  { verb: 'Objectify', bengali: 'বস্তুনিষ্ঠ করা' },
+  { verb: 'Obliterate', bengali: 'মুছে ফেলা' },
+  { verb: 'Obscure', bengali: 'অস্পষ্ট করা' },
+  { verb: 'Officialize', bengali: 'সরকারি করা' },
+  { verb: 'Offset', bengali: 'ভারসাম্য করা' },
+  { verb: 'Ogle', bengali: 'কামাতুর চোখে তাকানো' },
+  { verb: 'Oil', bengali: 'তেল দেওয়া' },
+  { verb: 'Ooze', bengali: 'চুইয়ে পড়া' },
+  { verb: 'Orbit', bengali: 'প্রদক্ষিণ করা' },
+
+  // P
+  { verb: 'Pacify', bengali: 'শান্ত করা' },
+  { verb: 'Pack', bengali: 'প্যাকেট করা' },
+  { verb: 'Paint', bengali: 'রঙ করা' },
+  { verb: 'Pamper', bengali: 'আদর দিয়ে মাথায় তোলা' },
+  { verb: 'Pardon', bengali: 'ক্ষমা করা' },
+  { verb: 'Participate', bengali: 'অংশগ্রহণ করা' },
+  { verb: 'Pass', bengali: 'অব্যাহতি পাওয়া/উত্তীর্ণ হওয়া' },
+  { verb: 'Paste', bengali: 'আঠা দিয়ে লাগানো' },
+  { verb: 'Pat', bengali: 'পিঠ চাপড়ানো' },
+  { verb: 'Pause', bengali: 'থামা' },
+  { verb: 'Pay', bengali: 'পরিশোধ করা' },
+  { verb: 'Penalize', bengali: 'দণ্ড দেওয়া' },
+  { verb: 'Perceive', bengali: 'উপলব্ধি করা' },
+  { verb: 'Perform', bengali: 'সম্পাদন করা' },
+  { verb: 'Permit', bengali: 'অনুমতি দেওয়া' },
+  { verb: 'Persuade', bengali: 'প্ররোচিত করা' },
+  { verb: 'Phone', bengali: 'ফোন করা' },
+  { verb: 'Pick', bengali: 'সংগ্রহ করা/তোলা' },
+  { verb: 'Place', bengali: 'স্থাপন করা' },
+  { verb: 'Plan', bengali: 'পরিকল্পনা করা' },
+  { verb: 'Plant', bengali: 'রোপণ করা' },
+  { verb: 'Play', bengali: 'খেলা করা' },
+  { verb: 'Please', bengali: 'সন্তুষ্ট করা' },
+  { verb: 'Pledge', bengali: 'অঙ্গীকার করা' },
+  { verb: 'Plot', bengali: 'ষড়যন্ত্র করা/নকশা করা' },
+  { verb: 'Pluck', bengali: 'ছেঁড়া/তোলা' },
+  { verb: 'Plug', bengali: 'আটকানো' },
+  { verb: 'Point', bengali: 'নির্দেশ করা' },
+  { verb: 'Polish', bengali: 'পালিশ করা' },
+  { verb: 'Pollute', bengali: 'দূষিত করা' },
+  { verb: 'Ponder', bengali: 'গভীরভাবে ভাবা' },
+  { verb: 'Pop', bengali: 'শব্দ করে ফাটা' },
+  { verb: 'Portray', bengali: 'চিত্রিত করা' },
+  { verb: 'Pose', bengali: 'ভঙ্গি করা' },
+  { verb: 'Possess', bengali: 'অধিকারী হওয়া' },
+  { verb: 'Post', bengali: 'ডাকযোগে পাঠানো/টাঙানো' },
+  { verb: 'Postpone', bengali: 'স্থগিত করা' },
+  { verb: 'Pour', bengali: 'ঢালা' },
+  { verb: 'Practice', bengali: 'অনুশীলন করা' },
+  { verb: 'Praise', bengali: 'প্রশংসা করা' },
+  { verb: 'Pray', bengali: 'প্রার্থনা করা' },
+  { verb: 'Preach', bengali: 'ধর্মোপদেশ দেওয়া' },
+  { verb: 'Precede', bengali: 'আগে ঘটা' },
+  { verb: 'Predict', bengali: 'ভবিষ্যদ্বাণী করা' },
+  { verb: 'Prefer', bengali: 'অধিকতর পছন্দ করা' },
+  { verb: 'Prepare', bengali: 'প্রস্তুত করা' },
+  { verb: 'Prescribe', bengali: 'ব্যবস্থাপত্র দেওয়া' },
+  { verb: 'Present', bengali: 'উপস্থাপন করা' },
+  { verb: 'Preserve', bengali: 'সংরক্ষণ করা' },
+  { verb: 'Press', bengali: 'চাপ দেওয়া' },
+
+  // Q
+  { verb: 'Quack', bengali: 'প্যাকপ্যাক করা' },
+  { verb: 'Quadruple', bengali: 'চারগুণ করা' },
+  { verb: 'Quaff', bengali: 'একচুমুকে পান করা' },
+  { verb: 'Quail', bengali: 'ভয়ে পিছিয়ে যাওয়া' },
+  { verb: 'Quake', bengali: 'কাঁপা' },
+  { verb: 'Qualify', bengali: 'যোগ্যতা অর্জন করা' },
+  { verb: 'Quantify', bengali: 'পরিমাণ নির্ধারণ করা' },
+  { verb: 'Quarantine', bengali: 'সঙ্গনিরোধ করা' },
+  { verb: 'Quarrel', bengali: 'ঝগড়া করা' },
+  { verb: 'Quarry', bengali: 'পাথর উত্তোলন করা' },
+  { verb: 'Quarter', bengali: 'চারভাগে ভাগ করা' },
+  { verb: 'Quash', bengali: 'বাতিল করা/দমন করা' },
+  { verb: 'Quaver', bengali: 'কাঁপা (কণ্ঠস্বর)' },
+  { verb: 'Queer', bengali: 'নষ্ট করা/বিচিত্র করা' },
+  { verb: 'Quell', bengali: 'দমন করা/শান্ত করা' },
+  { verb: 'Quench', bengali: 'তৃষ্ণা মেটানো' },
+  { verb: 'Query', bengali: 'প্রশ্ন করা' },
+  { verb: 'Quest', bengali: 'সন্ধান করা' },
+  { verb: 'Question', bengali: 'জিজ্ঞাসাবাদ করা' },
+  { verb: 'Queue', bengali: 'লাইন ধরা' },
+  { verb: 'Quibble', bengali: 'খুঁত ধরা/অহেতুক আপত্তি' },
+  { verb: 'Quicken', bengali: 'দ্রুত করা' },
+  { verb: 'Quiet', bengali: 'শান্ত করা' },
+  { verb: 'Quilt', bengali: 'লেপ সেলাই করা' },
+  { verb: 'Quip', bengali: 'রসিকতা করা' },
+  { verb: 'Quirk', bengali: 'বিচিত্র আচরণ করা' },
+  { verb: 'Quit', bengali: 'ত্যাগ করা/ছেড়ে দেওয়া' },
+  { verb: 'Quiver', bengali: 'থরথর করে কাঁপা' },
+  { verb: 'Quiz', bengali: 'পরীক্ষা নেওয়া/জিজ্ঞাসা করা' },
+  { verb: 'Quote', bengali: 'উদ্ধৃতি দেওয়া' },
+  { verb: 'Quantize', bengali: 'পরিমাপযোগ্য করা' },
+  { verb: 'Quarterback', bengali: 'নেতৃত্ব দেওয়া' },
+
+  // R
+  { verb: 'Race', bengali: 'পাল্লা দেওয়া/দৌড়ানো' },
+  { verb: 'Radiate', bengali: 'বিকিরণ করা' },
+  { verb: 'Rain', bengali: 'বৃষ্টি হওয়া' },
+  { verb: 'Raise', bengali: 'তোলা/উত্থাপন করা' },
+  { verb: 'Ramble', bengali: 'এলোমেলো ঘুরে বেড়ানো' },
+  { verb: 'Rank', bengali: 'শ্রেণিভুক্ত করা' },
+  { verb: 'Rattle', bengali: 'খটখট শব্দ করা' },
+  { verb: 'Reach', bengali: 'পৌঁছানো' },
+  { verb: 'Read', bengali: 'পড়া' },
+  { verb: 'Realize', bengali: 'উপলব্ধি করা' },
+  { verb: 'Rear', bengali: 'লালন-পালন করা' },
+  { verb: 'Reason', bengali: 'তর্ক বা যুক্তি করা' },
+  { verb: 'Recall', bengali: 'স্মরণ করা' },
+  { verb: 'Receive', bengali: 'গ্রহণ করা' },
+  { verb: 'Recite', bengali: 'আবৃত্তি করা' },
+  { verb: 'Recognize', bengali: 'চিনতে পারা' },
+  { verb: 'Recommend', bengali: 'সুপারিশ করা' },
+  { verb: 'Record', bengali: 'লিপিবদ্ধ করা' },
+  { verb: 'Recover', bengali: 'আরোগ্য লাভ করা' },
+  { verb: 'Reduce', bengali: 'কমানো' },
+  { verb: 'Reflect', bengali: 'প্রতিফলিত করা' },
+  { verb: 'Reform', bengali: 'সংস্কার করা' },
+  { verb: 'Refuse', bengali: 'প্রত্যাখ্যান করা' },
+  { verb: 'Regret', bengali: 'অনুশোচনা করা' },
+  { verb: 'Regulate', bengali: 'নিয়ন্ত্রণ করা' },
+  { verb: 'Reject', bengali: 'বর্জন করা' },
+  { verb: 'Rejoice', bengali: 'আনন্দ করা' },
+  { verb: 'Relate', bengali: 'সম্পর্কিত করা/বর্ণনা করা' },
+  { verb: 'Relax', bengali: 'বিশ্রাম নেওয়া' },
+  { verb: 'Release', bengali: 'মুক্তি দেওয়া' },
+  { verb: 'Rely', bengali: 'নির্ভর করা' },
+  { verb: 'Remain', bengali: 'অবশিষ্ট থাকা' },
+  { verb: 'Remember', bengali: 'মনে রাখা' },
+  { verb: 'Remind', bengali: 'মনে করিয়ে দেওয়া' },
+  { verb: 'Remove', bengali: 'অপসারণ করা' },
+  { verb: 'Renew', bengali: 'নবায়ন করা' },
+  { verb: 'Repair', bengali: 'মেরামত করা' },
+  { verb: 'Repeat', bengali: 'পুনরাবৃত্তি করা' },
+  { verb: 'Replace', bengali: 'প্রতিস্থাপন করা' },
+  { verb: 'Reply', bengali: 'উত্তর দেওয়া' },
+  { verb: 'Report', bengali: 'প্রতিবেদন করা' },
+  { verb: 'Request', bengali: 'অনুরোধ করা' },
+  { verb: 'Require', bengali: 'প্রয়োজন হওয়া' },
+  { verb: 'Rescue', bengali: 'উদ্ধার করা' },
+  { verb: 'Resign', bengali: 'পদত্যাগ করা' },
+  { verb: 'Resist', bengali: 'প্রতিরোধ করা' },
+  { verb: 'Resolve', bengali: 'সমাধান করা' },
+  { verb: 'Respect', bengali: 'সম্মান করা' },
+  { verb: 'Respond', bengali: 'সাড়া দেওয়া' },
+  { verb: 'Rest', bengali: 'বিশ্রাম করা' },
+  { verb: 'Return', bengali: 'ফিরে আসা/ফেরত দেওয়া' },
+
+  // S
+  { verb: 'Sabatoge', bengali: 'অন্তর্ঘাত করা' },
+  { verb: 'Sacrifice', bengali: 'উৎসর্গ করা' },
+  { verb: 'Sadden', bengali: 'দুঃখিত করা' },
+  { verb: 'Safeguard', bengali: 'নিরাপত্তা দেওয়া' },
+  { verb: 'Sail', bengali: 'পাল তোলা/ভ্রমণ করা' },
+  { verb: 'Salute', bengali: 'সালাম দেওয়া' },
+  { verb: 'Salvage', bengali: 'উদ্ধার করা (ধ্বংসাবশেষ)' },
+  { verb: 'Sample', bengali: 'নমুনা পরীক্ষা করা' },
+  { verb: 'Sanctify', bengali: 'পবিত্র করা' },
+  { verb: 'Sanction', bengali: 'অনুমোদন/নিষেধাজ্ঞা দেওয়া' },
+  { verb: 'Satisfy', bengali: 'সন্তুষ্ট করা' },
+  { verb: 'Saturate', bengali: 'পরিপৃক্ত করা' },
+  { verb: 'Save', bengali: 'রক্ষা করা/সঞ্চয় করা' },
+  { verb: 'Savor', bengali: 'আস্বাদন করা' },
+  { verb: 'Say', bengali: 'বলা' },
+  { verb: 'Scan', bengali: 'স্ক্যান করা/খুঁটিয়ে দেখা' },
+  { verb: 'Scare', bengali: 'ভয় দেখানো' },
+  { verb: 'Scatter', bengali: 'ছড়িয়ে দেওয়া' },
+  { verb: 'Schedule', bengali: 'সময়সূচী করা' },
+  { verb: 'School', bengali: 'শিক্ষা দেওয়া' },
+  { verb: 'Scold', bengali: 'বকাঝকা করা' },
+  { verb: 'Scoop', bengali: 'তুলে নেওয়া' },
+  { verb: 'Scorch', bengali: 'ঝলসানো' },
+  { verb: 'Score', bengali: 'স্কোর করা/দাগ কাটা' },
+  { verb: 'Scorn', bengali: 'ঘৃণা করা' },
+  { verb: 'Scour', bengali: 'খুঁজে দেখা/পরিষ্কার করা' },
+  { verb: 'Scramble', bengali: 'হামাগুড়ি দেওয়া/এলোমেলো করা' },
+  { verb: 'Scrap', bengali: 'বাতিল করা' },
+  { verb: 'Scratch', bengali: 'আঁচড়ানো' },
+  { verb: 'Scream', bengali: 'চিৎকার করা' },
+  { verb: 'Screen', bengali: 'পর্দা দিয়ে আড়াল করা/বাছাই করা' },
+  { verb: 'Screw', bengali: 'স্ক্রু দিয়ে আটকানো' },
+  { verb: 'Scribble', bengali: 'ঘষাঘষি করে লেখা' },
+  { verb: 'Scroll', bengali: 'স্ক্রল করা' },
+  { verb: 'Scrub', bengali: 'ঘষে মাজা' },
+  { verb: 'Seal', bengali: 'মোহর মারা/বন্ধ করা' },
+  { verb: 'Search', bengali: 'খোঁজা' },
+  { verb: 'Season', bengali: 'মশলা দেওয়া/পক্ব করা' },
+  { verb: 'Seat', bengali: 'বসানো' },
+  { verb: 'Secure', bengali: 'নিরাপদ করা' },
+  { verb: 'See', bengali: 'দেখা' },
+  { verb: 'Seek', bengali: 'খোঁজা/প্রার্থনা করা' },
+  { verb: 'Seem', bengali: 'মনে হওয়া' },
+  { verb: 'Segment', bengali: 'খণ্ডিত করা' },
+  { verb: 'Seize', bengali: 'ছিনিয়ে নেওয়া/জব্দ করা' },
+  { verb: 'Select', bengali: 'বাছাই করা' },
+  { verb: 'Sell', bengali: 'বিক্রি করা' },
+  { verb: 'Send', bengali: 'পাঠানো' },
+  { verb: 'Sense', bengali: 'অনুভব করা' },
+  { verb: 'Separate', bengali: 'পৃথক করা' },
+
+  // T
+  { verb: 'Tabulate', bengali: 'তালিকাবদ্ধ করা' },
+  { verb: 'Tackle', bengali: 'মোকাবেলা করা' },
+  { verb: 'Tag', bengali: 'চিহ্নিত করা' },
+  { verb: 'Tailor', bengali: 'উপযোগী করে তৈরি করা' },
+  { verb: 'Take', bengali: 'নেওয়া' },
+  { verb: 'Talk', bengali: 'কথা বলা' },
+  { verb: 'Tame', bengali: 'বশ করা' },
+  { verb: 'Tap', bengali: 'আলতো টোকা দেওয়া' },
+  { verb: 'Target', bengali: 'লক্ষ্য নির্ধারণ করা' },
+  { verb: 'Taste', bengali: 'স্বাদ নেওয়া' },
+  { verb: 'Tax', bengali: 'কর আরোপ করা' },
+  { verb: 'Teach', bengali: 'শেখানো' },
+  { verb: 'Tear', bengali: 'ছেঁড়া' },
+  { verb: 'Tease', bengali: 'উত্যক্ত করা' },
+  { verb: 'Telecast', bengali: 'সম্প্রচার করা' },
+  { verb: 'Tell', bengali: 'বলা' },
+  { verb: 'Tempt', bengali: 'প্রলুব্ধ করা' },
+  { verb: 'Tend', bengali: 'যত্ন নেওয়া/প্রবণতা থাকা' },
+  { verb: 'Terminate', bengali: 'সমাপ্ত করা' },
+  { verb: 'Terrify', bengali: 'ভীত করা' },
+  { verb: 'Test', bengali: 'পরীক্ষা করা' },
+  { verb: 'Testify', bengali: 'সাক্ষ্য দেওয়া' },
+  { verb: 'Thank', bengali: 'ধন্যবাদ দেওয়া' },
+  { verb: 'Thaw', bengali: 'বরফ গলা' },
+  { verb: 'Think', bengali: 'চিন্তা করা' },
+  { verb: 'Thirst', bengali: 'তৃষ্ণার্ত হওয়া' },
+  { verb: 'Thrashen', bengali: 'পিটানো' },
+  { verb: 'Threaten', bengali: 'হুমকি দেওয়া' },
+  { verb: 'Thrive', bengali: 'সমৃদ্ধ হওয়া' },
+  { verb: 'Throb', bengali: 'স্পন্দিত হওয়া' },
+  { verb: 'Throng', bengali: 'ভিড় করা' },
+  { verb: 'Throw', bengali: 'নিক্ষেপ করা' },
+  { verb: 'Thrust', bengali: 'ঠেলা দেওয়া' },
+  { verb: 'Thump', bengali: 'জোরে আঘাত করা' },
+  { verb: 'Tick', bengali: 'টিক চিহ্ন দেওয়া' },
+  { verb: 'Tickle', bengali: 'শুড়শুড়ি দেওয়া' },
+  { verb: 'Tie', bengali: 'বাঁধা' },
+  { verb: 'Tighten', bengali: 'শক্ত করা' },
+  { verb: 'Time', bengali: 'সময় নির্ধারণ করা' },
+  { verb: 'Tingle', bengali: 'ঝিনঝিন করা' },
+  { verb: 'Tip', bengali: 'বখশিশ দেওয়া/হেলানো' },
+  { verb: 'Tire', bengali: 'ক্লান্ত হওয়া' },
+  { verb: 'Toast', bengali: 'সেঁকা/শুভেচ্ছা জানানো' },
+  { verb: 'Tolerate', bengali: 'সহ্য করা' },
+  { verb: 'Toss', bengali: 'আলতো করে ছোড়া' },
+  { verb: 'Total', bengali: 'মোট করা' },
+  { verb: 'Touch', bengali: 'স্পর্শ করা' },
+  { verb: 'Toughen', bengali: 'শক্তিশালী করা' },
+  { verb: 'Trace', bengali: 'চিহ্ন অনুসরণ করা' },
+  { verb: 'Track', bengali: 'পিছু নেওয়া' },
+
+  // U
+  { verb: 'Unarm', bengali: 'নিরস্ত্র করা' },
+  { verb: 'Unbind', bengali: 'মুক্ত করা/বাঁধন খোলা' },
+  { verb: 'Unblock', bengali: 'বাধা মুক্ত করা' },
+  { verb: 'Unbuckle', bengali: 'বাকল খোলা' },
+  { verb: 'Unburden', bengali: 'ভারমুক্ত করা' },
+  { verb: 'Unbutton', bengali: 'বোতাম খোলা' },
+  { verb: 'Unclasp', bengali: 'আঁকড়ে ধরা থেকে মুক্ত করা' },
+  { verb: 'Uncoil', bengali: 'কুণ্ডলী খোলা' },
+  { verb: 'Uncover', bengali: 'আবিষ্কার করা/উন্মোচন করা' },
+  { verb: 'Undergo', bengali: 'অভিজ্ঞতা লাভ করা/কষ্ট সহ্য করা' },
+  { verb: 'Underline', bengali: 'নিচে দাগ দেওয়া' },
+  { verb: 'Undermine', bengali: 'ভিত্তি দুর্বল করা' },
+  { verb: 'Understand', bengali: 'বোঝা' },
+  { verb: 'Understudy', bengali: 'বিকল্প হিসেবে শেখা' },
+  { verb: 'Undertake', bengali: 'দায়িত্ব নেওয়া' },
+  { verb: 'Undo', bengali: 'বাতিল করা/খোলা' },
+  { verb: 'Undress', bengali: 'পোশাক খোলা' },
+  { verb: 'Unearth', bengali: 'খুঁড়ে বের করা' },
+  { verb: 'Unfasten', bengali: 'ঢিলা করা' },
+  { verb: 'Unfold', bengali: 'মেলা/খোলা' },
+  { verb: 'Unfurl', bengali: 'উড়ানো/খোলা' },
+  { verb: 'Unify', bengali: 'একত্রিত করা' },
+  { verb: 'Unite', bengali: 'সম্মিলিত হওয়া' },
+  { verb: 'Unknot', bengali: 'গিট খোলা' },
+  { verb: 'Unlace', bengali: 'ফিতা খোলা' },
+  { verb: 'Unlatch', bengali: 'খিল খোলা' },
+  { verb: 'Unlearn', bengali: 'ভুলে যাওয়া (অভ্যাস)' },
+  { verb: 'Unload', bengali: 'মাল খালাস করা' },
+  { verb: 'Unlock', bengali: 'তালা খোলা' },
+  { verb: 'Unmask', bengali: 'মুখোশ খোলা' },
+  { verb: 'Unpack', bengali: 'প্যাকেট খোলা' },
+  { verb: 'Unpin', bengali: 'পিন খোলা' },
+  { verb: 'Unplug', bengali: 'প্লাগ খোলা' },
+  { verb: 'Unravel', bengali: 'জট খোলা' },
+  { verb: 'Unroll', bengali: 'গোটানো বস্তু খোলা' },
+  { verb: 'Unscrew', bengali: 'স্ক্রু খোলা' },
+  { verb: 'Unseal', bengali: 'সিল খোলা' },
+  { verb: 'Unsettle', bengali: 'অস্থির করা' },
+  { verb: 'Unshackle', bengali: 'শৃঙ্খলমুক্ত করা' },
+  { verb: 'Unstick', bengali: 'আঠা থেকে মুক্ত করা' },
+  { verb: 'Untie', bengali: 'বাঁধন খোলা' },
+  { verb: 'Unveil', bengali: 'উন্মোচন করা' },
+  { verb: 'Unwind', bengali: 'শান্ত হওয়া/খোলা' },
+  { verb: 'Upbraid', bengali: 'তিরস্কার করা' },
+  { verb: 'Update', bengali: 'হালনাগাদ করা' },
+  { verb: 'Upgrade', bengali: 'উন্নত করা' },
+  { verb: 'Uphold', bengali: 'বজায় রাখা/সমর্থন করা' },
+  { verb: 'Uproot', bengali: 'উচ্ছেদ করা' },
+  { verb: 'Upset', bengali: 'মন খারাপ করা' },
+  { verb: 'Urge', bengali: 'আহ্বান করা/প্ররোচিত করা' },
+  { verb: 'Use', bengali: 'ব্যবহার করা' },
+
+  // V
+  { verb: 'Vacate', bengali: 'খালি করা' },
+  { verb: 'Vaccinate', bengali: 'টিকা দেওয়া' },
+  { verb: 'Validate', bengali: 'বৈধ করা' },
+  { verb: 'Value', bengali: 'মূল্যায়ন করা' },
+  { verb: 'Vanish', bengali: 'অদৃশ্য হওয়া' },
+  { verb: 'Vaporize', bengali: 'বাষ্পীভূত করা' },
+  { verb: 'Varnish', bengali: 'বার্নিশ করা' },
+  { verb: 'Vary', bengali: 'পরিবর্তন হওয়া/ভিন্ন হওয়া' },
+  { verb: 'Vault', bengali: 'লাফিয়ে পার হওয়া' },
+  { verb: 'Veer', bengali: 'দিক পরিবর্তন করা' },
+  { verb: 'Vegetate', bengali: 'নিষ্ক্রিয় জীবন কাটানো' },
+  { verb: 'Veil', bengali: 'পর্দা দিয়ে ঢাকা' },
+  { verb: 'Vend', bengali: 'বিক্রি করা' },
+  { verb: 'Venerate', bengali: 'শ্রদ্ধা করা' },
+  { verb: 'Vent', bengali: 'প্রকাশ করা/নির্গমন করা' },
+  { verb: 'Ventilate', bengali: 'বাতাস চলাচলের ব্যবস্থা করা' },
+  { verb: 'Venture', bengali: 'সাহস করে করা' },
+  { verb: 'Verbalize', bengali: 'কথায় প্রকাশ করা' },
+  { verb: 'Verify', bengali: 'যাচাই করা' },
+  { verb: 'Versify', bengali: 'পদ্যে রচনা করা' },
+  { verb: 'Vex', bengali: 'বিরক্ত করা' },
+  { verb: 'Vibrate', bengali: 'কম্পিত হওয়া' },
+  { verb: 'Victimize', bengali: 'শিকার বানানো/নির্যাতন করা' },
+  { verb: 'View', bengali: 'দেখা' },
+  { verb: 'Vilify', bengali: 'নিন্দা করা/গালি দেওয়া' },
+  { verb: 'Vindicate', bengali: 'দোষমুক্ত করা' },
+  { verb: 'Violate', bengali: 'লঙ্ঘন করা' },
+  { verb: 'Visit', bengali: 'পরিদর্শন করা' },
+  { verb: 'Visualize', bengali: 'কল্পনা করা' },
+  { verb: 'Vitiate', bengali: 'নষ্ট করা' },
+  { verb: 'Vocalize', bengali: 'উচ্চারণ করা' },
+  { verb: 'Voice', bengali: 'মত প্রকাশ করা' },
+  { verb: 'Void', bengali: 'বাতিল করা' },
+  { verb: 'Volley', bengali: 'একসাথে নিক্ষেপ করা' },
+  { verb: 'Volunteer', bengali: 'স্বেচ্ছায় কাজ করা' },
+  { verb: 'Vomit', bengali: 'বমি করা' },
+  { verb: 'Vote', bengali: 'ভোট দেওয়া' },
+  { verb: 'Vouch', bengali: 'জামিন হওয়া/সমর্থন করা' },
+  { verb: 'Vow', bengali: 'প্রতিজ্ঞা করা' },
+  { verb: 'Voyage', bengali: 'সমুদ্র ভ্রমণ করা' },
+  { verb: 'Vulgarize', bengali: 'অমার্জিত করা' },
+  { verb: 'Vulture', bengali: 'শকুনের মতো আচরণ করা' },
+  { verb: 'Vroom', bengali: 'গাড়ির ইঞ্জিনের শব্দ করা' },
+  { verb: 'Veto', bengali: 'নাচচ করা' },
+  { verb: 'Vamp', bengali: 'মেরামত করা/সাজানো' },
+  { verb: 'Vandalize', bengali: 'সম্পত্তি নষ্ট করা' },
+  { verb: 'Vanquish', bengali: 'পরাজিত করা' },
+  { verb: 'Vapor', bengali: 'বাষ্প হওয়া' },
+  { verb: 'Versal', bengali: 'সর্বজনীন করা' },
+
+  // W
+  { verb: 'Waddle', bengali: 'পাথীর মতো টলমল করে হাঁটা' },
+  { verb: 'Wade', bengali: 'কষ্টে হাঁটা (জলে বা কাদায়)' },
+  { verb: 'Wag', bengali: 'লেজ নাড়ানো' },
+  { verb: 'Wage', bengali: 'চালানো (যুদ্ধ বা সংগ্রাম)' },
+  { verb: 'Wail', bengali: 'বিলাপ করা' },
+  { verb: 'Wait', bengali: 'অপেক্ষা করা' },
+  { verb: 'Wake', bengali: 'জাগানো/জাগা' },
+  { verb: 'Walk', bengali: 'হাঁটা' },
+  { verb: 'Wander', bengali: 'উদ্দেশ্যহীনভাবে ঘোরা' },
+  { verb: 'Want', bengali: 'চাওয়া' },
+  { verb: 'Warm', bengali: 'উষ্ণ করা' },
+  { verb: 'Warn', bengali: 'সতর্ক করা' },
+  { verb: 'Warp', bengali: 'বাঁকানো বা বিকৃত করা' },
+  { verb: 'Warrant', bengali: 'নিশ্চয়তা দেওয়া' },
+  { verb: 'Wash', bengali: 'ধৌত করা' },
+  { verb: 'Waste', bengali: 'অপচয় করা' },
+  { verb: 'Watch', bengali: 'দেখা/পাহারা দেওয়া' },
+  { verb: 'Water', bengali: 'জল দেওয়া' },
+  { verb: 'Wave', bengali: 'হাত নাড়ানো/ঢেউ তোলা' },
+  { verb: 'Waver', bengali: 'দ্বিধা করা/কাঁপা' },
+  { verb: 'Wax', bengali: 'মোম মাখানো/বৃদ্ধি পাওয়া' },
+  { verb: 'Waylay', bengali: 'পথ আগলে দাঁড়ানো' },
+  { verb: 'Weaken', bengali: 'দুর্বল করা' },
+  { verb: 'Wean', bengali: 'স্তন্যদান ত্যাগ করানো' },
+  { verb: 'Wear', bengali: 'পরিধান করা' },
+  { verb: 'Weary', bengali: 'ক্লান্ত হওয়া' },
+  { verb: 'Weave', bengali: 'বোনা' },
+  { verb: 'Wed', bengali: 'বিবাহ করা' },
+  { verb: 'Weep', bengali: 'কাঁদা' },
+  { verb: 'Weigh', bengali: 'ওজন করা' },
+  { verb: 'Welcome', bengali: 'স্বাগত জানানো' },
+  { verb: 'Weld', bengali: 'ঝালাই করা' },
+  { verb: 'Wet', bengali: 'ভেজান' },
+  { verb: 'Whack', bengali: 'জোরে আঘাত করা' },
+  { verb: 'Wheel', bengali: 'চাকায় করে নেওয়া/ঘোরানো' },
+  { verb: 'Whine', bengali: 'ঘ্যানঘ্যান করা' },
+  { verb: 'Whip', bengali: 'চাবুক মারা' },
+  { verb: 'Whirl', bengali: 'দ্রুত ঘোরানো' },
+  { verb: 'Whisper', bengali: 'ফিসফিস করা' },
+  { verb: 'Whistle', bengali: 'শিস দেওয়া' },
+  { verb: 'Whiten', bengali: 'সাদা করা' },
+  { verb: 'Widen', bengali: 'প্রশস্ত করা' },
+  { verb: 'Wield', bengali: 'চালনা করা (অস্ত্র বা ক্ষমতা)' },
+  { verb: 'Wiggle', bengali: 'এপাশ-ওপাশ নাড়ানো' },
+  { verb: 'Win', bengali: 'জয়লাভ করা' },
+  { verb: 'Wind', bengali: 'দম দেওয়া/ঘোরানো' },
+  { verb: 'Wink', bengali: 'চোখ টিপ দেওয়া' },
+  { verb: 'Wipe', bengali: 'মোছা' },
+  { verb: 'Wish', bengali: 'ইচ্ছা করা' },
+  { verb: 'Withdraw', bengali: 'প্রত্যাহার করা' },
+
+  // X
+  { verb: 'X-ray', bengali: 'রঞ্জনরশ্মি দ্বারা পরীক্ষা করা' },
+  { verb: 'Xerox', bengali: 'ফটোকপি করা' },
+  { verb: 'Xylograph', bengali: 'কাঠে খোদাই করা' },
+  { verb: 'Xenotransplant', bengali: 'ভিন্ন প্রজাতির অঙ্গ প্রতিস্থাপন করা' },
+  { verb: 'X-out', bengali: 'চিহ্ন দিয়ে কেটে দেওয়া' },
+  { verb: 'Xylophone', bengali: 'জাইলোফোন বাজানো' },
+  { verb: 'Xebec', bengali: 'ছোট তিনমাস্তুল জাহাজে ভ্রমণ করা' },
+  { verb: 'Xenomorphize', bengali: 'অদ্ভুত রূপ দেওয়া' },
+  { verb: 'Xanthify', bengali: 'হলুদ করা বা হওয়া' },
+  { verb: 'Xeriscape', bengali: 'খরা-সহনশীল বাগান করা' },
+
+  // Y
+  { verb: 'Yacht', bengali: 'বিলাসবহুল নৌকায় ভ্রমণ করা' },
+  { verb: 'Yap', bengali: 'ঘেউ ঘেউ করা/বকবক করা' },
+  { verb: 'Yard', bengali: 'উঠানে বা ঘেরায় রাখা' },
+  { verb: 'Yarn', bengali: 'গল্প বলা/সুতা কাটা' },
+  { verb: 'Yawn', bengali: 'হাই তোলা' },
+  { verb: 'Yean', bengali: 'শাবক জন্ম দেওয়া (ভেড়া/ছাগল)' },
+  { verb: 'Yearn', bengali: 'ব্যাকুল হওয়া/তীব্র আকাঙ্ক্ষা করা' },
+  { verb: 'Yell', bengali: 'চিৎকার করা' },
+  { verb: 'Yellow', bengali: 'হলুদ হওয়া বা করা' },
+  { verb: 'Yelp', bengali: 'আর্তনাদ করা (কুকুরের মতো)' },
+  { verb: 'Yen', bengali: 'তীব্র ইচ্ছা পোষণ করা' },
+  { verb: 'Yield', bengali: 'উৎপাদন করা/নতি স্বীকার করা' },
+  { verb: 'Yodel', bengali: 'গলা কাঁপিয়ে গান গাওয়া' },
+  { verb: 'Yoke', bengali: 'জোয়াল লাগানো/একত্র করা' },
+  { verb: 'Yowl', bengali: 'তীব্র চিৎকার করা' },
+  { verb: 'Yoyo', bengali: 'উঠা-নামা করা/অস্থিতিশীল হওয়া' },
+  { verb: 'Yule', bengali: 'বড়দিন উদযাপন করা' },
+  { verb: 'Yum', bengali: 'সুস্বাদু কিছু খাওয়া বা শব্দ করা' },
+  { verb: 'Yank', bengali: 'হ্যাঁচকা টান দেওয়া' },
+
+  // Z
+  { verb: 'Zap', bengali: 'দ্রুত ধ্বংস করা বা সরানো' },
+  { verb: 'Zeal', bengali: 'আগ্রহ দেখানো' },
+  { verb: 'Zero', bengali: 'শূন্যে আনা/লক্ষ্য স্থির করা' },
+  { verb: 'Zest', bengali: 'উৎসাহ জাগানো/লেবুর খোসা ছাড়ানো' },
+  { verb: 'Zigzag', bengali: 'আঁকাবাঁকা পথে চলা' },
+  { verb: 'Zinc', bengali: 'দস্তা দিয়ে প্রলেপ দেওয়া' },
+  { verb: 'Zip', bengali: 'চেইন আটকানো/দ্রুত চলা' },
+  { verb: 'Zone', bengali: 'অঞ্চলে ভাগ করা' },
+  { verb: 'Zoom', bengali: 'দ্রুত বড় করা বা চলা' },
+  { verb: 'Zonify', bengali: 'অঞ্চলভুক্ত করা' }
+  
+
+            ],
+            
+            // DIALOGUE DATA: Add your dialogues from Dialogue Practice
+            dialogues: [
+  { scenario: "Introducing Yourself", personA: "Hello! My name is Michael. I'm pleased to meet you!", personB: "Hi Michael! I'm Sarah. It's nice to meet you too. Where are you from?", context: "Greetings" },
+  { scenario: "Greeting a Friend", personA: "Hey! It's been so long! How have you been?", personB: "I'm doing great! I missed you so much. We should definitely catch up soon.", context: "Socializing" },
+  { scenario: "Making Plans", personA: "Would you like to go to a movie this weekend?", personB: "Yes! I'd love to. What movie do you want to watch?", context: "Planning" },
+  { scenario: "Asking Directions", personA: "Excuse me! Can you help me? I'm looking for the train station.", personB: "Of course! I'd be happy to help. The station is not very far from here.", context: "Directions" },
+  { scenario: "Small Talk", personA: "Beautiful day, isn't it? I really enjoy this warm weather.", personB: "Absolutely! It's perfect for going out. Do you plan to do anything special today?", context: "General Conversation" },
+  { scenario: "At a Restaurant", personA: "Good evening! We have a reservation for two under the name Smith.", personB: "Welcome! Let me check our system. Yes, I found it! Please come this way.", context: "Ordering food" },
+  { scenario: "Shopping", personA: "Hi! I'm looking for a blue jacket. Can you help me find one?", personB: "Of course! We have a great selection. What size do you wear?", context: "Buying clothes" },
+  { scenario: "At the Bank", personA: "Good morning! I'd like to open a savings account.", personB: "Excellent! That's a great decision. I'll assist you with that. May I have your ID, please?", context: "Banking services" },
+  { scenario: "Booking a Hotel", personA: "Hello! I'd like to book a room for three nights.", personB: "Great! I'd be happy to help you. What dates will you need the room?", context: "Accommodation" },
+  { scenario: "At the Doctor", personA: "Good morning, Doctor. I haven't been feeling well for the past week.", personB: "I'm sorry to hear that. Can you describe your symptoms?", context: "Medical consultation" },
+  { scenario: "Job Interview", personA: "Thank you for meeting me today. I'm very excited about this position.", personB: "Welcome! We're pleased to have you here. Let's start by asking you to tell us about yourself.", context: "Professional" },
+  { scenario: "Teacher-Student Talk", personA: "Miss, I don't quite understand today's lesson on grammar. Can you explain it again?", personB: "Of course! I'm happy to help. Let me break it down into simpler concepts.", context: "Education" },
+  { scenario: "Office Meeting", personA: "Good morning, everyone. Let's begin our quarterly meeting. I'd like to discuss our Q3 performance.", personB: "Great! I have the reports here. Our sales have increased by 25% compared to Q2.", context: "Business" },
+  { scenario: "Customer Service", personA: "Hello, I have a complaint about my recent purchase. The product I received arrived damaged.", personB: "I'm very sorry to hear that! I truly apologize for the inconvenience. Can you describe the damage?", context: "Support" },
+  { scenario: "Project Discussion", personA: "Let's review the project timeline. When do we plan to complete phase one?", personB: "We're currently on track. Based on our progress, I estimate we'll finish by the end of next month.", context: "Work Collaboration" },
+  { scenario: "Airport Check-in", personA: "Good morning! I'd like to check in for my flight to Paris. My flight number is AF 214.", personB: "Perfect! May I have your passport and booking confirmation, please?", context: "Travel" },
+  { scenario: "Grocery Shopping", personA: "Excuse me! Where can I find fresh vegetables?", personB: "They're in aisle three, right next to the fruits section. We just received a fresh shipment.", context: "Shopping" },
+  { scenario: "Borrowing Items", personA: "Hi! Can I borrow your pen? Mine doesn't work anymore.", personB: "Of course! Take it. When will you return it?", context: "Daily interaction" },
+  { scenario: "Apologizing", personA: "I'm so sorry for being late. I missed my bus, and I got stuck in traffic.", personB: "That's okay. I understand. These things happen sometimes.", context: "Conflict resolution" },
+  { scenario: "Talking about Hobbies", personA: "What do you like to do in your free time? Do you have any hobbies?", personB: "Yes! I really enjoy reading books. I love mystery novels especially.", context: "Personal interest" }
+            ]
+        };
+        
+        // ============================================
+        // APPLICATION STATE
+        // ============================================
+        
+        let examState = {
+            questions: [],
+            answers: {},
+            timeRemaining: 15 * 60,
+            timerInterval: null,
+            isSubmitted: false
+        };
+        
+        const defaultConfig = {
+            exam_title: "Grand Examination",
+            exam_subtitle: "English Learning Assessment"
+        };
+        
+        let config = { ...defaultConfig };
+        
+        // ============================================
+        // ELEMENT SDK INTEGRATION
+        // ============================================
+        
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange: async (newConfig) => {
+                    config = { ...defaultConfig, ...newConfig };
+                    updateUI();
+                },
+                mapToCapabilities: (cfg) => ({
+                    recolorables: [],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (cfg) => new Map([
+                    ["exam_title", cfg.exam_title || defaultConfig.exam_title],
+                    ["exam_subtitle", cfg.exam_subtitle || defaultConfig.exam_subtitle]
+                ])
+            });
+        }
+        
+        function updateUI() {
+            const titleEl = document.getElementById('exam-title');
+            const subtitleEl = document.getElementById('exam-subtitle');
+            if (titleEl) titleEl.textContent = config.exam_title || defaultConfig.exam_title;
+            if (subtitleEl) subtitleEl.textContent = config.exam_subtitle || defaultConfig.exam_subtitle;
+        }
+        
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        function generateWrongOptions(correct, allOptions, count = 3) {
+            const filtered = allOptions.filter(opt => opt !== correct);
+            return shuffleArray(filtered).slice(0, count);
+        }
+        
+        // ============================================
+        // QUESTION GENERATORS
+        // ============================================
+        
+        function generateVocabQuestions() {
+    const words = shuffleArray(EXAM_DATA.vocabulary).slice(0, 10);
+    return words.map((item, idx) => {
+        const questionType = Math.random() > 0.5 ? 'meaning' : 'sentence_fill';
+        
+        if (questionType === 'meaning') {
+            const allMeanings = EXAM_DATA.vocabulary.map(v => v.meaning);
+            const wrongOptions = generateWrongOptions(item.meaning, allMeanings);
+            const options = shuffleArray([item.meaning, ...wrongOptions]);
+            
+            return {
+                id: `vocab_${idx}`,
+                section: 'vocabulary',
+                type: 'mcq',
+                question: `What is the Bengali meaning of "${item.word}"?`,
+                options,
+                correctAnswer: item.meaning
+            };
+        } else {
+            // বাক্য থেকে শব্দটি সরিয়ে শূন্যস্থান তৈরি করা
+            const blankSentence = item.sentence.replace(new RegExp(item.word, 'gi'), '_____');
+            const allWords = EXAM_DATA.vocabulary.map(v => v.word);
+            const wrongOptions = generateWrongOptions(item.word, allWords);
+            const options = shuffleArray([item.word, ...wrongOptions]);
+            
+            return {
+                id: `vocab_${idx}`,
+                section: 'vocabulary',
+                type: 'mcq',
+                question: `Complete the sentence with the correct word:`,
+                sentence: blankSentence, // এটি UI তে দেখাবে
+                options,
+                correctAnswer: item.word
+            };
+        }
+    });
+}
+
+        
+        function generateVerbQuestions() {
+    const verbs = shuffleArray(EXAM_DATA.verbs).slice(0, 10);
+    return verbs.map((item, idx) => {
+        const questionType = Math.random() > 0.5 ? 'grammar' : 'meaning';
+        
+        if (questionType === 'grammar') {
+            // He/She/It এর জন্য s/es যোগ করার লজিক
+            const subjects = ['He', 'She', 'It'];
+            const subject = subjects[Math.floor(Math.random() * subjects.length)];
+            
+            // অটোমেটিক s/es যোগ করা (বেসিক রুলস)
+            let sForm = item.verb.endsWith('y') && !/[aeiou]y$/.test(item.verb) 
+                       ? item.verb.slice(0, -1) + 'ies' 
+                       : (item.verb.endsWith('s') || item.verb.endsWith('ch') || item.verb.endsWith('sh') || item.verb.endsWith('x') || item.verb.endsWith('o') 
+                          ? item.verb + 'es' 
+                          : item.verb + 's');
+
+            const options = shuffleArray([item.verb, sForm]);
+            
+            return {
+                id: `verb_grammar_${idx}`,
+                section: 'verbs',
+                type: 'mcq',
+                question: `Choose the correct verb form for the sentence:`,
+                sentence: `${subject} _____ the task every day.`, // এখানে আপনার ভার্বটি বসবে
+                options,
+                correctAnswer: sForm
+            };
+        } else {
+            // ভার্বের অর্থ থেকে প্রশ্ন
+            const allMeanings = EXAM_DATA.verbs.map(v => v.bengali);
+            const wrongOptions = generateWrongOptions(item.bengali, allMeanings);
+            const options = shuffleArray([item.bengali, ...wrongOptions]);
+            
+            return {
+                id: `verb_meaning_${idx}`,
+                section: 'verbs',
+                type: 'mcq',
+                question: `"${item.verb}" এর সঠিক বাংলা অর্থ কোনটি?`,
+                options,
+                correctAnswer: item.bengali
+            };
+        }
+    });
+}
+
+        
+        function generateDialogueQuestions() {
+            const dialogues = shuffleArray(EXAM_DATA.dialogues).slice(0, 10);
+            
+            return dialogues.map((dialogue, idx) => {
+                const allResponses = EXAM_DATA.dialogues.map(d => d.personB);
+                const wrongOptions = generateWrongOptions(dialogue.personB, allResponses);
+                const options = shuffleArray([dialogue.personB, ...wrongOptions]);
+                
+                return {
+                    id: `dialogue_${idx}`,
+                    section: 'dialogues',
+                    type: 'dialogue',
+                    question: `Complete the dialogue (${dialogue.scenario}):`,
+                    personA: dialogue.personA,
+                    options,
+                    correctAnswer: dialogue.personB,
+                    scenario: dialogue.scenario,
+                    context: dialogue.context
+                };
+            });
+        }
+        
+        // ============================================
+        // RENDER FUNCTIONS
+        // ============================================
+        
+        function renderQuestion(question, index) {
+            const sectionColors = {
+                vocabulary: { bg: 'from-blue-500 to-indigo-500', light: 'bg-blue-50', text: 'text-blue-600' },
+                verbs: { bg: 'from-violet-500 to-purple-500', light: 'bg-violet-50', text: 'text-violet-600' },
+                dialogues: { bg: 'from-pink-500 to-rose-500', light: 'bg-pink-50', text: 'text-pink-600' }
+            };
+            
+            const colors = sectionColors[question.section];
+            const sectionLabels = { vocabulary: '📚 Vocabulary', verbs: '✍️ Verbs', dialogues: '💬 Dialogues' };
+            
+            let questionContent = '';
+            
+            if (question.type === 'mcq') {
+                let sentenceHtml = question.sentence ? `<p class="text-xl font-medium text-gray-700 mb-4 p-4 bg-blue-50 rounded-xl">"${question.sentence}"</p>` : '';
+        
+        questionContent = `
+            ${sentenceHtml} 
+            <p class="text-lg text-gray-800 mb-4">${question.question}</p>
+            <div class="grid grid-cols-1 gap-3">
+                ${question.options.map((opt, optIdx) => `
+                    <button onclick="selectAnswer('${question.id}', '${opt.replace(/'/g, "\\'")}')" 
+                            class="option-btn text-left p-4 border-2 border-gray-200 rounded-xl font-medium ${examState.answers[question.id] === opt ? 'selected' : ''}"
+                            data-question="${question.id}" data-option="${opt}">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-600 font-bold mr-3">${String.fromCharCode(65 + optIdx)}</span>
+                        ${opt}
+                    </button>
+                `).join('')}
+            </div>
+                `;
+            } else if (question.type === 'fill') {
+                questionContent = `
+                    <p class="text-lg text-gray-800 mb-2">${question.question}</p>
+                    <p class="text-xl font-medium text-gray-700 mb-4 p-4 ${colors.light} rounded-xl">"${question.sentence}"</p>
+                    <div class="flex flex-wrap gap-3">
+                        ${question.options.map(opt => `
+                            <button onclick="selectAnswer('${question.id}', '${opt}')" 
+                                    class="option-btn px-6 py-3 border-2 border-gray-200 rounded-xl font-semibold ${examState.answers[question.id] === opt ? 'selected' : ''}"
+                                    data-question="${question.id}" data-option="${opt}">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            } else if (question.type === 'dialogue') {
+                questionContent = `
+                    <p class="text-lg text-gray-800 mb-3">${question.question}</p>
+                    <div class="${colors.light} rounded-xl p-4 mb-4">
+                        <p class="flex items-start gap-3 mb-2">
+                            <span class="font-bold text-gray-700 whitespace-nowrap">Person A:</span>
+                            <span class="text-gray-800">"${question.personA}"</span>
+                        </p>
+                        <p class="flex items-start gap-3">
+                            <span class="font-bold text-gray-700 whitespace-nowrap">Person B:</span>
+                            <span class="text-gray-500 italic">Choose the correct response...</span>
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-1 gap-3">
+                        ${question.options.map((opt, optIdx) => `
+                            <button onclick="selectAnswer('${question.id}', '${opt.replace(/'/g, "\\'")}')" 
+                                    class="option-btn text-left p-4 border-2 border-gray-200 rounded-xl font-medium ${examState.answers[question.id] === opt ? 'selected' : ''}"
+                                    data-question="${question.id}" data-option="${opt}">
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-600 font-bold mr-3">${String.fromCharCode(65 + optIdx)}</span>
+                                "${opt}"
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            return `
+                <div class="question-card bg-white rounded-2xl shadow-lg overflow-hidden animate-slide-up" style="animation-delay: ${index * 0.05}s">
+                    <div class="bg-gradient-to-r ${colors.bg} px-6 py-3 flex items-center justify-between">
+                        <span class="text-white font-semibold">${sectionLabels[question.section]}</span>
+                        <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">Q${index + 1}</span>
+                    </div>
+                    <div class="p-6">
+                        ${questionContent}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderReviewItem(question, index, userAnswer) {
+            const isCorrect = userAnswer === question.correctAnswer;
+            const statusColor = isCorrect ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50';
+            const statusIcon = isCorrect ? '✓' : '✗';
+            const statusText = isCorrect ? 'Correct' : 'Incorrect';
+            
+            let questionDetail = '';
+            if (question.type === 'mcq') {
+                questionDetail = question.question;
+            } else if (question.type === 'fill') {
+                questionDetail = `${question.question} "${question.sentence}"`;
+            } else if (question.type === 'dialogue') {
+                questionDetail = `${question.question} Person A: "${question.personA}"`;
+            }
+            
+            return `
+                <div class="border-2 ${statusColor} rounded-xl p-4">
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-gray-700">Q${index + 1}.</span>
+                            <span class="text-xs px-2 py-1 rounded-full ${isCorrect ? 'bg-emerald-200 text-emerald-700' : 'bg-red-200 text-red-700'} font-semibold">
+                                ${statusIcon} ${statusText}
+                            </span>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-3">${questionDetail}</p>
+                    <div class="space-y-2 text-sm">
+                        ${!isCorrect ? `<p class="text-red-600"><span class="font-semibold">Your answer:</span> ${userAnswer || 'Not answered'}</p>` : ''}
+                        <p class="text-emerald-600"><span class="font-semibold">Correct answer:</span> ${question.correctAnswer}</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ============================================
+        // EXAM FUNCTIONS
+        // ============================================
+        
+        function startExam() {
+            examState = {
+                questions: [],
+                answers: {},
+                timeRemaining: 15 * 60,
+                timerInterval: null,
+                isSubmitted: false
+            };
+            
+            const vocabQuestions = generateVocabQuestions();
+            const verbQuestions = generateVerbQuestions();
+            const dialogueQuestions = generateDialogueQuestions();
+            
+            examState.questions = [...vocabQuestions, ...verbQuestions, ...dialogueQuestions];
+            
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('exam-screen').classList.remove('hidden');
+            document.getElementById('results-screen').classList.add('hidden');
+            
+            renderQuestions();
+            startTimer();
+            updateProgress();
+        }
+        
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = examState.questions.map((q, idx) => renderQuestion(q, idx)).join('');
+        }
+        
+        function selectAnswer(questionId, answer) {
+            examState.answers[questionId] = answer;
+            
+            const buttons = document.querySelectorAll(`[data-question="${questionId}"]`);
+            buttons.forEach(btn => {
+                if (btn.dataset.option === answer) {
+                    btn.classList.add('selected');
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+            
+            updateProgress();
+        }
+        
+        function updateProgress() {
+            const answered = Object.keys(examState.answers).length;
+            const total = examState.questions.length;
+            const percentage = (answered / total) * 100;
+            
+            document.getElementById('progress-text').textContent = `${answered}/${total}`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+        
+        function startTimer() {
+            updateTimerDisplay();
+            
+            examState.timerInterval = setInterval(() => {
+                examState.timeRemaining--;
+                updateTimerDisplay();
+                
+                if (examState.timeRemaining <= 60) {
+                    document.getElementById('timer-display').classList.add('timer-warning', 'bg-red-500');
+                }
+                
+                if (examState.timeRemaining <= 0) {
+                    clearInterval(examState.timerInterval);
+                    submitExam();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(examState.timeRemaining / 60);
+            const seconds = examState.timeRemaining % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function confirmSubmit() {
+            const answered = Object.keys(examState.answers).length;
+            const total = examState.questions.length;
+            const unanswered = total - answered;
+            
+            let warning = '';
+            if (unanswered > 0) {
+                warning = `You have ${unanswered} unanswered question${unanswered > 1 ? 's' : ''}. Are you sure you want to submit?`;
+            } else {
+                warning = 'All questions answered! Ready to submit your exam?';
+            }
+            
+            document.getElementById('submit-warning').textContent = warning;
+            document.getElementById('submit-modal').classList.remove('hidden');
+        }
+        
+        function hideSubmitModal() {
+            document.getElementById('submit-modal').classList.add('hidden');
+        }
+        
+        function submitExam() {
+            if (examState.isSubmitted) return;
+            examState.isSubmitted = true;
+            
+            clearInterval(examState.timerInterval);
+            hideSubmitModal();
+            
+            let vocabScore = 0, verbScore = 0, dialogueScore = 0;
+            
+            examState.questions.forEach(q => {
+                const isCorrect = examState.answers[q.id] === q.correctAnswer;
+                if (isCorrect) {
+                    if (q.section === 'vocabulary') vocabScore++;
+                    else if (q.section === 'verbs') verbScore++;
+                    else if (q.section === 'dialogues') dialogueScore++;
+                }
+            });
+            
+            const totalScore = vocabScore + verbScore + dialogueScore;
+            const passed = totalScore >= 15;
+            
+            document.getElementById('exam-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+            
+            setTimeout(() => {
+                const scoreCircle = document.getElementById('score-circle');
+                const circumference = 553;
+                const offset = circumference - (totalScore / 30) * circumference;
+                scoreCircle.style.strokeDashoffset = offset;
+                
+                document.getElementById('score-number').textContent = totalScore;
+                document.getElementById('vocab-score').textContent = `${vocabScore}/10`;
+                document.getElementById('verb-score').textContent = `${verbScore}/10`;
+                document.getElementById('dialogue-score').textContent = `${dialogueScore}/10`;
+                
+                if (passed) {
+                    document.getElementById('result-title').textContent = '🎉 Congratulations!';
+                    document.getElementById('result-message').textContent = 'You passed the examination with flying colors!';
+                    triggerConfetti();
+                } else {
+                    document.getElementById('result-title').textContent = 'Keep Practicing! 💪';
+                    document.getElementById('result-message').textContent = 'You need 15 marks to pass. Review your answers and try again!';
+                }
+                
+                renderReview();
+            }, 100);
+        }
+        
+        function renderReview() {
+            const container = document.getElementById('review-container');
+            container.innerHTML = examState.questions.map((q, idx) => 
+                renderReviewItem(q, idx, examState.answers[q.id])
+            ).join('');
+        }
+        
+        function triggerConfetti() {
+            const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 30);
+            }
+        }
+        
+        function restartExam() {
+            document.getElementById('results-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            
+            const timerDisplay = document.getElementById('timer-display');
+            timerDisplay.classList.remove('timer-warning', 'bg-red-500');
+        }
+        
+        updateUI();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c9c6454e3fdfc55',t:'MTc3MDM5OTE5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
