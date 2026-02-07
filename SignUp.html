@@ -196,6 +196,14 @@
    </div>
   </div>
   <script>
+   <script>
+  // এখানে আপনার গুগল অ্যাপস স্ক্রিপ্টের URL টি বসাবেন
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby81wpumSVc0j8swHn7a9p8r2ACFoVJNF2Se9NbtjlLOtrRQut7U2uo6U37kVoQ5Ck9_Q/exec"; 
+
+  // এরপর আপনার বাকি সব ফাংশন শুরু হবে...
+  document.getElementById('signup-form').addEventListener('submit', (e) => {
+      // আপনার আগের কোডগুলো এখানে থাকবে...
+
     // ============================================
     // AUTO-LOGIN CHECK (Runs on Page Load)
     // ============================================
@@ -268,25 +276,38 @@
       if (!isValid) return;
 
       // Store user data
-      const userData = {
-        fullName: fullName,
-        email: email,
-        password: password,
-        registeredAt: new Date().toISOString()
-      };
+      // --- এই অংশটুকু আপনার সাইন-আপ সাবমিট ইভেন্টের ভেতরে বসবে ---
 
-      localStorage.setItem(email, JSON.stringify(userData));
-      
-      // Show success message
-      document.getElementById('signup-success').textContent = '✓ Account created successfully! Redirecting...';
-      
-      // Auto-login after 1.5 seconds
-      setTimeout(() => {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('currentUser', email);
+const userData = {
+    action: 'signup', // আমরা গুগল স্ক্রিপ্টকে বলছি এটা সাইন আপ
+    name: fullName,
+    email: email,
+    password: password
+};
+
+// গুগল শিটে ডাটা পাঠানো শুরু
+fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors', // গুগল শিটের জন্য এটি প্রয়োজন হতে পারে
+    cache: 'no-cache',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData)
+})
+.then(() => {
+    // সফল হলে মেসেজ দেখাবে
+    document.getElementById('signup-success').textContent = '✓ Account created in Google Sheet! Redirecting...';
+    
+    // ব্রাউজারেও তথ্য রাখা যাতে সে সাথে সাথে লগইন হতে পারে
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('currentUser', email);
+    
+    setTimeout(() => {
         window.location.href = 'course.html';
-      }, 1500);
-    });
+    }, 1500);
+})
+.catch(error => {
+    document.getElementById('signup-general-error').textContent = 'Error: ' + error.message;
+});
 
     // ============================================
     // SIGN IN HANDLER
