@@ -127,10 +127,20 @@ function loadUserData() {
                 document.getElementById('score-bar').style.width = percentage + "%";
 
                 // ৪. প্রোফাইলের অন্যান্য তথ্য আপডেট
-                document.getElementById('view-dob').textContent = data.dob || "—";
-                document.getElementById('view-phone').textContent = data.phone || "—";
-                document.getElementById('view-location').textContent = data.location || "—";
-                document.getElementById('view-bio').textContent = data.bio || "Tell us about yourself...";
+                // তারিখটি ফরম্যাট করার অংশ
+    if (data.dob && data.dob !== "—") {
+        const dateObj = new Date(data.dob);
+        // এটি তারিখকে 'DD/MM/YYYY' ফরম্যাটে দেখাবে (যেমন: 18/10/2002)
+        const formattedDate = dateObj.toLocaleDateString('en-GB'); 
+        document.getElementById('view-dob').textContent = formattedDate;
+    } else {
+        document.getElementById('view-dob').textContent = "—";
+    }
+
+    // বাকি অন্যান্য তথ্য যেমন আছে তেমনই থাকবে...
+    document.getElementById('view-phone').textContent = data.phone || "—";
+    document.getElementById('view-location').textContent = data.location || "—";
+    document.getElementById('view-bio').textContent = data.bio || "Tell us about yourself...";
             }
         })
         .catch(err => {
