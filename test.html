@@ -2009,7 +2009,7 @@
     
     let vocabScore = 0, verbScore = 0, dialogueScore = 0;
     
-    // ১. স্কোর ক্যালকুলেশন (আপনার আগের কোড অনুযায়ী)
+    // ১. স্কোর ক্যালকুলেশন
     examState.questions.forEach(q => {
         const isCorrect = examState.answers[q.id] === q.correctAnswer;
         if (isCorrect) {
@@ -2020,24 +2020,34 @@
     });
     
     const totalScore = vocabScore + verbScore + dialogueScore;
-    const passed = totalScore >= 15;
 
-    // ২. গুগল শিটে ডাটা পাঠানো (নতুন যোগ করা হয়েছে)
-    const userEmail = localStorage.getItem('currentUser');
-    if (userEmail && typeof SCRIPT_URL !== 'undefined') {
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            cache: 'no-cache',
-            body: JSON.stringify({
-                action: 'updateScore',
-                email: userEmail,
-                score: totalScore
-            })
-        }).catch(err => console.log("Database update failed, but exam continues..."));
+    // ২. গুগল শিটে ডাটা পাঠানো (সংশোধিত অংশ)
+    try {
+        // SignUp.html থেকে সেভ করা অবজেক্ট থেকে ইমেইল বের করা
+        const userData = JSON.parse(localStorage.getItem('currentUser'));
+        const userEmail = userData ? userData.email : null;
+
+        if (userEmail && typeof SCRIPT_URL !== 'undefined') {
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // গুগল স্ক্রিপ্টের জন্য এটি প্রয়োজন
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'updateProfile', // Apps Script এর সাথে মিল রাখা হয়েছে
+                    email: userEmail,
+                    score: totalScore // এটিই শিটে গিয়ে আগের স্কোরের সাথে যোগ হবে
+                })
+            });
+            console.log("Score sending to database: " + totalScore);
+        } else {
+            console.error("Email not found in localStorage!");
+        }
+    } catch (e) {
+        console.error("Data preparation failed:", e);
     }
 
     // ৩. রেজাল্ট স্ক্রিন দেখানো
+function showResults(totalScore, vocabScore, verbScore, dialogueScore, passed) {
     document.getElementById('exam-screen').classList.add('hidden');
     document.getElementById('results-screen').classList.remove('hidden');
     
