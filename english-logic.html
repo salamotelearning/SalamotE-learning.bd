@@ -135,20 +135,46 @@
             }
         }
 
-        function showCompletion() {
-            document.getElementById('card-display').innerHTML = `
-                <div class="text-center py-10">
-                    <div class="text-6xl mb-4">🎉</div>
-                    <h2 class="text-3xl font-bold text-gray-900">Great Job!</h2>
-                    <p class="text-gray-500 mt-2">You mastered today's English Logic.</p>
-                    <div class="my-8 bg-indigo-50 p-6 rounded-2xl">
-                        <p class="text-sm text-indigo-400 font-bold uppercase">Total Earned</p>
-                        <p class="text-4xl font-bold text-indigo-600">${totalXP} XP</p>
-                    </div>
-                    <button onclick="location.href='index.html'" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">Back to Courses</button>
-                </div>
-            `;
+        async function showCompletion() {
+    // ১. গুগল শিটে স্কোর পাঠানোর চেষ্টা (নতুন অংশ)
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser) {
+        try {
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "updateProfile",
+                    email: currentUser.email,
+                    score: totalXP + " XP" // এটি শিটের Score কলামে গিয়ে জমা হবে
+                })
+            });
+        } catch (err) {
+            console.log("Score update failed, but it's okay!");
         }
+    }
+
+    // ২. আপনার দেওয়া ডিজাইনটি এখানে (মোবাইল ফ্রেন্ডলি টাচসহ)
+    document.getElementById('card-display').innerHTML = `
+        <div class="text-center py-6 md:py-10">
+            <div class="text-6xl mb-4">🎉</div>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Great Job!</h2>
+            <p class="text-gray-500 mt-2 px-4">You mastered today's English Logic.</p>
+            
+            <div class="my-6 md:my-8 bg-indigo-50 p-6 rounded-2xl mx-4">
+                <p class="text-sm text-indigo-400 font-bold uppercase">Total Earned</p>
+                <p class="text-4xl font-bold text-indigo-600">${totalXP} XP</p>
+            </div>
+
+            <div class="px-4">
+                <button onclick="location.href='index.html'" 
+                        class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-lg">
+                    Back to Courses
+                </button>
+            </div>
+        </div>
+    `;
+}
+
     </script>
 </body>
 </html>
