@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Salamot E-learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-indigo-gradient { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <nav class="bg-white shadow-sm p-4 flex justify-between items-center px-6 md:px-12">
+        <div class="font-bold text-xl text-indigo-600">Salamot E-learning</div>
+        <div class="space-x-4 flex items-center">
+            <a href="course.html" class="text-gray-600 hover:text-indigo-600">Courses</a>
+            <button onclick="logout()" class="text-red-500 font-medium text-sm">Logout</button>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto py-10 px-4">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+            <div class="bg-indigo-gradient h-32 relative"></div>
+            <div class="px-8 pb-8">
+                <div class="relative flex justify-between items-end -mt-12">
+                    <div class="bg-white p-1 rounded-full shadow-lg">
+                        <img id="profile-img" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=128" alt="Profile" class="w-32 h-32 rounded-full border-4 border-white object-cover">
+                    </div>
+                    <button onclick="toggleEditMode()" class="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2">
+                        <svg id="edit-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        <span id="btn-text">Edit Profile</span>
+                    </button>
+                </div>
+                <div class="mt-4">
+                    <h1 id="display-name" class="text-3xl font-bold text-gray-800">Loading...</h1>
+                    <p id="display-email" class="text-gray-500 italic">loading@example.com</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="md:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-indigo-500">
+                    <h3 class="text-gray-400 uppercase text-xs font-bold tracking-wider mb-4">Exam Progress</h3>
+                    <div class="text-center">
+                        <div class="inline-flex items-center justify-center p-4 bg-indigo-50 rounded-full mb-3">
+                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <p class="text-gray-500 text-sm">Last Exam Score</p>
+                        <h2 id="last-score" class="text-3xl font-extrabold text-indigo-600">0/30</h2>
+                        <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
+                            <div id="score-bar" class="bg-indigo-600 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <div id="profile-details" class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div id="view-mode" class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><p class="text-xs text-gray-400 font-bold uppercase">Date of Birth</p><p id="view-dob" class="text-gray-700 font-medium">—</p></div>
+                            <div><p class="text-xs text-gray-400 font-bold uppercase">Phone</p><p id="view-phone" class="text-gray-700 font-medium">—</p></div>
+                        </div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase">Location</p><p id="view-location" class="text-gray-700 font-medium">—</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase">Bio</p><p id="view-bio" class="text-gray-700 leading-relaxed italic">Tell us about yourself...</p></div>
+                    </div>
+
+                    <form id="edit-form" class="hidden space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-sm font-medium text-gray-700">DOB</label><input type="date" id="input-dob" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"></div>
+                            <div><label class="block text-sm font-medium text-gray-700">Phone</label><input type="text" id="input-phone" placeholder="017..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"></div>
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-700">Location</label><input type="text" id="input-location" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"></div>
+                        <div><label class="block text-sm font-medium text-gray-700">Bio</label><textarea id="input-bio" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm border p-2"></textarea></div>
+                        <div class="flex gap-2 pt-2">
+                            <button type="button" onclick="saveProfile()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold">Save Changes</button>
+                            <button type="button" onclick="toggleEditMode()" class="bg-gray-100 text-gray-600 px-6 py-2 rounded-lg font-bold">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6AFwAQKcnv97N-mzN6X3zbk1hGeEvvfbBTmdu5M4h-MYMQEeJwSxuZm6CWG1luvKKEQ/exec";
+
+        // 1. Session Protection
+        window.onload = function() {
+            if (localStorage.getItem('isLoggedIn') !== 'true') {
+                window.location.href = 'SignUp.html';
+                return;
+            }
+            loadUserData();
+        };
+
+        // 2. Load Initial Data
+        function loadUserData() {
+            const email = localStorage.getItem('currentUser');
+            const name = localStorage.getItem('userName') || "Student";
+            const lastScore = localStorage.getItem('lastExamScore') || "0";
+
+            document.getElementById('display-name').textContent = name;
+            document.getElementById('display-email').textContent = email;
+            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${name}&background=6366f1&color=fff&size=128`;
+            
+            // Set Score
+            document.getElementById('last-score').textContent = lastScore + "/30";
+            document.getElementById('score-bar').style.width = (lastScore / 30 * 100) + "%";
+
+            // Fetch Additional Data from Sheets (via Apps Script)
+            fetch(`${SCRIPT_URL}?email=${email}&action=getProfile`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.status === "success") {
+                        document.getElementById('view-dob').textContent = data.dob || "—";
+                        document.getElementById('view-phone').textContent = data.phone || "—";
+                        document.getElementById('view-location').textContent = data.location || "—";
+                        document.getElementById('view-bio').textContent = data.bio || "Tell us about yourself...";
+                    }
+                });
+        }
+
+        // 3. Toggle Edit Mode
+        function toggleEditMode() {
+            const viewMode = document.getElementById('view-mode');
+            const editForm = document.getElementById('edit-form');
+            const btnText = document.getElementById('btn-text');
+
+            if (editForm.classList.contains('hidden')) {
+                editForm.classList.remove('hidden');
+                viewMode.classList.add('hidden');
+                btnText.textContent = "Exit Edit";
+                // Pre-fill inputs
+                document.getElementById('input-dob').value = document.getElementById('view-dob').textContent.replace('—', '');
+                document.getElementById('input-phone').value = document.getElementById('view-phone').textContent.replace('—', '');
+                document.getElementById('input-location').value = document.getElementById('view-location').textContent.replace('—', '');
+                document.getElementById('input-bio').value = document.getElementById('view-bio').textContent.replace('Tell us about yourself...', '');
+            } else {
+                editForm.classList.add('hidden');
+                viewMode.classList.remove('hidden');
+                btnText.textContent = "Edit Profile";
+            }
+        }
+
+        // 4. Save Profile (POST Request)
+        async function saveProfile() {
+            const email = localStorage.getItem('currentUser');
+            const btn = document.querySelector('#edit-form button[type="button"]');
+            btn.textContent = "Saving...";
+            btn.disabled = true;
+
+            const profileData = {
+                action: "updateProfile",
+                email: email,
+                dob: document.getElementById('input-dob').value,
+                phone: document.getElementById('input-phone').value,
+                location: document.getElementById('input-location').value,
+                bio: document.getElementById('input-bio').value
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(profileData)
+                });
+                
+                alert("Profile Updated Successfully!");
+                location.reload(); // Refresh to show new data
+            } catch (error) {
+                console.error("Save failed", error);
+                alert("Error updating profile.");
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'SignUp.html';
+        }
+    </script>
+</body>
+</html>
