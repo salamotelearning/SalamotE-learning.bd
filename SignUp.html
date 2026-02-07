@@ -196,246 +196,124 @@
    </div>
   </div>
   <script>
-  // এখানে আপনার গুগল অ্যাপস স্ক্রিপ্টের URL টি বসাবেন
+  // ১. গুগল শিট কানেকশন ইউআরএল
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby81wpumSVc0j8swHn7a9p8r2ACFoVJNF2Se9NbtjlLOtrRQut7U2uo6U37kVoQ5Ck9_Q/exec"; 
 
-  // এরপর আপনার বাকি সব ফাংশন শুরু হবে...
-  document.getElementById('signup-form').addEventListener('submit', (e) => {
-      // আপনার আগের কোডগুলো এখানে থাকবে...
-
-    // ============================================
-    // AUTO-LOGIN CHECK (Runs on Page Load)
-    // ============================================
-    window.addEventListener('DOMContentLoaded', () => {
-      const isLoggedIn = localStorage.getItem('isLoggedIn');
-      if (isLoggedIn === 'true') {
-        window.location.href = 'course.html';
-      }
-    });
-
-    // ============================================
-    // AUTHENTICATION LOGIC
-    // ============================================
-    
-    function toggleAuthForm() {
-      const signinForm = document.getElementById('signin-form');
-      const signupForm = document.getElementById('signup-form');
-      
-      signinForm.classList.toggle('hidden');
-      signupForm.classList.toggle('hidden');
-      
-      clearAllErrors();
-    }
-
-    function clearAllErrors() {
-      document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-      document.getElementById('signup-success').textContent = '';
-    }
-
-    // ============================================
-    // SIGN UP HANDLER
-    // ============================================
-    document.getElementById('signup-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      clearAllErrors();
-
-      const fullName = document.getElementById('signup-name').value.trim();
-      const email = document.getElementById('signup-email').value.trim();
-      const password = document.getElementById('signup-password').value;
-      const confirmPassword = document.getElementById('signup-confirm-password').value;
-
-      let isValid = true;
-
-      // Validation
-      if (!fullName || fullName.length < 3) {
-        document.getElementById('signup-name-error').textContent = 'Full name must be at least 3 characters';
-        isValid = false;
-      }
-
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        document.getElementById('signup-email-error').textContent = 'Please enter a valid email address';
-        isValid = false;
-      }
-
-      if (localStorage.getItem(email)) {
-        document.getElementById('signup-email-error').textContent = 'Email already registered. Try signing in!';
-        isValid = false;
-      }
-
-      if (!password || password.length < 6) {
-        document.getElementById('signup-password-error').textContent = 'Password must be at least 6 characters';
-        isValid = false;
-      }
-
-      if (password !== confirmPassword) {
-        document.getElementById('signup-confirm-error').textContent = 'Passwords do not match';
-        isValid = false;
-      }
-
-      if (!isValid) return;
-
-      // Store user data
-      // --- এই অংশটুকু আপনার সাইন-আপ সাবমিট ইভেন্টের ভেতরে বসবে ---
-
-const userData = {
-    action: 'signup', // আমরা গুগল স্ক্রিপ্টকে বলছি এটা সাইন আপ
-    name: fullName,
-    email: email,
-    password: password
-};
-
-// গুগল শিটে ডাটা পাঠানো শুরু
-fetch(SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors', // গুগল শিটের জন্য এটি প্রয়োজন হতে পারে
-    cache: 'no-cache',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData)
-})
-.then(() => {
-    // সফল হলে মেসেজ দেখাবে
-    document.getElementById('signup-success').textContent = '✓ Account created in Google Sheet! Redirecting...';
-    
-    // ব্রাউজারেও তথ্য রাখা যাতে সে সাথে সাথে লগইন হতে পারে
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('currentUser', email);
-    
-    setTimeout(() => {
-        window.location.href = 'course.html';
-    }, 1500);
-})
-.catch(error => {
-    document.getElementById('signup-general-error').textContent = 'Error: ' + error.message;
-});
-
-    // ============================================
-    // SIGN IN HANDLER
-    // ============================================
-    document.getElementById('signin-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      clearAllErrors();
-
-      const email = document.getElementById('signin-email').value.trim();
-      const password = document.getElementById('signin-password').value;
-
-      let isValid = true;
-
-      if (!email) {
-        document.getElementById('signin-email-error').textContent = 'Email is required';
-        isValid = false;
-      }
-
-      if (!password) {
-        document.getElementById('signin-password-error').textContent = 'Password is required';
-        isValid = false;
-      }
-
-      if (!isValid) return;
-
-      // Check if user exists
-      const userData = localStorage.getItem(email);
-      
-      if (!userData) {
-        document.getElementById('signin-general-error').textContent = '✗ Email not found. Please sign up first.';
-        return;
-      }
-
-      const user = JSON.parse(userData);
-
-      // Verify password
-      if (user.password !== password) {
-        document.getElementById('signin-password-error').textContent = 'Incorrect password';
-        return;
-      }
-
-      // Login successful
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('currentUser', email);
-      
+  // ২. অটো-লগইন চেক: অলরেডি লগইন থাকলে কোর্স পেজে পাঠাবে
+  window.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
       window.location.href = 'course.html';
-    });
+    }
+  });
 
-    // ============================================
-    // SIGN OUT FUNCTION (For Other Pages)
-    // ===========================================
-    // ১. পেজ লোড হওয়ার সময় চেক: ইউজার কি অলরেডি লগইন করা?
-    // যদি থাকে, তবে তাকে সরাসরি কোর্স পেজে পাঠিয়ে দাও।
-    (function() {
-      const isLoggedIn = localStorage.getItem('isLoggedIn');
-      if (isLoggedIn === 'true') {
-        window.location.replace('course.html');
-      }
-    })();
+  // ৩. সাইন-ইন এবং সাইন-আপ ফর্ম অদলবদল (Toggle Logic)
+  // এটি আপনার "Create one" এবং "Sign in" বাটনের জন্য কাজ করবে
+  function toggleAuthForm() {
+    const signinForm = document.getElementById('signin-form');
+    const signupForm = document.getElementById('signup-form');
+    
+    signinForm.classList.toggle('hidden');
+    signupForm.classList.toggle('hidden');
+    
+    clearAllErrors();
+  }
 
-    // ২. সাইন আউট ফাংশন
-    function signOut() {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('currentUser');
-      window.location.href = 'index.html';
+  // সব এরর মেসেজ ক্লিন করার ফাংশন
+  function clearAllErrors() {
+    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    const successMsg = document.getElementById('signup-success');
+    if (successMsg) successMsg.textContent = '';
+  }
+
+  // ৪. সাইন আপ হ্যান্ডলার (গুগল শিটে ডাটা পাঠাবে)
+  document.getElementById('signup-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearAllErrors();
+
+    const fullName = document.getElementById('signup-name').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const confirmPassword = document.getElementById('signup-confirm-password').value;
+
+    // ভ্যালিডেশন চেক
+    if (fullName.length < 3) {
+      document.getElementById('signup-name-error').textContent = 'Full name must be at least 3 characters';
+      return;
+    }
+    if (password.length < 6) {
+      document.getElementById('signup-password-error').textContent = 'Password must be at least 6 characters';
+      return;
+    }
+    if (password !== confirmPassword) {
+      document.getElementById('signup-confirm-error').textContent = 'Passwords do not match';
+      return;
     }
 
-    // ৩. টগল ফর্ম (Sign In / Sign Up switching)
-    function toggleAuthForm() {
-      const signinForm = document.getElementById('signin-form');
-      const signupForm = document.getElementById('signup-form');
-      signinForm.classList.toggle('hidden');
-      signupForm.classList.toggle('hidden');
-      clearAllErrors();
-    }
+    const userData = {
+      action: 'signup',
+      name: fullName,
+      email: email,
+      password: password
+    };
 
-    function clearAllErrors() {
-      document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-      const successMsg = document.getElementById('signup-success');
-      if(successMsg) successMsg.textContent = '';
-    }
+    document.getElementById('signup-success').textContent = 'Wait! Saving to Google Sheet...';
 
-    // ৪. সাইন ইন হ্যান্ডলার (লগইন বাটন চাপলে যা হবে)
-    document.getElementById('signin-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('signin-email').value.trim();
-      const password = document.getElementById('signin-password').value;
-
-      const userData = localStorage.getItem(email);
-      if (!userData) {
-        document.getElementById('signin-general-error').textContent = '✗ ইউজার পাওয়া যায়নি। দয়া করে সাইন আপ করুন।';
-        return;
-      }
-
-      const user = JSON.parse(userData);
-      if (user.password !== password) {
-        document.getElementById('signin-password-error').textContent = 'ভুল পাসওয়ার্ড!';
-        return;
-      }
-
-      // সাকসেস হলে ডাটা সেট করে কোর্স পেজে রিডাইরেক্ট
+    // শিটে ডাটা পাঠানো
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      body: JSON.stringify(userData)
+    })
+    .then(() => {
+      document.getElementById('signup-success').textContent = '✓ Account Created Successfully! Redirecting...';
+      
+      // ব্যাকআপ হিসেবে লোকাল স্টোরেজে রাখা
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('currentUser', email);
-      window.location.replace('course.html');
-    });
-
-    // ৫. সাইন আপ হ্যান্ডলার
-    document.getElementById('signup-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const fullName = document.getElementById('signup-name').value.trim();
-      const email = document.getElementById('signup-email').value.trim();
-      const password = document.getElementById('signup-password').value;
-
-      if (localStorage.getItem(email)) {
-        document.getElementById('signup-email-error').textContent = 'এই ইমেইলটি আগে থেকেই আছে!';
-        return;
-      }
-
-      const userData = { fullName, email, password };
-      localStorage.setItem(email, JSON.stringify(userData));
-      
-      document.getElementById('signup-success').textContent = '✓ অ্যাকাউন্ট তৈরি হয়েছে! লগইন হচ্ছে...';
+      localStorage.setItem(email, JSON.stringify({fullName, password}));
 
       setTimeout(() => {
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('currentUser', email);
-        window.location.replace('course.html');
+        window.location.href = 'course.html';
       }, 1500);
+    })
+    .catch(error => {
+      document.getElementById('signup-general-error').textContent = 'Error: ' + error.message;
     });
-     </script>
+  });
+
+  // ৫. সাইন ইন হ্যান্ডলার (লোকাল চেক)
+  document.getElementById('signin-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    clearAllErrors();
+
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
+
+    const storedData = localStorage.getItem(email);
+    
+    if (!storedData) {
+      document.getElementById('signin-general-error').textContent = '✗ Email not found. Please sign up first.';
+      return;
+    }
+
+    const user = JSON.parse(storedData);
+    if (user.password !== password) {
+      document.getElementById('signin-password-error').textContent = 'Incorrect password';
+      return;
+    }
+
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('currentUser', email);
+    window.location.href = 'course.html';
+  });
+
+  // ৬. সাইন আউট ফাংশন
+  function signOut() {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('currentUser');
+    window.location.href = 'SignUp.html';
+  }
+</script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ca0c1cf961cfc55',t:'MTc3MDQ0NDk3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html><!-- SECURITY GATEKEEPER - Place this in <head> of protected pages -->
