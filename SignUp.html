@@ -202,7 +202,7 @@
   // ২. অটো-লগইন চেক: অলরেডি লগইন থাকলে কোর্স পেজে পাঠাবে
   window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
-      window.location.href = 'course.html';
+      window.location.href = 'courses.html';
     }
   });
 
@@ -305,7 +305,7 @@
 
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('currentUser', email);
-    window.location.href = 'course.html';
+    window.location.href = 'courses.html';
   });
 
   // ৬. সাইন আউট ফাংশন
