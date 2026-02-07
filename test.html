@@ -6,6 +6,9 @@
   <title>Grand Exam - English Learning Assessment</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/_sdk/element_sdk.js"></script>
+   <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6AFwAQKcnv97N-mzN6X3zbk1hGeEvvfbBTmdu5M4h-MYMQEeJwSxuZm6CWG1luvKKEQ/exec";
+   </script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
         body {
@@ -1998,64 +2001,74 @@
         }
         
         function submitExam() {
-            if (examState.isSubmitted) return;
-            examState.isSubmitted = true;
-            
-            clearInterval(examState.timerInterval);
-            hideSubmitModal();
-            
-            let vocabScore = 0, verbScore = 0, dialogueScore = 0;
-            
-            examState.questions.forEach(q => {
-                const isCorrect = examState.answers[q.id] === q.correctAnswer;
-                if (isCorrect) {
-                    if (q.section === 'vocabulary') vocabScore++;
-                    else if (q.section === 'verbs') verbScore++;
-                    else if (q.section === 'dialogues') dialogueScore++;
-                }
-            });
-            
-            const totalScore = vocabScore + verbScore + dialogueScore;
-            const passed = totalScore >= 15;
-            
-const userEmail = localStorage.getItem('currentUser');
-if (userEmail) {
-    fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: JSON.stringify({
-            action: 'updateScore',
-            email: userEmail,
-            score: totalScore // ৩০ এর মধ্যে কত পেল সেটা সেভ হবে
-        })
-    });
-}
-            document.getElementById('exam-screen').classList.add('hidden');
-            document.getElementById('results-screen').classList.remove('hidden');
-            
-            setTimeout(() => {
-                const scoreCircle = document.getElementById('score-circle');
-                const circumference = 553;
-                const offset = circumference - (totalScore / 30) * circumference;
-                scoreCircle.style.strokeDashoffset = offset;
-                
-                document.getElementById('score-number').textContent = totalScore;
-                document.getElementById('vocab-score').textContent = `${vocabScore}/10`;
-                document.getElementById('verb-score').textContent = `${verbScore}/10`;
-                document.getElementById('dialogue-score').textContent = `${dialogueScore}/10`;
-                
-                if (passed) {
-                    document.getElementById('result-title').textContent = '🎉 Congratulations!';
-                    document.getElementById('result-message').textContent = 'You passed the examination with flying colors!';
-                    triggerConfetti();
-                } else {
-                    document.getElementById('result-title').textContent = 'Keep Practicing! 💪';
-                    document.getElementById('result-message').textContent = 'You need 15 marks to pass. Review your answers and try again!';
-                }
-                
-                renderReview();
-            }, 100);
+    if (examState.isSubmitted) return;
+    examState.isSubmitted = true;
+    
+    clearInterval(examState.timerInterval);
+    hideSubmitModal();
+    
+    let vocabScore = 0, verbScore = 0, dialogueScore = 0;
+    
+    // ১. স্কোর ক্যালকুলেশন (আপনার আগের কোড অনুযায়ী)
+    examState.questions.forEach(q => {
+        const isCorrect = examState.answers[q.id] === q.correctAnswer;
+        if (isCorrect) {
+            if (q.section === 'vocabulary') vocabScore++;
+            else if (q.section === 'verbs') verbScore++;
+            else if (q.section === 'dialogues') dialogueScore++;
         }
+    });
+    
+    const totalScore = vocabScore + verbScore + dialogueScore;
+    const passed = totalScore >= 15;
+
+    // ২. গুগল শিটে ডাটা পাঠানো (নতুন যোগ করা হয়েছে)
+    const userEmail = localStorage.getItem('currentUser');
+    if (userEmail && typeof SCRIPT_URL !== 'undefined') {
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            body: JSON.stringify({
+                action: 'updateScore',
+                email: userEmail,
+                score: totalScore
+            })
+        }).catch(err => console.log("Database update failed, but exam continues..."));
+    }
+
+    // ৩. রেজাল্ট স্ক্রিন দেখানো
+    document.getElementById('exam-screen').classList.add('hidden');
+    document.getElementById('results-screen').classList.remove('hidden');
+    
+    // ৪. অ্যানিমেশন এবং ডাটা শো করা (আপনার অরিজিনাল কোড)
+    setTimeout(() => {
+        const scoreCircle = document.getElementById('score-circle');
+        if (scoreCircle) {
+            const circumference = 553;
+            const offset = circumference - (totalScore / 30) * circumference;
+            scoreCircle.style.strokeDashoffset = offset;
+        }
+        
+        document.getElementById('score-number').textContent = totalScore;
+        document.getElementById('vocab-score').textContent = `${vocabScore}/10`;
+        document.getElementById('verb-score').textContent = `${verbScore}/10`;
+        document.getElementById('dialogue-score').textContent = `${dialogueScore}/10`;
+        
+        if (passed) {
+            document.getElementById('result-title').textContent = '🎉 Congratulations!';
+            document.getElementById('result-message').textContent = 'You passed the examination with flying colors!';
+            triggerConfetti(); // আপনার কনফেটি ফাংশন
+        } else {
+            document.getElementById('result-title').textContent = 'Keep Practicing! 💪';
+            document.getElementById('result-message').textContent = 'You need 15 marks to pass. Review your answers and try again!';
+        }
+        
+        // ৫. রিভিউ রেন্ডার করা
+        renderReview();
+    }, 100);
+}
+
         
         function renderReview() {
             const container = document.getElementById('review-container');
