@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Logic - Salamot E-learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f8fafc; }
+        .logic-card { animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .correct-ans { border-color: #10b981 !important; background-color: #ecfdf5; }
+        .wrong-ans { border-color: #ef4444 !important; background-color: #fef2f2; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-indigo-600 font-bold text-xl">English Logic</h1>
+            <div class="flex items-center gap-4">
+                <span id="user-xp" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-bold text-sm">🎯 0 XP</span>
+                <button onclick="location.href='index.html'" class="text-gray-500 hover:text-indigo-600 font-medium">Exit</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-2xl mx-auto p-4 mt-6">
+        <div class="w-full bg-gray-200 h-2 rounded-full mb-6">
+            <div id="progress" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <div id="card-display" class="logic-card bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+            <div class="text-center py-10">
+                <p class="text-gray-500">Loading your logic cards...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "আপনার_APPS_SCRIPT_URL_এখানে_দিন"; // <--- আপনার URL দিন
+        let cards = [];
+        let currentIndex = 0;
+        let totalXP = 0;
+
+        // Session Check
+        window.onload = () => {
+            const user = localStorage.getItem('currentUser');
+            if(!user) { location.href = 'login.html'; return; }
+            fetchCards();
+        };
+
+        async function fetchCards() {
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getEnglishLogic`);
+                const data = await res.json();
+                if(data.success) {
+                    cards = data.cards;
+                    renderCard();
+                }
+            } catch (err) {
+                alert("Error loading cards. Check internet.");
+            }
+        }
+
+        function renderCard() {
+            if(currentIndex >= cards.length) {
+                showCompletion();
+                return;
+            }
+
+            const card = cards[currentIndex];
+            const progress = ((currentIndex + 1) / cards.length) * 100;
+            document.getElementById('progress').style.width = progress + "%";
+
+            let examplesHTML = card.examples.map(ex => `
+                <div class="bg-indigo-50 p-4 rounded-xl mb-3 border-l-4 border-indigo-400">
+                    <p class="font-bold text-gray-800">✓ ${ex.english}</p>
+                    <p class="text-sm text-gray-500">${ex.bengali}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('card-display').innerHTML = `
+                <div class="mb-6">
+                    <span class="text-xs font-bold text-indigo-500 uppercase tracking-widest">Topic ${currentIndex + 1}</span>
+                    <h2 class="text-2xl font-bold text-gray-900 mt-1">${card.title}</h2>
+                </div>
+                
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 mb-2 text-indigo-600 font-semibold">
+                        <span>💡</span> Logic
+                    </div>
+                    <p class="text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl">${card.logicBengali}</p>
+                </div>
+
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 mb-3 text-indigo-600 font-semibold">
+                        <span>🎤</span> Speaking Examples
+                    </div>
+                    ${examplesHTML}
+                </div>
+
+                <div class="bg-yellow-50 p-6 rounded-2xl border-2 border-yellow-200">
+                    <p class="font-bold mb-4 text-gray-800">${card.question}</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="ans-input" placeholder="Type answer..." 
+                               class="flex-1 p-3 rounded-xl border-2 border-gray-200 outline-none focus:border-indigo-500">
+                        <button id="check-btn" onclick="checkAnswer('${card.answer}', ${card.xpReward})" 
+                                class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700">Check</button>
+                    </div>
+                    <p id="msg" class="mt-4 hidden font-bold"></p>
+                </div>
+            `;
+        }
+
+        function checkAnswer(correct, xp) {
+            const input = document.getElementById('ans-input');
+            const btn = document.getElementById('check-btn');
+            const msg = document.getElementById('msg');
+            
+            if(input.value.trim().toLowerCase() === correct.toLowerCase()) {
+                input.className = "flex-1 p-3 rounded-xl border-2 correct-ans outline-none";
+                msg.innerHTML = "✨ Awesome! +"+xp+" XP";
+                msg.className = "mt-4 block text-green-600";
+                totalXP += xp;
+                document.getElementById('user-xp').textContent = "🎯 " + totalXP + " XP";
+                
+                btn.innerHTML = "Next →";
+                btn.onclick = () => { currentIndex++; renderCard(); };
+            } else {
+                input.className = "flex-1 p-3 rounded-xl border-2 wrong-ans outline-none";
+                msg.innerHTML = "❌ Try again! (Tip: " + correct + ")";
+                msg.className = "mt-4 block text-red-600";
+            }
+        }
+
+        function showCompletion() {
+            document.getElementById('card-display').innerHTML = `
+                <div class="text-center py-10">
+                    <div class="text-6xl mb-4">🎉</div>
+                    <h2 class="text-3xl font-bold text-gray-900">Great Job!</h2>
+                    <p class="text-gray-500 mt-2">You mastered today's English Logic.</p>
+                    <div class="my-8 bg-indigo-50 p-6 rounded-2xl">
+                        <p class="text-sm text-indigo-400 font-bold uppercase">Total Earned</p>
+                        <p class="text-4xl font-bold text-indigo-600">${totalXP} XP</p>
+                    </div>
+                    <button onclick="location.href='index.html'" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold">Back to Courses</button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
