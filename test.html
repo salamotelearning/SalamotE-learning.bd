@@ -2000,7 +2000,8 @@
             document.getElementById('submit-modal').classList.add('hidden');
         }
         
-        function submitExam() {
+        // ১. পরীক্ষা সাবমিট করার ফাংশন
+function submitExam() {
     if (examState.isSubmitted) return;
     examState.isSubmitted = true;
     
@@ -2009,7 +2010,6 @@
     
     let vocabScore = 0, verbScore = 0, dialogueScore = 0;
     
-    // ১. স্কোর ক্যালকুলেশন
     examState.questions.forEach(q => {
         const isCorrect = examState.answers[q.id] === q.correctAnswer;
         if (isCorrect) {
@@ -2020,38 +2020,37 @@
     });
     
     const totalScore = vocabScore + verbScore + dialogueScore;
+    const passed = totalScore >= 15;
 
-    // ২. গুগল শিটে ডাটা পাঠানো (সংশোধিত অংশ)
+    // শিটে ডাটা পাঠানো (এটি আপনার Apps Script এ পয়েন্ট যোগ করবে)
     try {
-        // SignUp.html থেকে সেভ করা অবজেক্ট থেকে ইমেইল বের করা
         const userData = JSON.parse(localStorage.getItem('currentUser'));
         const userEmail = userData ? userData.email : null;
 
         if (userEmail && typeof SCRIPT_URL !== 'undefined') {
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // গুগল স্ক্রিপ্টের জন্য এটি প্রয়োজন
-                headers: { 'Content-Type': 'application/json' },
+                mode: 'no-cors',
                 body: JSON.stringify({
-                    action: 'updateProfile', // Apps Script এর সাথে মিল রাখা হয়েছে
+                    action: 'updateProfile',
                     email: userEmail,
-                    score: totalScore // এটিই শিটে গিয়ে আগের স্কোরের সাথে যোগ হবে
+                    score: totalScore
                 })
             });
-            console.log("Score sending to database: " + totalScore);
-        } else {
-            console.error("Email not found in localStorage!");
         }
     } catch (e) {
-        console.error("Data preparation failed:", e);
+        console.error("Score sending failed:", e);
     }
 
-    // ৩. রেজাল্ট স্ক্রিন দেখানো
+    // রেজাল্ট দেখানোর ফাংশন কল করা
+    showResults(totalScore, vocabScore, verbScore, dialogueScore, passed);
+}
+
+// ২. রেজাল্ট স্ক্রিন দেখানো এবং অ্যানিমেশন
 function showResults(totalScore, vocabScore, verbScore, dialogueScore, passed) {
     document.getElementById('exam-screen').classList.add('hidden');
     document.getElementById('results-screen').classList.remove('hidden');
     
-    // ৪. অ্যানিমেশন এবং ডাটা শো করা (আপনার অরিজিনাল কোড)
     setTimeout(() => {
         const scoreCircle = document.getElementById('score-circle');
         if (scoreCircle) {
@@ -2068,13 +2067,12 @@ function showResults(totalScore, vocabScore, verbScore, dialogueScore, passed) {
         if (passed) {
             document.getElementById('result-title').textContent = '🎉 Congratulations!';
             document.getElementById('result-message').textContent = 'You passed the examination with flying colors!';
-            triggerConfetti(); // আপনার কনফেটি ফাংশন
+            triggerConfetti();
         } else {
             document.getElementById('result-title').textContent = 'Keep Practicing! 💪';
             document.getElementById('result-message').textContent = 'You need 15 marks to pass. Review your answers and try again!';
         }
         
-        // ৫. রিভিউ রেন্ডার করা
         renderReview();
     }, 100);
 }
