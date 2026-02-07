@@ -198,11 +198,20 @@
  </head>
  <body class="h-full font-body">
   <nav class="bg-white shadow-md p-4 flex justify-between items-center relative z-50">
-    <div class="font-bold text-lg md:text-xl text-indigo-600">
-        Salamot E-learning
+    <div class="flex flex-col">
+        <div class="font-bold text-lg md:text-xl text-indigo-600 leading-tight">
+            Salamot E-learning
+        </div>
+        
+        <div class="flex items-center gap-2 mt-1">
+            <div class="w-24 md:w-32 h-1.5 bg-gray-100 rounded-full overflow-hidden border border-gray-50">
+                <div id="nav-progress-line" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-full w-0 transition-all duration-1000"></div>
+            </div>
+            <span id="nav-xp-text" class="text-[9px] font-bold text-indigo-500 whitespace-nowrap">0 XP</span>
+        </div>
     </div>
 
-    <button onclick="toggleMenu()" class="text-gray-600 focus:outline-none p-2">
+    <button onclick="toggleMenu()" class="text-gray-600 focus:outline-none p-2 hover:bg-gray-50 rounded-full transition-colors">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
         </svg>
@@ -669,10 +678,45 @@ lessonCard.innerHTML = `
             menu.classList.add('hidden');
         }
     }
-
-    function signOut() {
+  // এইটা পয়েন্টের স্ক্রিপ্ট
+   function signOut() {
         localStorage.clear();
         window.location.replace('SignUp.html');
     }
+  async function updateNavStats() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) return;
+
+    try {
+        // Apps Script থেকে ইউজারের প্রোফাইল ডাটা কল করা হচ্ছে
+        const response = await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "getProfile",
+                email: user.email
+            })
+        });
+        const data = await response.json();
+
+        if (data.status === "success") {
+            const totalPoints = parseInt(data.score) || 0;
+            
+            // লেভেল সিস্টেম: প্রতি ১০০ XP তে এক লেভেল বাড়বে
+            const pointsPerLevel = 100;
+            const level = Math.floor(totalPoints / pointsPerLevel) + 1;
+            const currentProgress = (totalPoints % pointsPerLevel); // বর্তমান লেভেলের প্রগ্রেস
+
+            // UI আপডেট
+            document.getElementById('nav-xp-text').innerText = `${totalPoints} XP • LVL ${level}`;
+            document.getElementById('nav-progress-line').style.width = `${currentProgress}%`;
+        }
+    } catch (err) {
+        console.error("Stats update failed:", err);
+    }
+}
+
+// পেজ লোড হওয়ার সাথে সাথে রান করবে
+window.addEventListener('DOMContentLoaded', updateNavStats);
+
  </script></body>
 </html>
