@@ -282,32 +282,62 @@
     });
   });
 
-  // ৫. সাইন ইন হ্যান্ডলার (লোকাল চেক)
-  document.getElementById('signin-form').addEventListener('submit', (e) => {
+    // ৫. সাইন ইন হ্যান্ডলার (গুগল শিট থেকে ডাটা চেক করবে)
+  document.getElementById('signin-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     clearAllErrors();
 
     const email = document.getElementById('signin-email').value.trim();
     const password = document.getElementById('signin-password').value;
 
-    const storedData = localStorage.getItem(email);
-    
-    if (!storedData) {
-      document.getElementById('signin-general-error').textContent = '✗ Email not found. Please sign up first.';
-      return;
-    }
+    // লোডিং অবস্থা দেখানো
+    const generalError = document.getElementById('signin-general-error');
+    generalError.style.color = "#4f46e5"; // নীল রঙ (Loading)
+    generalError.textContent = 'Verifying with Google Database...';
 
-    const user = JSON.parse(storedData);
-    if (user.password !== password) {
-      document.getElementById('signin-password-error').textContent = 'Incorrect password';
-      return;
-    }
+    try {
+      // গুগল শিটে রিকোয়েস্ট পাঠানো
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        // 'no-cors' মোডে রেসপন্স পড়া যায় না, তাই সরাসরি JSON ডাটা পাঠাতে হবে
+        body: JSON.stringify({
+          action: 'login',
+          email: email,
+          password: password
+        })
+      });
 
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('currentUser', email);
-    window.location.href = 'courses.html';
+      // গুগল শিট থেকে আসা রেজাল্ট
+      const res = await response.json();
+
+      if (res.result === 'success') {
+        // লগইন সফল হলে
+        generalError.style.color = "#10b981"; // সবুজ রঙ (Success)
+        generalError.textContent = '✓ Login successful! Entering classroom...';
+
+        // ব্রাউজারে সেশন মনে রাখা
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('currentUser', email);
+        localStorage.setItem('userName', res.name); // শিট থেকে ইউজারের নাম সেভ করা
+
+        // ১.৫ সেকেন্ড পর কোর্স পেজে পাঠানো
+        setTimeout(() => {
+          window.location.href = 'courses.html'; 
+        }, 1500);
+
+      } else {
+        // ভুল ইমেইল বা পাসওয়ার্ড
+        generalError.style.color = "#ef4444"; // লাল রঙ (Error)
+        generalError.textContent = '✗ Invalid email or password. Please try again.';
+      }
+
+    } catch (error) {
+      // নেটওয়ার্ক বা অন্য কোনো সমস্যা হলে
+      generalError.style.color = "#ef4444";
+      generalError.textContent = '✗ Connection Error: Could not reach the server.';
+      console.error('Login Error:', error);
+    }
   });
-
   // ৬. সাইন আউট ফাংশন
   function signOut() {
     localStorage.removeItem('isLoggedIn');
