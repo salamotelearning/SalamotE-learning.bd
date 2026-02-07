@@ -98,33 +98,48 @@
             loadUserData();
         };
 
-        // 2. Load Initial Data
-        function loadUserData() {
-            const email = localStorage.getItem('currentUser');
-            const name = localStorage.getItem('userName') || "Student";
-            const lastScore = localStorage.getItem('lastExamScore') || "0";
+// 2. Load Initial Data (Updated to Fetch Latest Score from Sheet)
+function loadUserData() {
+    const email = localStorage.getItem('currentUser');
+    
+    // প্রাথমিক কিছু ডিফল্ট ডাটা সেট করা
+    const localName = localStorage.getItem('userName') || "Student";
+    document.getElementById('display-name').textContent = localName;
+    document.getElementById('display-email').textContent = email;
+    document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${localName}&background=6366f1&color=fff&size=128`;
 
-            document.getElementById('display-name').textContent = name;
-            document.getElementById('display-email').textContent = email;
-            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name=${name}&background=6366f1&color=fff&size=128`;
-            
-            // Set Score
-            document.getElementById('last-score').textContent = lastScore + "/30";
-            document.getElementById('score-bar').style.width = (lastScore / 30 * 100) + "%";
+    // সরাসরি গুগল শিট থেকে লেটেস্ট ডাটা এবং স্কোর নিয়ে আসা
+    fetch(`${SCRIPT_URL}?email=${email}&action=getProfile`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.status === "success") {
+                // ১. নাম আপডেট (যদি শিটে ভিন্ন কিছু থাকে)
+                document.getElementById('display-name').textContent = data.name;
 
-            // Fetch Additional Data from Sheets (via Apps Script)
-            fetch(`${SCRIPT_URL}?email=${email}&action=getProfile`)
-                .then(res => res.json())
-                .then(data => {
-                    if(data.status === "success") {
-                        document.getElementById('view-dob').textContent = data.dob || "—";
-                        document.getElementById('view-phone').textContent = data.phone || "—";
-                        document.getElementById('view-location').textContent = data.location || "—";
-                        document.getElementById('view-bio').textContent = data.bio || "Tell us about yourself...";
-                    }
-                });
-        }
+                // ২. স্কোর আপডেট (গুগল শিটের Column D থেকে আসা ডাটা)
+                const sheetScore = data.score || "0 / 30"; // উদা: "3 / 30"
+                document.getElementById('last-score').textContent = sheetScore;
 
+                // ৩. প্রগ্রেস বার আপডেট
+                // "3 / 30" থেকে শুধু ৩ সংখ্যাটি আলাদা করে পারসেন্টেজ বের করা
+                const scoreValue = parseInt(sheetScore.split('/')[0]) || 0;
+                const percentage = (scoreValue / 30) * 100;
+                document.getElementById('score-bar').style.width = percentage + "%";
+
+                // ৪. প্রোফাইলের অন্যান্য তথ্য আপডেট
+                document.getElementById('view-dob').textContent = data.dob || "—";
+                document.getElementById('view-phone').textContent = data.phone || "—";
+                document.getElementById('view-location').textContent = data.location || "—";
+                document.getElementById('view-bio').textContent = data.bio || "Tell us about yourself...";
+            }
+        })
+        .catch(err => {
+            console.error("Sheet থেকে ডাটা লোড করতে সমস্যা হয়েছে:", err);
+            // এরর হলে অন্তত লোকাল স্টোরেজের পুরনো স্কোরটি দেখাবে
+            const fallbackScore = localStorage.getItem('lastExamScore') || "0";
+            document.getElementById('last-score').textContent = fallbackScore + "/30";
+        });
+}
         // 3. Toggle Edit Mode
         function toggleEditMode() {
             const viewMode = document.getElementById('view-mode');
