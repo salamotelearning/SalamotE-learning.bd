@@ -116,14 +116,28 @@ function loadUserData() {
     // ১. নাম আপডেট
     document.getElementById('display-name').textContent = data.name || "User";
 
-    // ২. স্কোর আপডেট
-    // আপনার Apps Script শুধু সংখ্যা পাঠায় (উদা: 15), তাই আমরা নিজে থেকে " / 30" যোগ করব
-    const scoreVal = parseInt(data.score) || 0;
-    document.getElementById('last-score').textContent = scoreVal + " / 30";
+    // ২. বর্তমান স্কোর আপডেট (৩০ এর লিমিট ছাড়া শুধু XP দেখাবে)
+const currentXP = parseInt(data.score) || 0;
+document.getElementById('last-score').textContent = currentXP + " XP";
 
-    // ৩. প্রগ্রেস বার আপডেট
-    const percentage = (scoreVal / 30) * 100;
-    document.getElementById('score-bar').style.width = percentage + "%";
+// ৩. লেভেল এবং পরবর্তী লেভেলের টার্গেট সেট করা
+let nextLevelXP = 100; // ডিফল্ট
+
+if (currentXP >= 2000) {
+    nextLevelXP = 5000; // লেভেল ৪ এর পর পরবর্তী টার্গেট ৫০০০ ধরা হয়েছে
+} else if (currentXP >= 1000) {
+    nextLevelXP = 2000;
+} else if (currentXP >= 500) {
+    nextLevelXP = 1000;
+} else if (currentXP >= 100) {
+    nextLevelXP = 500;
+}
+
+// ৪. প্রগ্রেস বার আপডেট (এটি এখন বর্তমান XP এবং নেক্সট লেভেলের অনুপাতে কাজ করবে)
+const percentage = (currentXP / nextLevelXP) * 100;
+// Math.min(percentage, 100) নিশ্চিত করবে বারটি যেন বক্সের বাইরে না যায়
+document.getElementById('score-bar').style.width = Math.min(percentage, 100) + "%";
+
 
     // ৪. প্রোফাইলের অন্যান্য তথ্য আপডেট
     
