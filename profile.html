@@ -112,32 +112,40 @@ function loadUserData() {
     fetch(`${SCRIPT_URL}?email=${email}&action=getProfile`)
         .then(res => res.json())
         .then(data => {
-            if(data.status === "success") {
-                // ১. নাম আপডেট (যদি শিটে ভিন্ন কিছু থাকে)
-                document.getElementById('display-name').textContent = data.name;
+            if (data.status === "success") {
+    // ১. নাম আপডেট
+    document.getElementById('display-name').textContent = data.name || "User";
 
-                // ২. স্কোর আপডেট (গুগল শিটের Column D থেকে আসা ডাটা)
-                const sheetScore = data.score || "0 / 30"; // উদা: "3 / 30"
-                document.getElementById('last-score').textContent = sheetScore;
+    // ২. স্কোর আপডেট
+    // আপনার Apps Script শুধু সংখ্যা পাঠায় (উদা: 15), তাই আমরা নিজে থেকে " / 30" যোগ করব
+    const scoreVal = parseInt(data.score) || 0;
+    document.getElementById('last-score').textContent = scoreVal + " / 30";
 
-                // ৩. প্রগ্রেস বার আপডেট
-                // "3 / 30" থেকে শুধু ৩ সংখ্যাটি আলাদা করে পারসেন্টেজ বের করা
-                const scoreValue = parseInt(sheetScore.split('/')[0]) || 0;
-                const percentage = (scoreValue / 30) * 100;
-                document.getElementById('score-bar').style.width = percentage + "%";
+    // ৩. প্রগ্রেস বার আপডেট
+    const percentage = (scoreVal / 30) * 100;
+    document.getElementById('score-bar').style.width = percentage + "%";
 
-                // ৪. প্রোফাইলের অন্যান্য তথ্য আপডেট
-                // তারিখটি ফরম্যাট করার অংশ
+    // ৪. প্রোফাইলের অন্যান্য তথ্য আপডেট
+    
+    // তারিখ ফিক্স (গুগল শিটের তারিখ হ্যান্ডেল করা)
     if (data.dob && data.dob !== "—") {
-        const dateObj = new Date(data.dob);
-        // এটি তারিখকে 'DD/MM/YYYY' ফরম্যাটে দেখাবে (যেমন: 18/10/2002)
-        const formattedDate = dateObj.toLocaleDateString('en-GB'); 
-        document.getElementById('view-dob').textContent = formattedDate;
+        try {
+            const dateObj = new Date(data.dob);
+            // যদি তারিখ ইনভ্যালিড হয়, তবে সরাসরি ডাটা দেখাবে
+            if (!isNaN(dateObj.getTime())) {
+                const formattedDate = dateObj.toLocaleDateString('en-GB'); 
+                document.getElementById('view-dob').textContent = formattedDate;
+            } else {
+                document.getElementById('view-dob').textContent = data.dob;
+            }
+        } catch(e) {
+            document.getElementById('view-dob').textContent = data.dob;
+        }
     } else {
         document.getElementById('view-dob').textContent = "—";
     }
 
-    // বাকি অন্যান্য তথ্য যেমন আছে তেমনই থাকবে...
+    // ৫. ফোন, লোকেশন এবং বায়ো (এগুলো এখন কাজ করবে)
     document.getElementById('view-phone').textContent = data.phone || "—";
     document.getElementById('view-location').textContent = data.location || "—";
     document.getElementById('view-bio').textContent = data.bio || "Tell us about yourself...";
