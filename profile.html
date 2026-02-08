@@ -46,11 +46,18 @@
                 <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-indigo-500">
                     <h3 class="text-gray-400 uppercase text-xs font-bold tracking-wider mb-4">Exam Progress</h3>
                     <div class="text-center">
+                       
+                        <div class="mt-2">
+    <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+        Level <span id="user-level">0</span>
+    </span>
+</div>
+
                         <div class="inline-flex items-center justify-center p-4 bg-indigo-50 rounded-full mb-3">
                             <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <p class="text-gray-500 text-sm">Last Exam Score</p>
-                        <h2 id="last-score" class="text-3xl font-extrabold text-indigo-600">0/30</h2>
+                        <h2 id="last-score" class="text-3xl font-extrabold text-indigo-600">0</h2>
                         <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
                             <div id="score-bar" class="bg-indigo-600 h-2 rounded-full" style="width: 0%"></div>
                         </div>
@@ -116,28 +123,34 @@ function loadUserData() {
     // ১. নাম আপডেট
     document.getElementById('display-name').textContent = data.name || "User";
 
-    // ২. বর্তমান স্কোর আপডেট (৩০ এর লিমিট ছাড়া শুধু XP দেখাবে)
+// ১. বর্তমান XP বের করা
 const currentXP = parseInt(data.score) || 0;
 document.getElementById('last-score').textContent = currentXP + " XP";
 
-// ৩. লেভেল এবং পরবর্তী লেভেলের টার্গেট সেট করা
-let nextLevelXP = 100; // ডিফল্ট
+// ২. লেভেল এবং পরবর্তী লেভেলের টার্গেট নির্ধারণ (আপনার দেওয়া শর্ত অনুযায়ী)
+let currentLevel = 0;
+let nextLevelXP = 100; // লেভেল ১ এর জন্য টার্গেট
 
 if (currentXP >= 2000) {
-    nextLevelXP = 5000; // লেভেল ৪ এর পর পরবর্তী টার্গেট ৫০০০ ধরা হয়েছে
+    currentLevel = 4;
+    nextLevelXP = 5000; // পরবর্তী মাইলফলক
 } else if (currentXP >= 1000) {
+    currentLevel = 3;
     nextLevelXP = 2000;
 } else if (currentXP >= 500) {
+    currentLevel = 2;
     nextLevelXP = 1000;
 } else if (currentXP >= 100) {
+    currentLevel = 1;
     nextLevelXP = 500;
 }
 
-// ৪. প্রগ্রেস বার আপডেট (এটি এখন বর্তমান XP এবং নেক্সট লেভেলের অনুপাতে কাজ করবে)
-const percentage = (currentXP / nextLevelXP) * 100;
-// Math.min(percentage, 100) নিশ্চিত করবে বারটি যেন বক্সের বাইরে না যায়
-document.getElementById('score-bar').style.width = Math.min(percentage, 100) + "%";
+// ৩. HTML-এ লেভেলের মান বসানো
+document.getElementById('user-level').textContent = currentLevel;
 
+// ৪. প্রগ্রেস বার আপডেট (এটি বর্তমান XP এবং পরবর্তী লেভেলের টার্গেট অনুযায়ী কাজ করবে)
+const percentage = (currentXP / nextLevelXP) * 100;
+document.getElementById('score-bar').style.width = Math.min(percentage, 100) + "%";
 
     // ৪. প্রোফাইলের অন্যান্য তথ্য আপডেট
     
