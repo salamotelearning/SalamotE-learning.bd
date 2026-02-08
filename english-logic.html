@@ -21,7 +21,7 @@
             <h1 class="text-indigo-600 font-bold text-xl">English Logic</h1>
             <div class="flex items-center gap-4">
                 <span id="user-xp" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-bold text-sm">🎯 0 XP</span>
-                <button onclick="location.href='index.html'" class="text-gray-500 hover:text-indigo-600 font-medium">Exit</button>
+                <button onclick="location.href='courses.html'" class="text-gray-500 hover:text-indigo-600 font-medium">Exit</button>
             </div>
         </div>
     </nav>
@@ -105,7 +105,7 @@
                     <p class="font-bold mb-4 text-gray-800">${card.question}</p>
                     <div class="flex gap-2">
                         <input type="text" id="ans-input" placeholder="Type answer..." 
-                               class="flex-1 p-3 rounded-xl border-2 border-gray-200 outline-none focus:border-indigo-500">
+                               class="flex-1 p-1/2 rounded-xl border-2 border-gray-200 outline-none focus:border-indigo-500">
                         <button id="check-btn" onclick='checkAnswer(${JSON.stringify(card.answer)}, ${card.xpReward})'
                          class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700">Check</button>
                     </div>
@@ -177,7 +177,7 @@
                 <p class="text-5xl font-black text-indigo-600">${totalXP}<span class="text-xl ml-1">XP</span></p>
             </div>
 
-            <button onclick="location.href='index.html'" 
+            <button onclick="location.href='courses.html'" 
                     class="w-full max-w-[280px] bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-indigo-100 active:scale-95 transition-all">
                 Back to Dashboard
             </button>
