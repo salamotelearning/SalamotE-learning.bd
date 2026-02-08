@@ -137,21 +137,30 @@
 
         async function showCompletion() {
     // ১. শিটে স্কোর সেভ
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    if (user && totalXP > 0) {
+    const userEmail = localStorage.getItem('currentUser'); // সরাসরি ইমেইল নিচ্ছি
+    
+    if (userEmail && totalXP > 0) {
         try {
-            await fetch(SCRIPT_URL, {
+            // রেজাল্ট পাঠানোর সময় fetch-কে কনফিগার করা
+            fetch(SCRIPT_URL, {
                 method: "POST",
+                mode: "no-cors", 
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
                 body: JSON.stringify({
                     action: "updateProfile",
-                    email: user.email,
-                    score: totalXP // সংখ্যা পাঠালে অ্যাপস স্ক্রিপ্ট যোগ করে নেবে
+                    email: userEmail,
+                    score: totalXP 
                 })
             });
-        } catch (e) { console.error("Update failed"); }
+            console.log("XP sent to sheet: " + totalXP);
+        } catch (e) { 
+            console.error("XP Update failed", e); 
+        }
     }
 
-    // ২. সাকসেস মেসেজ (পুরো স্ক্রিন জুড়ে সুন্দরভাবে দেখাবে)
+    // ২. সাকসেস মেসেজ দেখানো
     document.getElementById('card-display').innerHTML = `
         <div class="flex flex-col items-center justify-center text-center py-8 px-4 min-h-[450px] animate-fade-in">
             <div class="text-6xl mb-6 animate-bounce">🎉</div>
@@ -168,7 +177,8 @@
                 Back to Dashboard
             </button>
         </div>
-    `;       }
+    `;
+        }
     </script>
 </body>
 </html>
