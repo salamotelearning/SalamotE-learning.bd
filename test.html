@@ -2047,6 +2047,9 @@ function submitExam() {
     } catch (e) {
         console.error("Score sending failed:", e);
     }
+     // রেজাল্ট স্ক্রিন এবং অ্যানিমেশন দেখানো (অবশ্যই কল করতে হবে)
+    showResults(totalScore, vocabScore, verbScore, dialogueScore, passed);
+}
 // ২. রেজাল্ট স্ক্রিন দেখানো এবং অ্যানিমেশন
 function showResults(totalScore, vocabScore, verbScore, dialogueScore, passed) {
     document.getElementById('exam-screen').classList.add('hidden');
