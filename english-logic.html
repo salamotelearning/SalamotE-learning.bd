@@ -106,8 +106,8 @@
                     <div class="flex gap-2">
                         <input type="text" id="ans-input" placeholder="Type answer..." 
                                class="flex-1 p-3 rounded-xl border-2 border-gray-200 outline-none focus:border-indigo-500">
-                        <button id="check-btn" onclick="checkAnswer('${card.answer}', ${card.xpReward})" 
-                                class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700">Check</button>
+                        <button id="check-btn" onclick='checkAnswer(${JSON.stringify(card.answer)}, ${card.xpReward})'
+                         class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700">Check</button>
                     </div>
                     <p id="msg" class="mt-4 hidden font-bold"></p>
                 </div>
