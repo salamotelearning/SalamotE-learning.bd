@@ -115,25 +115,30 @@
         }
 
         function checkAnswer(correct, xp) {
-            const input = document.getElementById('ans-input');
-            const btn = document.getElementById('check-btn');
-            const msg = document.getElementById('msg');
-            
-            if(input.value.trim().toLowerCase() === correct.toLowerCase()) {
-                input.className = "flex-1 p-3 rounded-xl border-2 correct-ans outline-none";
-                msg.innerHTML = "✨ Awesome! +"+xp+" XP";
-                msg.className = "mt-4 block text-green-600";
-                totalXP += xp;
-                document.getElementById('user-xp').textContent = "🎯 " + totalXP + " XP";
-                
-                btn.innerHTML = "Next →";
-                btn.onclick = () => { currentIndex++; renderCard(); };
-            } else {
-                input.className = "flex-1 p-3 rounded-xl border-2 wrong-ans outline-none";
-                msg.innerHTML = "❌ Try again! (Tip: " + correct + ")";
-                msg.className = "mt-4 block text-red-600";
-            }
-        }
+    const input = document.getElementById('ans-input');
+    const btn = document.getElementById('check-btn');
+    const msg = document.getElementById('msg');
+    
+    // উত্তরটিকে ক্লিন করা: স্পেস মোছা এবং সব অ্যাপোস্ট্রফিকে একই রকম করা
+    let userAns = input.value.trim().toLowerCase().replace(/’/g, "'");
+    let correctAns = correct.trim().toLowerCase().replace(/’/g, "'");
+
+    if(userAns === correctAns) {
+        input.className = "flex-1 p-3 rounded-xl border-2 correct-ans outline-none";
+        msg.innerHTML = "✨ Awesome! +"+xp+" XP";
+        msg.className = "mt-4 block text-green-600";
+        totalXP += xp;
+        document.getElementById('user-xp').textContent = "🎯 " + totalXP + " XP";
+        
+        btn.innerHTML = "Next →";
+        btn.onclick = () => { currentIndex++; renderCard(); };
+    } else {
+        input.className = "flex-1 p-3 rounded-xl border-2 wrong-ans outline-none";
+        msg.innerHTML = "❌ Try again! (Tip: " + correct + ")";
+        msg.className = "mt-4 block text-red-600";
+    }
+}
+
 
         async function showCompletion() {
     // ১. শিটে স্কোর সেভ
