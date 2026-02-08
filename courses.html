@@ -691,37 +691,61 @@ lessonCard.innerHTML = `
 
     // ৩. নেভিগেশন বারের পয়েন্ট এবং লেভেল আপডেট ফাংশন
     async function updateNavStats() {
-        // মনে রাখবেন: SCRIPT_URL আপনার ফাইলে আগেই ডিফাইন করা থাকতে হবে
-        const userEmail = localStorage.getItem('currentUser'); // সরাসরি ইমেইল নিচ্ছি
-        if (!userEmail) return;
+    const userEmail = localStorage.getItem('currentUser'); 
+    if (!userEmail) return;
 
-        try {
-            // GET রিকোয়েস্টের মাধ্যমে প্রোফাইল ডাটা আনা (আপনার Apps Script অনুযায়ী)
-            const response = await fetch(`${SCRIPT_URL}?action=getProfile&email=${encodeURIComponent(userEmail)}`);
-            const data = await response.json();
+    try {
+        const response = await fetch(`${SCRIPT_URL}?action=getProfile&email=${encodeURIComponent(userEmail)}`);
+        const data = await response.json();
 
-            if (data.status === "success") {
-                const totalPoints = parseInt(data.score) || 0;
-                
-                // আপনার দেওয়া লেভেল লজিক (প্রতি ১০০ XP তে ১ লেভেল)
-                const pointsPerLevel = 100;
-                const level = Math.floor(totalPoints / pointsPerLevel) + 1;
-                const currentProgress = (totalPoints % pointsPerLevel); // বর্তমান লেভেলের প্রগ্রেস
+        if (data.status === "success") {
+            const totalPoints = parseInt(data.score) || 0;
+            
+            let currentLevel = 0;
+            let nextLevelXP = 100; 
+            let prevLevelXP = 0;   
 
-                // UI আপডেট (নিশ্চিত করুন আপনার HTML এ এই ID গুলো আছে)
-                const xpDisplay = document.getElementById('nav-xp-text') || document.getElementById('nav-xp');
-                if (xpDisplay) {
-                    xpDisplay.innerText = `${totalPoints} XP • LVL ${level}`;
-                }
-
-                const progressBar = document.getElementById('nav-progress-line');
-                if (progressBar) {
-                    progressBar.style.width = `${currentProgress}%`;
-                }
+            // আপনার দেওয়া শর্ত অনুযায়ী লেভেল সেট করা
+            if (totalPoints >= 2000) {
+                currentLevel = 4;
+                nextLevelXP = 5000; 
+                prevLevelXP = 2000;
+            } else if (totalPoints >= 1000) {
+                currentLevel = 3;
+                nextLevelXP = 2000;
+                prevLevelXP = 1000;
+            } else if (totalPoints >= 500) {
+                currentLevel = 2;
+                nextLevelXP = 1000;
+                prevLevelXP = 500;
+            } else if (totalPoints >= 100) {
+                currentLevel = 1;
+                nextLevelXP = 500;
+                prevLevelXP = 100;
             }
-        } catch (err) {
-            console.error("Stats update failed:", err);
+
+            // UI আপডেট
+            const xpDisplay = document.getElementById('nav-xp-text');
+            if (xpDisplay) {
+                xpDisplay.innerText = `${totalPoints} XP • LVL ${currentLevel}`;
+            }
+
+            // প্রগ্রেস বার ক্যালকুলেশন
+            const progressBar = document.getElementById('nav-progress-line');
+            if (progressBar) {
+                let progressPercent = 0;
+                if (totalPoints < 100) {
+                    progressPercent = (totalPoints / 100) * 100;
+                } else {
+                    // বর্তমান লেভেলের ভেতরে কতটুকু এগোলো তার হিসাব
+                    progressPercent = ((totalPoints - prevLevelXP) / (nextLevelXP - prevLevelXP)) * 100;
+                }
+                progressBar.style.width = `${Math.min(progressPercent, 100)}%`;
+            }
         }
+    } catch (err) {
+        console.error("Stats update failed:", err);
+    }
     }
 
     // পেজ লোড হওয়ার সাথে সাথে রান করবে
