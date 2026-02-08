@@ -2022,7 +2022,7 @@ function submitExam() {
     const totalScore = vocabScore + verbScore + dialogueScore;
     const passed = totalScore >= 15;
 
-    // শিটে ডাটা পাঠানো (এটি আপনার Apps Script এ পয়েন্ট যোগ করবে)
+    // শিটে ডাটা পাঠানো
     try {
         const userData = JSON.parse(localStorage.getItem('currentUser'));
         const userEmail = userData ? userData.email : null;
@@ -2030,22 +2030,23 @@ function submitExam() {
         if (userEmail && typeof SCRIPT_URL !== 'undefined') {
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                
+                mode: 'no-cors', // গুগল স্ক্রিপ্টের জন্য এটি দরকার
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8' // CORS ঝামেলা এড়াতে
+                },
                 body: JSON.stringify({
                     action: 'updateProfile',
                     email: userEmail,
                     score: totalScore
                 })
             });
+            console.log("Score sent to sheet: ", totalScore);
+        } else {
+            console.warn("User email not found! Score not sent.");
         }
     } catch (e) {
         console.error("Score sending failed:", e);
     }
-
-    // রেজাল্ট দেখানোর ফাংশন কল করা
-    showResults(totalScore, vocabScore, verbScore, dialogueScore, passed);
-}
-
 // ২. রেজাল্ট স্ক্রিন দেখানো এবং অ্যানিমেশন
 function showResults(totalScore, vocabScore, verbScore, dialogueScore, passed) {
     document.getElementById('exam-screen').classList.add('hidden');
