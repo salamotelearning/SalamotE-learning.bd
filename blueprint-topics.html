@@ -216,15 +216,36 @@ function changeLevel(step) {
     renderSubLevel();
 }
 
-function markTopicComplete() {
+async function markTopicComplete() {
+    // ১. প্রথমে ব্রাউজারে (LocalStorage) প্রগ্রেস সেভ করা
     if (!progress.completed.includes(activeTopicId)) {
         progress.completed.push(activeTopicId);
         localStorage.setItem('eng_progress', JSON.stringify(progress));
+        
+        // ২. গুগল শিটে প্রগ্রেস পাঠানোর চেষ্টা করা (I কলামের জন্য)
+        const userEmail = localStorage.getItem('user_email'); 
+        if (userEmail) {
+            try {
+                // আমরা অ্যাপস স্ক্রিপ্টে 'updateProgress' অ্যাকশন পাঠাচ্ছি
+                await fetch(webAppUrl, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        action: 'updateProgress', 
+                        email: userEmail, 
+                        topicId: activeTopicId 
+                    })
+                });
+                console.log("Progress synced to Google Sheet successfully! ✅");
+            } catch (err) {
+                console.error("Failed to sync progress to sheet:", err);
+            }
+        }
     }
+    
+    // তোমার দেওয়া ইংরেজি অ্যালার্ট মেসেজ
     alert("Congrats! You’ve mastered this topic successfully. 🏆");
     showHome();
 }
-
 function showHome() {
     document.getElementById('topics-grid').classList.remove('hidden');
     document.getElementById('learning-screen').classList.add('hidden');
