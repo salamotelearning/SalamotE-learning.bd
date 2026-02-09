@@ -102,7 +102,7 @@ async function loadLesson(topic) {
     document.getElementById('topics-grid').classList.add('hidden');
     document.getElementById('learning-screen').classList.remove('hidden');
     document.getElementById('current-topic-title').innerText = topic.title;
-    document.getElementById('lesson-content').innerHTML = '<p class="text-center animate-pulse text-indigo-400">ডাটা লোড হচ্ছে... ধৈর্য ধরো জানু! 🫣</p>';
+    document.getElementById('lesson-content').innerHTML = '<p class="text-center animate-pulse text-indigo-400">Loading......Please! Wait a bit</p>';
     
     try {
         const res = await fetch(`${webAppUrl}?topic=${topic.name}`);
@@ -194,21 +194,21 @@ function checkAns(correctAnsRaw, inputId) {
         nextBtn.style.opacity = "1";
         input.classList.remove('border-rose-500');
         input.classList.add('border-emerald-500', 'border-2');
-        feedback.innerText = "দারুণ! একদম সঠিক হয়েছে। 🎉";
+        feedback.innerText = "Exactly! You’ve got the point. 🎉";
         feedback.className = "mt-2 text-sm text-emerald-400 font-bold";
     } else {
         isQuizSolved = false;
         nextBtn.disabled = true;
         nextBtn.style.opacity = "0.5";
         input.classList.add('border-rose-500', 'border-2');
-        feedback.innerText = "উফ! উত্তরটা মেলেনি জানু। 🫣";
+        feedback.innerText = "Uff! Wrong Answer. Please! Try again😟";
         feedback.className = "mt-2 text-sm text-rose-400 font-bold";
     }
 }
 
 function changeLevel(step) {
     if (step === 1 && !isQuizSolved) {
-        alert("আগে কুইজটির সঠিক উত্তর দাও! ✋");
+        alert("Master the logic first, or else you won’t see any progress.✋");
         return;
     }
     currentSubLevel += step;
@@ -221,7 +221,7 @@ function markTopicComplete() {
         progress.completed.push(activeTopicId);
         localStorage.setItem('eng_progress', JSON.stringify(progress));
     }
-    alert("অভিনন্দন! এই টপিকটি আপনি সফলভাবে শেষ করেছেন। 🏆");
+    alert("Congrats! You’ve mastered this topic successfully. 🏆");
     showHome();
 }
 
