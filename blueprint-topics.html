@@ -136,8 +136,7 @@ function renderSubLevel() {
     items.forEach((item, index) => {
         const el = document.createElement('div');
         el.className = "p-4 rounded-xl mb-4 card-animate " + 
-            (item.Type === 'Aha' ? 'bg-amber-500/10 border-l-4 border-amber-500' : 
-            (item.Type === 'Notice' ? 'bg-red-500/10 border-l-4 border-amber-500' : 
+            (item.Type === 'Aha' ? 'bg-amber-500/10 border-l-4 border-amber-500' :
             (item.Type === 'Quiz' ? 'bg-blue-500/10 border-l-4 border-blue-500' : 'bg-slate-700/30'));
         
         if (item.Type === 'Quiz') {
